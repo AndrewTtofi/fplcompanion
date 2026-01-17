@@ -32,7 +32,7 @@ A fully containerized Fantasy Premier League companion application that helps FP
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/AndrewTtofi/fplcompanion.git
    cd fplcompanion
    ```
 
@@ -245,11 +245,37 @@ Your Team ID is: **4604279**
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Commit message conventions
+- Semantic versioning
+- Development workflow
+- Pull request process
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for complete guidelines.
+
+## Versioning
+
+This project uses [Semantic Versioning](https://semver.org/). See [CHANGELOG.md](CHANGELOG.md) for version history.
+
+**Current Version:** v2.0.0
+
+- **MAJOR** version for incompatible API changes
+- **MINOR** version for new features (backward-compatible)
+- **PATCH** version for bug fixes
+
+Versions are automatically managed through commit messages on merge to `main`.
+
+## Links
+
+- **GitHub Repository:** https://github.com/AndrewTtofi/fplcompanion
+- **Issue Tracker:** https://github.com/AndrewTtofi/fplcompanion/issues
+- **Releases:** https://github.com/AndrewTtofi/fplcompanion/releases
+- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
-MIT
+MIT - See [LICENSE](LICENSE) for details
 
 ## Acknowledgments
 
