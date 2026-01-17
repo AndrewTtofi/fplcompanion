@@ -180,6 +180,20 @@ function PlayerCard({ player }) {
 
   return (
     <div className="relative">
+      {/* Auto-sub indicator */}
+      {player.auto_sub && !player.subbed_out && (
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 whitespace-nowrap">
+          AUTO SUB
+        </div>
+      )}
+
+      {/* Match not started indicator */}
+      {player.match_not_started && !player.auto_sub && (
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 whitespace-nowrap">
+          NOT STARTED
+        </div>
+      )}
+
       <Jersey
         teamShort={player.team_short}
         playerName={player.web_name}
@@ -198,6 +212,11 @@ function PlayerCard({ player }) {
           <div>
             <div className="font-bold text-sm">{player.web_name}</div>
             <div className="text-gray-400 text-xs">{player.team_short} • {player.position_name} • £{player.now_cost}m</div>
+            {player.auto_sub && player.subbed_in_for && (
+              <div className="text-green-400 text-[10px] mt-1">
+                ↑ Auto-subbed in for {player.subbed_in_for}
+              </div>
+            )}
           </div>
 
           {hasPlayed ? (
@@ -342,11 +361,27 @@ function BenchPlayerCard({ player, position }) {
   const isPlaying = player.fixtures?.some(f => f.started && !f.finished);
 
   return (
-    <div className="bg-white bg-opacity-90 rounded-lg p-3 shadow-md flex flex-col items-center min-w-[100px] relative">
+    <div className={`bg-white bg-opacity-90 rounded-lg p-3 shadow-md flex flex-col items-center min-w-[100px] relative ${
+      player.subbed_out ? 'opacity-50 border-2 border-red-300' : ''
+    }`}>
       {/* Bench Position Badge */}
       <div className="absolute -top-2 -left-2 bg-gray-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md z-10">
         {position}
       </div>
+
+      {/* Subbed Out Indicator */}
+      {player.subbed_out && (
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 whitespace-nowrap">
+          DNP
+        </div>
+      )}
+
+      {/* Match not started indicator */}
+      {player.match_not_started && !player.subbed_out && (
+        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 whitespace-nowrap">
+          NOT STARTED
+        </div>
+      )}
 
       {/* Jersey */}
       <Jersey
@@ -359,6 +394,13 @@ function BenchPlayerCard({ player, position }) {
         isPlaying={isPlaying}
         size="sm"
       />
+
+      {/* Show replacement info */}
+      {player.replaced_by && (
+        <div className="mt-2 text-[10px] text-center text-red-600 font-semibold">
+          Replaced by {player.replaced_by}
+        </div>
+      )}
     </div>
   );
 }
