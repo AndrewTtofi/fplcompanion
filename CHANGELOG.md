@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.4.0] - 2026-01-17
+
+### Changes
+- feat: beautify player hover popup in Live Points view (#5) (fffa36b)
+
 ## [v2.3.2] - 2026-01-17
 
 ### Changes
