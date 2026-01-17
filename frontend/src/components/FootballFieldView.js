@@ -217,7 +217,7 @@ function PlayerCard({ player }) {
       <div className="absolute z-10 bottom-full mb-2 hidden group-hover:block">
         <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-48 space-y-1">
           <div className="font-bold border-b border-gray-700 pb-1">{player.web_name}</div>
-          <div className="text-gray-300">{player.team_short} • £{player.now_cost}m</div>
+          <div className="text-gray-300">{player.team_short} • {player.position_name} • £{player.now_cost}m</div>
           {hasPlayed && (
             <>
               <div className="border-t border-gray-700 pt-1 mt-1">
@@ -266,7 +266,7 @@ function BenchPlayerCard({ player, position }) {
         {player.web_name}
       </div>
       <div className="text-xs text-gray-600">
-        {player.team_short} • {player.position}
+        {player.team_short} • {player.position_name}
       </div>
     </div>
   );
@@ -296,7 +296,7 @@ function ListPlayerRow({ player, benchPosition }) {
         )}
 
         <div className={`${positionColors[player.position_id]} px-2 py-1 rounded text-xs font-bold shrink-0`}>
-          {player.position}
+          {player.position_name}
         </div>
 
         <div className="flex-1 min-w-0">

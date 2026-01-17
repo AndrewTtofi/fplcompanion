@@ -220,7 +220,7 @@ function LivePlayerCard({ player, isBench = false }) {
 
           <div className="flex items-center gap-2 md:gap-4 mt-1 text-xs md:text-sm text-gray-600 flex-wrap">
             <span>{player.team_short}</span>
-            <span>{player.position}</span>
+            <span>{player.position_name}</span>
             <span>£{player.now_cost}m</span>
           </div>
 

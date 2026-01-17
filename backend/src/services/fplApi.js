@@ -217,10 +217,18 @@ class FPLApiService {
       this.getFixtures(gameweek)
     ]);
 
+    // Convert live data elements array to object for faster lookup
+    const liveDataMap = {};
+    if (liveData && liveData.elements) {
+      liveData.elements.forEach(el => {
+        liveDataMap[el.id] = el;
+      });
+    }
+
     // Enrich picks with player data, live stats, and fixtures
     const enrichedPicks = picks.picks.map(pick => {
       const player = bootstrap.elements.find(p => p.id === pick.element);
-      const liveStats = liveData.elements[pick.element];
+      const liveStats = liveDataMap[pick.element];
       const team = bootstrap.teams.find(t => t.id === player?.team);
       const position = bootstrap.element_types.find(p => p.id === player?.element_type);
 
@@ -248,7 +256,7 @@ class FPLApiService {
         player_name: player ? `${player.first_name} ${player.second_name}` : 'Unknown',
         web_name: player?.web_name || 'Unknown',
         team_short: team?.short_name || 'N/A',
-        position: position?.singular_name_short || 'N/A',
+        position_name: position?.singular_name_short || 'N/A',
         position_id: position?.id,
         now_cost: player?.now_cost / 10,
         fixtures: playerFixtures,
