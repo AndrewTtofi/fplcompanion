@@ -91,10 +91,15 @@ export default function TeamOverview({ teamData }) {
                 return (
                   <tr key={gw.event} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-3 px-4 font-medium">GW{gw.event}</td>
-                    <td className="py-3 px-4 text-right font-bold text-fpl-purple">
+                    <td className="py-3 px-4 text-right font-bold text-fpl-purple relative group">
                       {gwPoints}
                       {isCurrentGW && liveData?.total_live_points && (
-                        <span className="ml-1 text-xs text-green-600">●</span>
+                        <>
+                          <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                          <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">
+                            Live - Gameweek in progress
+                          </div>
+                        </>
                       )}
                     </td>
                     <td className="py-3 px-4 text-right text-sm">
@@ -220,9 +225,16 @@ function StatCard({ label, value, icon, subtitle, isLive }) {
         <span className="stat-label">{label}</span>
         {icon}
       </div>
-      <div className="stat-value">
+      <div className="stat-value relative group">
         {value}
-        {isLive && <span className="ml-2 text-sm text-green-600">●</span>}
+        {isLive && (
+          <>
+            <span className="ml-2 text-sm text-green-600 cursor-help">●</span>
+            <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-0">
+              Live - Gameweek in progress
+            </div>
+          </>
+        )}
       </div>
       {subtitle && <div className="text-sm text-gray-500 mt-1">{subtitle}</div>}
     </div>
