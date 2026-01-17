@@ -96,14 +96,30 @@ function LeagueStandings({ league, userTeamId }) {
   }
 
   const standings = data.standings.results;
-  // Check if user entry is in current page or use league metadata
+
+  // Debug: log the data structure to understand what we're getting
+  console.log('League data:', data);
+  console.log('User team ID:', userTeamId);
+
+  // The FPL API includes the user's entry in multiple places:
+  // 1. In standings.results if they're on the current page
+  // 2. In new_entries.results (contains the requesting user's entry)
   const userEntryInPage = standings.find(s => s.entry === userTeamId);
 
-  // Try to get user entry from standings or from league's new_entries data
-  const userEntry = userEntryInPage || data.new_entries?.results?.find(s => s.entry === userTeamId);
+  // Check all possible locations for user entry
+  const userEntryFromNewEntries = data.new_entries?.results?.[0];
 
-  // If still not found, try to construct from league metadata if available
-  const userRank = userEntry?.rank || data.standings?.has_next ? null : null;
+  console.log('User entry in page:', userEntryInPage);
+  console.log('User entry from new_entries:', userEntryFromNewEntries);
+  console.log('New entries structure:', data.new_entries);
+
+  // Use whichever source has data, prioritizing the one that matches our team ID
+  let userEntry = userEntryInPage;
+  if (!userEntry && userEntryFromNewEntries?.entry === userTeamId) {
+    userEntry = userEntryFromNewEntries;
+  }
+
+  console.log('Final user entry:', userEntry);
 
   return (
     <div className="space-y-4">

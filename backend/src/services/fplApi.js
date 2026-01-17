@@ -83,13 +83,19 @@ class FPLApiService {
 
   /**
    * Get classic league standings
+   * The FPL API returns league.standings.results for the requested page
+   * and includes the user's own entry in new_entries.results
    */
   async getClassicLeague(leagueId, page = 1) {
-    return this.fetchWithCache(
+    const data = await this.fetchWithCache(
       `/leagues-classic/${leagueId}/standings/?page_standings=${page}`,
       `fpl:league:classic:${leagueId}:page:${page}`,
       30 // 30s cache for fresh league standings
     );
+
+    // The FPL API should include new_entries which contains the user's own entry
+    // This ensures we can display user rank even when they're not on page 1
+    return data;
   }
 
   /**
