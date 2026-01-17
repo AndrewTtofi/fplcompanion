@@ -148,38 +148,38 @@ export default function FootballFieldView({ teamId, gameweek }) {
           <div className="absolute inset-0 pointer-events-none">
             {/* Center circle */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white border-opacity-30 rounded-full"></div>
-            {/* Center line */}
-            <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white opacity-30"></div>
-            {/* Penalty boxes */}
-            <div className="absolute top-1/2 left-0 transform -translate-y-1/2 w-20 h-40 border-2 border-white border-opacity-30 border-l-0"></div>
-            <div className="absolute top-1/2 right-0 transform -translate-y-1/2 w-20 h-40 border-2 border-white border-opacity-30 border-r-0"></div>
+            {/* Center line - now horizontal */}
+            <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-white opacity-30"></div>
+            {/* Penalty boxes - rotated for horizontal field */}
+            <div className="absolute left-1/2 top-0 transform -translate-x-1/2 h-20 w-40 border-2 border-white border-opacity-30 border-t-0"></div>
+            <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 h-20 w-40 border-2 border-white border-opacity-30 border-b-0"></div>
           </div>
 
-          <div className="relative space-y-6 md:space-y-10">
-            {/* Forwards */}
-            <div className="flex justify-center gap-4 md:gap-8">
-              {grouped.FWD.map(player => (
-                <PlayerCard key={player.element} player={player} />
-              ))}
-            </div>
-
-            {/* Midfielders */}
-            <div className="flex justify-center gap-4 md:gap-6">
-              {grouped.MID.map(player => (
+          <div className="relative flex items-center justify-center gap-6 md:gap-12">
+            {/* Goalkeeper */}
+            <div className="flex flex-col justify-center gap-4">
+              {grouped.GK.map(player => (
                 <PlayerCard key={player.element} player={player} />
               ))}
             </div>
 
             {/* Defenders */}
-            <div className="flex justify-center gap-4 md:gap-6">
+            <div className="flex flex-col justify-center gap-4 md:gap-6">
               {grouped.DEF.map(player => (
                 <PlayerCard key={player.element} player={player} />
               ))}
             </div>
 
-            {/* Goalkeeper */}
-            <div className="flex justify-center">
-              {grouped.GK.map(player => (
+            {/* Midfielders */}
+            <div className="flex flex-col justify-center gap-4 md:gap-6">
+              {grouped.MID.map(player => (
+                <PlayerCard key={player.element} player={player} />
+              ))}
+            </div>
+
+            {/* Forwards */}
+            <div className="flex flex-col justify-center gap-4 md:gap-8">
+              {grouped.FWD.map(player => (
                 <PlayerCard key={player.element} player={player} />
               ))}
             </div>
@@ -236,7 +236,7 @@ function PlayerCard({ player }) {
       />
 
       {/* Hover Card with Points Breakdown */}
-      <div className="absolute z-10 bottom-full mb-2 hidden group-hover:block">
+      <div className="absolute z-10 top-full mt-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block">
         <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-56 space-y-2">
           {/* Player Info */}
           <div>
@@ -544,25 +544,25 @@ function LivePointsPlayerRow({ player, benchPosition }) {
             {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
           </div>
         </div>
-
-        {/* Hover Tooltip */}
-        {hasPlayed && breakdown.length > 0 && (
-          <div className="absolute left-full ml-2 top-0 hidden group-hover:block z-20 pointer-events-none">
-            <div className="bg-gray-900 text-white text-xs rounded-lg p-2 shadow-xl whitespace-nowrap">
-              <div className="font-semibold mb-1">Quick Points</div>
-              {breakdown.slice(0, 3).map((item, idx) => (
-                <div key={idx} className="flex justify-between gap-3">
-                  <span>{item.label}</span>
-                  <span className="font-semibold">{item.points > 0 ? '+' : ''}{item.points}</span>
-                </div>
-              ))}
-              {breakdown.length > 3 && (
-                <div className="text-gray-400 text-[10px] mt-1">Click for full breakdown</div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Hover Tooltip */}
+      {hasPlayed && breakdown.length > 0 && (
+        <div className="absolute left-full ml-2 top-0 hidden group-hover:block z-20 pointer-events-none">
+          <div className="bg-gray-900 text-white text-xs rounded-lg p-2 shadow-xl whitespace-nowrap">
+            <div className="font-semibold mb-1">Quick Points</div>
+            {breakdown.slice(0, 3).map((item, idx) => (
+              <div key={idx} className="flex justify-between gap-3">
+                <span>{item.label}</span>
+                <span className="font-semibold">{item.points > 0 ? '+' : ''}{item.points}</span>
+              </div>
+            ))}
+            {breakdown.length > 3 && (
+              <div className="text-gray-400 text-[10px] mt-1">Click for full breakdown</div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Click Popup */}
       {showPopup && (
