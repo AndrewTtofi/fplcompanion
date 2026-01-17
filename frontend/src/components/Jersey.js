@@ -1,25 +1,25 @@
-// Team colors mapping based on Premier League teams
-const TEAM_COLORS = {
-  'ARS': { primary: '#EF0107', secondary: '#FFFFFF' },      // Arsenal - Red/White
-  'AVL': { primary: '#95BFE5', secondary: '#670E36' },      // Aston Villa - Claret/Blue
-  'BOU': { primary: '#DA291C', secondary: '#000000' },      // Bournemouth - Red/Black
-  'BRE': { primary: '#e30613', secondary: '#FBB800' },      // Brentford - Red/Yellow
-  'BHA': { primary: '#0057B8', secondary: '#FFCD00' },      // Brighton - Blue/Yellow
-  'CHE': { primary: '#034694', secondary: '#FFFFFF' },      // Chelsea - Blue/White
-  'CRY': { primary: '#1B458F', secondary: '#C4122E' },      // Crystal Palace - Blue/Red
-  'EVE': { primary: '#003399', secondary: '#FFFFFF' },      // Everton - Blue/White
-  'FUL': { primary: '#FFFFFF', secondary: '#000000' },      // Fulham - White/Black
-  'IPS': { primary: '#0E4FA0', secondary: '#FFFFFF' },      // Ipswich - Blue/White
-  'LEI': { primary: '#003090', secondary: '#FDBE11' },      // Leicester - Blue/Gold
-  'LIV': { primary: '#C8102E', secondary: '#00B2A9' },      // Liverpool - Red/Teal
-  'MCI': { primary: '#6CABDD', secondary: '#1C2C5B' },      // Man City - Sky Blue/Navy
-  'MUN': { primary: '#DA291C', secondary: '#FBE122' },      // Man United - Red/Yellow
-  'NEW': { primary: '#241F20', secondary: '#FFFFFF' },      // Newcastle - Black/White
-  'NFO': { primary: '#DD0000', secondary: '#FFFFFF' },      // Nottingham Forest - Red/White
-  'SOU': { primary: '#D71920', secondary: '#130C0E' },      // Southampton - Red/Black
-  'TOT': { primary: '#132257', secondary: '#FFFFFF' },      // Tottenham - Navy/White
-  'WHU': { primary: '#7A263A', secondary: '#1BB1E7' },      // West Ham - Claret/Blue
-  'WOL': { primary: '#FDB913', secondary: '#231F20' },      // Wolves - Gold/Black
+// Team colors and badge codes mapping based on Premier League teams
+const TEAM_DATA = {
+  'ARS': { primary: '#EF0107', secondary: '#FFFFFF', code: 3 },      // Arsenal
+  'AVL': { primary: '#95BFE5', secondary: '#670E36', code: 7 },      // Aston Villa
+  'BOU': { primary: '#DA291C', secondary: '#000000', code: 91 },     // Bournemouth
+  'BRE': { primary: '#e30613', secondary: '#FBB800', code: 94 },     // Brentford
+  'BHA': { primary: '#0057B8', secondary: '#FFCD00', code: 36 },     // Brighton
+  'CHE': { primary: '#034694', secondary: '#FFFFFF', code: 8 },      // Chelsea
+  'CRY': { primary: '#1B458F', secondary: '#C4122E', code: 31 },     // Crystal Palace
+  'EVE': { primary: '#003399', secondary: '#FFFFFF', code: 11 },     // Everton
+  'FUL': { primary: '#FFFFFF', secondary: '#000000', code: 54 },     // Fulham
+  'IPS': { primary: '#0E4FA0', secondary: '#FFFFFF', code: 40 },     // Ipswich
+  'LEI': { primary: '#003090', secondary: '#FDBE11', code: 13 },     // Leicester
+  'LIV': { primary: '#C8102E', secondary: '#00B2A9', code: 14 },     // Liverpool
+  'MCI': { primary: '#6CABDD', secondary: '#1C2C5B', code: 43 },     // Man City
+  'MUN': { primary: '#DA291C', secondary: '#FBE122', code: 1 },      // Man United
+  'NEW': { primary: '#241F20', secondary: '#FFFFFF', code: 4 },      // Newcastle
+  'NFO': { primary: '#DD0000', secondary: '#FFFFFF', code: 17 },     // Nottingham Forest
+  'SOU': { primary: '#D71920', secondary: '#130C0E', code: 20 },     // Southampton
+  'TOT': { primary: '#132257', secondary: '#FFFFFF', code: 6 },      // Tottenham
+  'WHU': { primary: '#7A263A', secondary: '#1BB1E7', code: 21 },     // West Ham
+  'WOL': { primary: '#FDB913', secondary: '#231F20', code: 39 },     // Wolves
 };
 
 export default function Jersey({
@@ -32,7 +32,11 @@ export default function Jersey({
   isPlaying,
   size = 'md'
 }) {
-  const colors = TEAM_COLORS[teamShort] || { primary: '#6B7280', secondary: '#FFFFFF' };
+  const teamData = TEAM_DATA[teamShort] || { primary: '#6B7280', secondary: '#FFFFFF', code: 0 };
+  const colors = { primary: teamData.primary, secondary: teamData.secondary };
+  const badgeUrl = teamData.code > 0
+    ? `https://resources.premierleague.com/premierleague/badges/t${teamData.code}.png`
+    : null;
 
   const sizes = {
     sm: { width: 60, height: 75, fontSize: 9, nameY: 62 },
@@ -100,6 +104,18 @@ export default function Jersey({
         {/* Stripe detail (optional decorative element) */}
         <line x1="35" y1="30" x2="35" y2="90" stroke={colors.secondary} strokeWidth="1" opacity="0.3"/>
         <line x1="65" y1="30" x2="65" y2="90" stroke={colors.secondary} strokeWidth="1" opacity="0.3"/>
+
+        {/* Team Badge - embedded as image */}
+        {badgeUrl && (
+          <image
+            href={badgeUrl}
+            x="35"
+            y="40"
+            width="30"
+            height="30"
+            opacity="0.9"
+          />
+        )}
 
         {/* Player name on jersey */}
         <text

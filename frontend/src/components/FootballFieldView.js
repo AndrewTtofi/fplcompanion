@@ -229,23 +229,26 @@ function PlayerCard({ player }) {
 
 function BenchPlayerCard({ player, position }) {
   const stats = player.live_stats || {};
+  const isPlaying = player.fixtures?.some(f => f.started && !f.finished);
 
   return (
-    <div className="bg-white bg-opacity-90 rounded-lg p-3 shadow-md min-w-[140px] md:min-w-[160px]">
-      <div className="flex items-center justify-between mb-2">
-        <div className="bg-gray-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-          {position}
-        </div>
-        <div className="text-lg font-bold text-gray-900">
-          {stats.total_points || 0}
-        </div>
+    <div className="bg-white bg-opacity-90 rounded-lg p-3 shadow-md flex flex-col items-center min-w-[100px] relative">
+      {/* Bench Position Badge */}
+      <div className="absolute -top-2 -left-2 bg-gray-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md z-10">
+        {position}
       </div>
-      <div className="text-sm font-semibold text-gray-900 truncate">
-        {player.web_name}
-      </div>
-      <div className="text-xs text-gray-600">
-        {player.team_short} • {player.position_name}
-      </div>
+
+      {/* Jersey */}
+      <Jersey
+        teamShort={player.team_short}
+        playerName={player.web_name}
+        isCaptain={false}
+        isViceCaptain={false}
+        points={stats.total_points || 0}
+        multiplier={1}
+        isPlaying={isPlaying}
+        size="sm"
+      />
     </div>
   );
 }
