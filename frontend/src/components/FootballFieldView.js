@@ -191,35 +191,145 @@ function PlayerCard({ player }) {
         size="md"
       />
 
-      {/* Hover Card */}
+      {/* Hover Card with Points Breakdown */}
       <div className="absolute z-10 bottom-full mb-2 hidden group-hover:block">
-        <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-48 space-y-1">
-          <div className="font-bold border-b border-gray-700 pb-1">{player.web_name}</div>
-          <div className="text-gray-300">{player.team_short} • {player.position_name} • £{player.now_cost}m</div>
-          {hasPlayed && (
+        <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-56 space-y-2">
+          {/* Player Info */}
+          <div>
+            <div className="font-bold text-sm">{player.web_name}</div>
+            <div className="text-gray-400 text-xs">{player.team_short} • {player.position_name} • £{player.now_cost}m</div>
+          </div>
+
+          {hasPlayed ? (
             <>
-              <div className="border-t border-gray-700 pt-1 mt-1">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Minutes:</span>
-                  <span>{stats.minutes}&apos;</span>
+              {/* Points Breakdown */}
+              <div className="border-t border-gray-700 pt-2">
+                <div className="font-semibold text-fpl-green mb-2 flex justify-between items-center">
+                  <span>Points Breakdown:</span>
+                  <span className="text-base">{stats.total_points} pts</span>
                 </div>
-                {stats.goals_scored > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Goals:</span>
-                    <span className="text-green-400">{stats.goals_scored}</span>
-                  </div>
-                )}
-                {stats.assists > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Assists:</span>
-                    <span className="text-green-400">{stats.assists}</span>
+
+                <div className="space-y-1 text-xs">
+                  {/* Minutes Played */}
+                  {stats.minutes > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Minutes ({stats.minutes}&apos;)</span>
+                      <span>{stats.minutes >= 60 ? '+2' : stats.minutes > 0 ? '+1' : '0'}</span>
+                    </div>
+                  )}
+
+                  {/* Goals */}
+                  {stats.goals_scored > 0 && (
+                    <div className="flex justify-between text-green-400">
+                      <span>Goals ({stats.goals_scored})</span>
+                      <span>+{stats.goals_scored * (player.position_id === 4 ? 4 : player.position_id === 3 ? 5 : 6)}</span>
+                    </div>
+                  )}
+
+                  {/* Assists */}
+                  {stats.assists > 0 && (
+                    <div className="flex justify-between text-green-400">
+                      <span>Assists ({stats.assists})</span>
+                      <span>+{stats.assists * 3}</span>
+                    </div>
+                  )}
+
+                  {/* Clean Sheet */}
+                  {stats.clean_sheets > 0 && (
+                    <div className="flex justify-between text-blue-400">
+                      <span>Clean Sheet</span>
+                      <span>+{player.position_id <= 3 ? (player.position_id === 1 || player.position_id === 2 ? 4 : 1) : 0}</span>
+                    </div>
+                  )}
+
+                  {/* Goals Conceded */}
+                  {stats.goals_conceded > 0 && (player.position_id === 1 || player.position_id === 2) && (
+                    <div className="flex justify-between text-red-400">
+                      <span>Goals Conceded ({stats.goals_conceded})</span>
+                      <span>-{Math.floor(stats.goals_conceded / 2)}</span>
+                    </div>
+                  )}
+
+                  {/* Saves */}
+                  {stats.saves >= 3 && player.position_id === 1 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Saves ({stats.saves})</span>
+                      <span>+{Math.floor(stats.saves / 3)}</span>
+                    </div>
+                  )}
+
+                  {/* Penalties Saved */}
+                  {stats.penalties_saved > 0 && (
+                    <div className="flex justify-between text-green-400">
+                      <span>Penalty Saved</span>
+                      <span>+{stats.penalties_saved * 5}</span>
+                    </div>
+                  )}
+
+                  {/* Penalties Missed */}
+                  {stats.penalties_missed > 0 && (
+                    <div className="flex justify-between text-red-400">
+                      <span>Penalty Missed</span>
+                      <span>-{stats.penalties_missed * 2}</span>
+                    </div>
+                  )}
+
+                  {/* Yellow Cards */}
+                  {stats.yellow_cards > 0 && (
+                    <div className="flex justify-between text-yellow-400">
+                      <span>Yellow Card</span>
+                      <span>-{stats.yellow_cards}</span>
+                    </div>
+                  )}
+
+                  {/* Red Cards */}
+                  {stats.red_cards > 0 && (
+                    <div className="flex justify-between text-red-400">
+                      <span>Red Card</span>
+                      <span>-{stats.red_cards * 3}</span>
+                    </div>
+                  )}
+
+                  {/* Own Goals */}
+                  {stats.own_goals > 0 && (
+                    <div className="flex justify-between text-red-400">
+                      <span>Own Goal</span>
+                      <span>-{stats.own_goals * 2}</span>
+                    </div>
+                  )}
+
+                  {/* Bonus Points */}
+                  {stats.bonus > 0 && (
+                    <div className="flex justify-between text-purple-400 font-semibold">
+                      <span>Bonus Points</span>
+                      <span>+{stats.bonus}</span>
+                    </div>
+                  )}
+
+                  {/* BPS (Bonus Points System) - informational */}
+                  {stats.bps > 0 && (
+                    <div className="flex justify-between text-gray-500 text-[10px] mt-1">
+                      <span>BPS Score</span>
+                      <span>{stats.bps}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Captain Multiplier */}
+                {player.is_captain && (
+                  <div className="border-t border-purple-600 mt-2 pt-2">
+                    <div className="flex justify-between text-purple-400 font-semibold">
+                      <span>Captain (×{player.multiplier})</span>
+                      <span>= {stats.total_points * player.multiplier} pts</span>
+                    </div>
                   </div>
                 )}
               </div>
             </>
-          )}
-          {!hasPlayed && (
-            <div className="text-gray-400 text-center py-1">Yet to play</div>
+          ) : (
+            <div className="text-gray-400 text-center py-2 border-t border-gray-700">
+              {player.fixtures?.some(f => !f.started) ? 'Yet to play' : 'Did not play'}
+            </div>
           )}
         </div>
       </div>
