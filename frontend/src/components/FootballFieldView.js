@@ -42,83 +42,83 @@ export default function FootballFieldView({ teamId, gameweek }) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* View Toggle */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">
+    <div className="flex flex-col h-[calc(100vh-200px)]">
+      {/* View Toggle - Fixed Height */}
+      <div className="flex justify-between items-center mb-4 flex-shrink-0">
+        <h2 className="text-xl font-bold text-gray-900">
           Gameweek {gameweek} Squad
         </h2>
 
         <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
           <button
             onClick={() => setViewMode('live')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all ${
               viewMode === 'live'
                 ? 'bg-white text-fpl-purple shadow-sm font-semibold'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <TrendingUp size={18} />
-            Live Points
+            <TrendingUp size={16} />
+            <span className="text-sm">Live Points</span>
           </button>
           <button
             onClick={() => setViewMode('field')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md transition-all ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all ${
               viewMode === 'field'
                 ? 'bg-white text-fpl-purple shadow-sm font-semibold'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <LayoutGrid size={18} />
-            Field View
+            <LayoutGrid size={16} />
+            <span className="text-sm">Field View</span>
           </button>
         </div>
       </div>
 
       {/* Live Points View */}
       {viewMode === 'live' && (
-        <div className="h-[calc(100vh-250px)] overflow-hidden">
+        <div className="flex-1 overflow-hidden min-h-0">
           <div className="grid grid-cols-3 gap-4 h-full">
             {/* Left Column - Summary Stats */}
-            <div className="space-y-3 flex flex-col">
+            <div className="space-y-2 flex flex-col">
               {/* Total Points Card */}
-              <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-4 text-white shadow-lg flex-1 flex flex-col justify-center">
+              <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-3 text-white shadow-lg flex-1 flex flex-col justify-center">
                 <div className="text-center">
-                  <div className="text-xs font-semibold uppercase tracking-wide mb-1">Total Live Points</div>
-                  <div className="text-4xl font-bold mb-1">{data.total_live_points}</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide mb-0.5">Total Live Points</div>
+                  <div className="text-3xl font-bold">{data.total_live_points}</div>
                   {data.transfers.cost > 0 && (
-                    <div className="text-xs opacity-90">
-                      ({data.total_live_points + data.transfers.cost} - {data.transfers.cost} transfer cost)
+                    <div className="text-[10px] opacity-90 mt-0.5">
+                      -{data.transfers.cost} pts
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Bench Points Card */}
-              <div className="bg-white rounded-lg p-4 shadow-md flex-1 flex flex-col justify-center">
+              <div className="bg-white rounded-lg p-3 shadow-md flex-1 flex flex-col justify-center">
                 <div className="text-center">
-                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Bench Points</div>
-                  <div className="text-3xl font-bold text-gray-700">{data.bench_points}</div>
+                  <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Bench Points</div>
+                  <div className="text-2xl font-bold text-gray-700">{data.bench_points}</div>
                 </div>
               </div>
 
               {/* Transfers Card */}
-              <div className="bg-white rounded-lg p-4 shadow-md flex-1 flex flex-col justify-center">
+              <div className="bg-white rounded-lg p-3 shadow-md flex-1 flex flex-col justify-center">
                 <div className="text-center">
-                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Transfers Made</div>
-                  <div className="text-3xl font-bold text-gray-700">{data.transfers.made}</div>
+                  <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Transfers Made</div>
+                  <div className="text-2xl font-bold text-gray-700">{data.transfers.made}</div>
                   {data.transfers.cost > 0 && (
-                    <div className="text-xs text-red-600 mt-1">-{data.transfers.cost} pts</div>
+                    <div className="text-[10px] text-red-600 mt-0.5">-{data.transfers.cost} pts</div>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Middle Column - Starting XI */}
-            <div className="bg-white rounded-lg shadow-md p-4 flex flex-col">
-              <h3 className="text-lg font-bold text-gray-900 mb-3">Starting XI</h3>
-              <div className="flex-1 overflow-hidden">
-                <div className="space-y-1 h-full flex flex-col justify-around">
+            <div className="bg-white rounded-lg shadow-md p-3 flex flex-col min-h-0">
+              <h3 className="text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Starting XI</h3>
+              <div className="flex-1 overflow-hidden min-h-0">
+                <div className="space-y-0.5 h-full flex flex-col justify-around">
                   {starting_xi.map(player => (
                     <LivePointsPlayerRow key={player.element} player={player} />
                   ))}
@@ -127,10 +127,10 @@ export default function FootballFieldView({ teamId, gameweek }) {
             </div>
 
             {/* Right Column - Bench */}
-            <div className="bg-white rounded-lg shadow-md p-4 flex flex-col">
-              <h3 className="text-lg font-bold text-gray-900 mb-3">Substitutes</h3>
-              <div className="flex-1 overflow-hidden">
-                <div className="space-y-1.5 h-full flex flex-col justify-around">
+            <div className="bg-white rounded-lg shadow-md p-3 flex flex-col min-h-0">
+              <h3 className="text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Substitutes</h3>
+              <div className="flex-1 overflow-hidden min-h-0">
+                <div className="space-y-0.5 h-full flex flex-col justify-around">
                   {bench.map((player, index) => (
                     <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
                   ))}
@@ -143,7 +143,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
 
       {/* Field View */}
       {viewMode === 'field' && (
-        <div className="bg-gradient-to-b from-green-600 via-green-500 to-green-600 rounded-xl p-4 md:p-8 shadow-2xl relative overflow-hidden">
+        <div className="bg-gradient-to-b from-green-600 via-green-500 to-green-600 rounded-xl p-4 shadow-2xl relative overflow-hidden flex-1 flex flex-col min-h-0">
           {/* Field Lines */}
           <div className="absolute inset-0 pointer-events-none">
             {/* Center circle */}
@@ -155,43 +155,44 @@ export default function FootballFieldView({ teamId, gameweek }) {
             <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 h-20 w-40 border-2 border-white border-opacity-30 border-b-0"></div>
           </div>
 
-          <div className="relative flex items-center justify-center gap-6 md:gap-12">
+          {/* Starting XI - Takes up most space */}
+          <div className="relative flex items-center justify-center gap-4 flex-1 min-h-0">
             {/* Goalkeeper */}
-            <div className="flex flex-col justify-center gap-4">
+            <div className="flex flex-col justify-center gap-2">
               {grouped.GK.map(player => (
                 <PlayerCard key={player.element} player={player} />
               ))}
             </div>
 
             {/* Defenders */}
-            <div className="flex flex-col justify-center gap-4 md:gap-6">
+            <div className="flex flex-col justify-center gap-2">
               {grouped.DEF.map(player => (
                 <PlayerCard key={player.element} player={player} />
               ))}
             </div>
 
             {/* Midfielders */}
-            <div className="flex flex-col justify-center gap-4 md:gap-6">
+            <div className="flex flex-col justify-center gap-2">
               {grouped.MID.map(player => (
                 <PlayerCard key={player.element} player={player} />
               ))}
             </div>
 
             {/* Forwards */}
-            <div className="flex flex-col justify-center gap-4 md:gap-8">
+            <div className="flex flex-col justify-center gap-2">
               {grouped.FWD.map(player => (
                 <PlayerCard key={player.element} player={player} />
               ))}
             </div>
           </div>
 
-          {/* Bench */}
-          <div className="mt-8 pt-6 border-t-2 border-white border-opacity-30">
-            <div className="flex items-center gap-2 mb-4">
-              <Users className="text-white" size={20} />
-              <h3 className="text-white font-bold text-lg">Substitutes</h3>
+          {/* Bench - Compact at bottom */}
+          <div className="mt-3 pt-3 border-t border-white border-opacity-30 flex-shrink-0">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="text-white" size={14} />
+              <h3 className="text-white font-bold text-sm">Subs</h3>
             </div>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex justify-center gap-2">
               {bench.map((player, index) => (
                 <BenchPlayerCard key={player.element} player={player} position={index + 1} />
               ))}
@@ -499,48 +500,48 @@ function LivePointsPlayerRow({ player, benchPosition }) {
   return (
     <div className="relative group">
       <div
-        className={`flex items-center justify-between p-2 rounded-lg border transition-all cursor-pointer ${
+        className={`flex items-center justify-between p-1 rounded border transition-all cursor-pointer ${
           isPlaying ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-fpl-purple'
         } ${benchPosition ? 'bg-gray-50' : 'bg-white'}`}
         onClick={() => setShowPopup(true)}
       >
-        <div className="flex items-center gap-2 flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 flex-1 min-w-0">
           {benchPosition && (
-            <div className="bg-gray-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+            <div className="bg-gray-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center shrink-0">
               {benchPosition}
             </div>
           )}
 
-          <div className={`${positionColors[player.position_id]} px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0`}>
+          <div className={`${positionColors[player.position_id]} px-1 py-0.5 rounded text-[9px] font-bold shrink-0`}>
             {player.position_name}
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-sm text-gray-900 truncate">{player.web_name}</span>
+            <div className="flex items-center gap-1">
+              <span className="font-semibold text-xs text-gray-900 truncate">{player.web_name}</span>
               {player.is_captain && (
-                <span className="bg-yellow-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">C</span>
+                <span className="bg-yellow-500 text-white text-[8px] px-1 py-0.5 rounded font-bold shrink-0">C</span>
               )}
               {player.is_vice_captain && (
-                <span className="bg-gray-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">V</span>
+                <span className="bg-gray-600 text-white text-[8px] px-1 py-0.5 rounded font-bold shrink-0">V</span>
               )}
               {player.auto_sub && !player.subbed_out && (
-                <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">AUTO</span>
+                <span className="bg-green-500 text-white text-[8px] px-1 py-0.5 rounded font-bold shrink-0">A</span>
               )}
               {isPlaying && (
-                <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded animate-pulse shrink-0">
-                  LIVE
+                <span className="bg-green-500 text-white text-[8px] px-1 py-0.5 rounded animate-pulse shrink-0">
+                  L
                 </span>
               )}
             </div>
-            <div className="text-xs text-gray-600">
+            <div className="text-[10px] text-gray-600">
               {player.team_short} • {stats.minutes || 0}&apos;
             </div>
           </div>
         </div>
 
-        <div className="text-right">
-          <div className="text-xl font-bold text-fpl-purple">
+        <div className="text-right flex-shrink-0">
+          <div className="text-base font-bold text-fpl-purple">
             {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
           </div>
         </div>
