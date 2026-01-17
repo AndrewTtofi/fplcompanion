@@ -216,12 +216,55 @@ Consider adding these later:
 
 ---
 
+## ✅ Issue 4: Shell Syntax Error in Heredoc (FIXED)
+
+**Problem:** Escaped `\$` variables in heredoc causing syntax error in GitHub Actions
+
+**Error Message:**
+```
+/home/runner/work/_temp/xxx.sh: line 23: syntax error near unexpected token `('
+```
+
+**Fix Applied:**
+- Replaced heredoc with simple `echo` commands
+- Removed the need for escaped variables
+- More reliable across different shell environments
+
+**Before (caused error):**
+```bash
+cat > /tmp/changelog_entry.md << EOF
+## [$NEW_VERSION] - $(date +%Y-%m-%d)
+
+### Changes
+$COMMITS
+
+EOF
+
+LINE=\$(grep -n "^## \\[" CHANGELOG.md ...)  # Escaped $ causing issues
+```
+
+**After (works correctly):**
+```bash
+echo "## [$NEW_VERSION] - $(date +%Y-%m-%d)" > /tmp/changelog_entry.md
+echo "" >> /tmp/changelog_entry.md
+echo "### Changes" >> /tmp/changelog_entry.md
+echo "$COMMITS" >> /tmp/changelog_entry.md
+echo "" >> /tmp/changelog_entry.md
+
+LINE=$(grep -n "^## \[" CHANGELOG.md ...)  # No escaping needed
+```
+
+---
+
 ## ✅ Status: All Issues Resolved
 
 The workflow is now:
 - ✅ Syntactically valid (no YAML errors)
 - ✅ Using modern, maintained actions
 - ✅ Properly detecting all breaking change formats
-- ✅ Ready to use on GitHub
+- ✅ Fixed shell syntax errors
+- ✅ Tested and working on GitHub
+
+**Latest commit:** `fix(ci): resolve shell syntax error in changelog generation`
 
 You can now push and the automated versioning will work correctly! 🚀
