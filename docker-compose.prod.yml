@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: fpl-redis-prod
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - fpl-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: fpl-backend-prod
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FPL_API_BASE_URL=https://fantasy.premierleague.com/api
+      - CACHE_TTL=300
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - fpl-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: fpl-frontend-prod
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+    networks:
+      - fpl-network
+
+volumes:
+  redis-data:
+
+networks:
+  fpl-network:
+    driver: bridge

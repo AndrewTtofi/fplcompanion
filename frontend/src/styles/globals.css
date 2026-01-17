@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fpl-purple: #37003c;
+  --fpl-pink: #ff2882;
+  --fpl-green: #00ff87;
+  --fpl-cyan: #04f5ff;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+.gradient-fpl {
+  background: linear-gradient(135deg, var(--fpl-purple) 0%, #4a0050 100%);
+}
+
+.pitch-view {
+  background: linear-gradient(180deg, #0f9d58 0%, #0f9d58 100%);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 50px,
+      rgba(255, 255, 255, 0.1) 50px,
+      rgba(255, 255, 255, 0.1) 51px
+    ),
+    linear-gradient(90deg, #0f9d58 0%, #0f9d58 100%);
+}
+
+.jersey {
+  @apply relative rounded-lg p-3 text-white text-center shadow-lg transition-all duration-200;
+}
+
+.jersey:hover {
+  @apply transform -translate-y-1 shadow-xl;
+}
+
+.jersey-gk {
+  @apply bg-yellow-500;
+}
+
+.jersey-def {
+  @apply bg-red-600;
+}
+
+.jersey-mid {
+  @apply bg-blue-600;
+}
+
+.jersey-fwd {
+  @apply bg-purple-600;
+}
+
+.jersey-bench {
+  @apply bg-gray-600 opacity-75;
+}
+
+.stat-card {
+  @apply bg-white rounded-lg shadow p-4 border border-gray-200;
+}
+
+.stat-label {
+  @apply text-sm text-gray-500 font-medium;
+}
+
+.stat-value {
+  @apply text-2xl font-bold text-gray-900 mt-1;
+}
