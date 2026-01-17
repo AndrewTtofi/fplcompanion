@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.2.0] - 2026-01-17
+
+### Changes
+- Merge pull request #1 from AndrewTtofi/feat/enhance-ui-performance (2b405c7)
+- fix(lint): resolve ESLint errors and CI secrets detection (e3109cf)
+- fix(ci): resolve CI pipeline configuration issues (109b503)
+- feat(ui): enhance UI performance and user experience (59263f8)
+
 ## [v2.1.0] - 2026-01-17
 
 ### Changes
