@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.5.0] - 2026-01-17
+
+### Changes
+- feat: implement URL-based routing to preserve page state on refresh (#6) (d2e950a)
+
 ## [v2.4.0] - 2026-01-17
 
 ### Changes
