@@ -126,51 +126,14 @@ export default function FootballFieldView({ teamId, gameweek }) {
               </div>
             </div>
 
-            {/* Right Column - Bench + Captain Info */}
-            <div className="space-y-4 flex flex-col">
-              {/* Captain Card */}
-              {data.captain && (
-                <div className="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg p-4 shadow-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wide text-yellow-900 mb-1">Captain</div>
-                      <div className="text-xl font-bold text-white">{data.captain.name}</div>
-                      <div className="text-sm text-yellow-100 mt-1">
-                        {data.captain.points} × 2 = {data.captain.multiplied_points} pts
-                      </div>
-                    </div>
-                    <div className="bg-white text-yellow-600 text-3xl font-bold rounded-full w-16 h-16 flex items-center justify-center">
-                      C
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Vice Captain Card */}
-              {data.vice_captain && (
-                <div className="bg-white rounded-lg p-4 shadow-md border-2 border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">Vice Captain</div>
-                      <div className="text-lg font-bold text-gray-900">{data.vice_captain.name}</div>
-                      <div className="text-sm text-gray-600 mt-1">{data.vice_captain.points} pts</div>
-                    </div>
-                    <div className="bg-gray-600 text-white text-2xl font-bold rounded-full w-12 h-12 flex items-center justify-center">
-                      V
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Bench */}
-              <div className="bg-white rounded-lg shadow-md p-4 flex-1 flex flex-col">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">Substitutes</h3>
-                <div className="flex-1 overflow-hidden">
-                  <div className="space-y-1.5 h-full flex flex-col justify-around">
-                    {bench.map((player, index) => (
-                      <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
-                    ))}
-                  </div>
+            {/* Right Column - Bench */}
+            <div className="bg-white rounded-lg shadow-md p-4 flex flex-col">
+              <h3 className="text-lg font-bold text-gray-900 mb-3">Substitutes</h3>
+              <div className="flex-1 overflow-hidden">
+                <div className="space-y-1.5 h-full flex flex-col justify-around">
+                  {bench.map((player, index) => (
+                    <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
+                  ))}
                 </div>
               </div>
             </div>
@@ -246,7 +209,7 @@ function PlayerCard({ player }) {
   const hasPlayed = stats.minutes > 0;
 
   return (
-    <div className="relative">
+    <div className="relative group">
       {/* Auto-sub indicator */}
       {player.auto_sub && !player.subbed_out && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 whitespace-nowrap">
@@ -584,7 +547,7 @@ function LivePointsPlayerRow({ player, benchPosition }) {
 
         {/* Hover Tooltip */}
         {hasPlayed && breakdown.length > 0 && (
-          <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block z-10 pointer-events-none">
+          <div className="absolute left-full ml-2 top-0 hidden group-hover:block z-20 pointer-events-none">
             <div className="bg-gray-900 text-white text-xs rounded-lg p-2 shadow-xl whitespace-nowrap">
               <div className="font-semibold mb-1">Quick Points</div>
               {breakdown.slice(0, 3).map((item, idx) => (
