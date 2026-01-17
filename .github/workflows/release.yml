@@ -59,7 +59,8 @@ jobs:
           BUMP_TYPE="none"
 
           # Check for breaking changes (MAJOR)
-          if echo "$COMMITS" | grep -qiE "^(BREAKING CHANGE|breaking:|break\(|!:)"; then
+          # Matches: feat!:, BREAKING CHANGE, breaking:, etc.
+          if echo "$COMMITS" | grep -qiE "^(feat|fix|chore)(\(.*\))?!:|^breaking:|BREAKING CHANGE"; then
             BUMP_TYPE="major"
           # Check for features (MINOR)
           elif echo "$COMMITS" | grep -qiE "^(feat|feature)(\(.*\))?:"; then
@@ -143,30 +144,28 @@ jobs:
             COMMITS=$(git log --pretty=format:"- %s (%h)" ${LATEST_TAG}..HEAD)
           fi
 
-          # Create changelog entry
-          CHANGELOG_ENTRY="## [$NEW_VERSION] - $(date +%Y-%m-%d)
+          # Create changelog entry (write directly to file to avoid YAML issues)
+          cat > /tmp/changelog_entry.md << EOF
+          ## [$NEW_VERSION] - $(date +%Y-%m-%d)
 
-### Changes
-$COMMITS
+          ### Changes
+          $COMMITS
 
-"
-
-          # Save to file
-          echo "$CHANGELOG_ENTRY" > /tmp/changelog_entry.md
+          EOF
 
           # Prepend to CHANGELOG.md after the "Unreleased" section
           if [ -f "CHANGELOG.md" ]; then
             # Find line number of first version entry
-            LINE=$(grep -n "^## \[" CHANGELOG.md | grep -v "Unreleased" | head -1 | cut -d: -f1)
-            if [ -n "$LINE" ]; then
+            LINE=\$(grep -n "^## \\[" CHANGELOG.md | grep -v "Unreleased" | head -1 | cut -d: -f1)
+            if [ -n "\$LINE" ]; then
               # Insert new entry before first version
-              head -n $((LINE - 1)) CHANGELOG.md > /tmp/changelog_temp.md
+              head -n \$((LINE - 1)) CHANGELOG.md > /tmp/changelog_temp.md
               cat /tmp/changelog_entry.md >> /tmp/changelog_temp.md
-              tail -n +$LINE CHANGELOG.md >> /tmp/changelog_temp.md
+              tail -n +\$LINE CHANGELOG.md >> /tmp/changelog_temp.md
               mv /tmp/changelog_temp.md CHANGELOG.md
             else
               # No version entries yet, append to end
-              echo "$CHANGELOG_ENTRY" >> CHANGELOG.md
+              cat /tmp/changelog_entry.md >> CHANGELOG.md
             fi
           fi
 
@@ -188,15 +187,14 @@ $COMMITS
 
       - name: Create GitHub Release
         if: steps.new_version.outputs.should_release == 'true'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.new_version.outputs.new_version }}
-          release_name: Release ${{ steps.new_version.outputs.new_version }}
+          name: Release ${{ steps.new_version.outputs.new_version }}
           body_path: /tmp/changelog_entry.md
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Summary
         if: steps.new_version.outputs.should_release == 'true'
