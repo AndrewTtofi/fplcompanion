@@ -1,6 +1,6 @@
 {
   "name": "fpl-companion-backend",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "FPL Companion Backend API",
   "main": "src/server.js",
   "scripts": {
