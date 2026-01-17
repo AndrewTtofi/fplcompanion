@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
 import { LayoutGrid, Users, TrendingUp } from 'lucide-react';
@@ -7,7 +8,17 @@ import ErrorMessage from './ErrorMessage';
 import Jersey from './Jersey';
 
 export default function FootballFieldView({ teamId, gameweek }) {
-  const [viewMode, setViewMode] = useState('live'); // 'live' or 'field'
+  const router = useRouter();
+  const { mode } = router.query;
+
+  const [viewMode, setViewMode] = useState(mode || 'live'); // 'live' or 'field'
+
+  // Update viewMode when URL changes
+  useEffect(() => {
+    if (mode) {
+      setViewMode(mode);
+    }
+  }, [mode]);
 
   const { data, error, isLoading, mutate } = useSWR(
     ['team-picks', teamId, gameweek],
@@ -51,7 +62,13 @@ export default function FootballFieldView({ teamId, gameweek }) {
 
         <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
           <button
-            onClick={() => setViewMode('live')}
+            onClick={() => {
+              setViewMode('live');
+              // Update URL with all query parameters
+              const currentTab = router.query.tab || 'gameweek';
+              const currentView = router.query.view || 'field';
+              router.push(`/team/${teamId}?tab=${currentTab}&view=${currentView}&mode=live`, undefined, { shallow: true });
+            }}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all ${
               viewMode === 'live'
                 ? 'bg-white text-fpl-purple shadow-sm font-semibold'
@@ -62,7 +79,13 @@ export default function FootballFieldView({ teamId, gameweek }) {
             <span className="text-sm">Live Points</span>
           </button>
           <button
-            onClick={() => setViewMode('field')}
+            onClick={() => {
+              setViewMode('field');
+              // Update URL with all query parameters
+              const currentTab = router.query.tab || 'gameweek';
+              const currentView = router.query.view || 'field';
+              router.push(`/team/${teamId}?tab=${currentTab}&view=${currentView}&mode=field`, undefined, { shallow: true });
+            }}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all ${
               viewMode === 'field'
                 ? 'bg-white text-fpl-purple shadow-sm font-semibold'

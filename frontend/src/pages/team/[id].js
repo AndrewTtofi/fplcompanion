@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { api, handleApiError } from '@/lib/api';
 import TeamOverview from '@/components/TeamOverview';
@@ -13,8 +13,17 @@ const fetcher = (url) => api.getTeamOverview(url).then(res => res.data);
 
 export default function TeamPage() {
   const router = useRouter();
-  const { id } = router.query;
-  const [activeTab, setActiveTab] = useState('overview');
+  const { id, tab } = router.query;
+
+  // Initialize activeTab from URL query parameter or default to 'overview'
+  const [activeTab, setActiveTab] = useState(tab || 'overview');
+
+  // Update activeTab when URL changes
+  useEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [tab]);
 
   const { data: teamData, error, isLoading } = useSWR(
     id ? id : null,
@@ -78,7 +87,11 @@ export default function TeamPage() {
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    // Update URL with query parameter without page reload
+                    router.push(`/team/${id}?tab=${tab.id}`, undefined, { shallow: true });
+                  }}
                   className={`py-4 px-6 font-medium text-sm border-b-2 transition-colors ${
                     activeTab === tab.id
                       ? 'border-fpl-purple text-fpl-purple'
