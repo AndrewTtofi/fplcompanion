@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 import { LayoutGrid, List, Users } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';
+import Jersey from './Jersey';
 
 export default function FootballFieldView({ teamId, gameweek }) {
   const [viewMode, setViewMode] = useState('field'); // 'field' or 'list'
@@ -177,41 +178,18 @@ function PlayerCard({ player }) {
   const isPlaying = player.fixtures?.some(f => f.started && !f.finished);
   const hasPlayed = stats.minutes > 0;
 
-  const positionColors = {
-    1: 'from-yellow-400 to-yellow-500', // GK
-    2: 'from-blue-500 to-blue-600',     // DEF
-    3: 'from-green-500 to-green-600',   // MID
-    4: 'from-red-500 to-red-600',       // FWD
-  };
-
   return (
-    <div className="relative flex flex-col items-center group">
-      {/* Player Jersey */}
-      <div className={`relative bg-gradient-to-b ${positionColors[player.position_id]} rounded-lg w-16 h-20 md:w-20 md:h-24 flex items-center justify-center shadow-lg transform transition-all group-hover:scale-110 group-hover:shadow-2xl ${
-        isPlaying ? 'ring-4 ring-fpl-green animate-pulse' : ''
-      }`}>
-        {/* Captain/Vice-Captain Badge */}
-        {player.is_captain && (
-          <div className="absolute -top-2 -right-2 bg-fpl-purple text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
-            C
-          </div>
-        )}
-        {player.is_vice_captain && (
-          <div className="absolute -top-2 -right-2 bg-gray-700 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shadow-md">
-            V
-          </div>
-        )}
-
-        {/* Points Badge */}
-        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white text-fpl-purple font-bold text-sm md:text-base px-2 py-1 rounded-full shadow-md min-w-[2rem] text-center">
-          {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
-        </div>
-
-        {/* Player Name */}
-        <div className="text-white font-bold text-xs md:text-sm text-center px-1 leading-tight">
-          {player.web_name}
-        </div>
-      </div>
+    <div className="relative">
+      <Jersey
+        teamShort={player.team_short}
+        playerName={player.web_name}
+        isCaptain={player.is_captain}
+        isViceCaptain={player.is_vice_captain}
+        points={stats.total_points || 0}
+        multiplier={player.multiplier}
+        isPlaying={isPlaying}
+        size="md"
+      />
 
       {/* Hover Card */}
       <div className="absolute z-10 bottom-full mb-2 hidden group-hover:block">
