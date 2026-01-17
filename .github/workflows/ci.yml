@@ -21,18 +21,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: |
-            backend/package-lock.json
-            frontend/package-lock.json
 
       - name: Install backend dependencies
         working-directory: ./backend
-        run: npm ci --prefer-offline
+        run: npm install --prefer-offline
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm ci --prefer-offline
+        run: npm install --prefer-offline
 
       - name: Lint backend
         working-directory: ./backend
@@ -59,11 +55,11 @@ jobs:
 
       - name: Install backend dependencies
         working-directory: ./backend
-        run: npm ci --prefer-offline
+        run: npm install --prefer-offline
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: npm ci --prefer-offline
+        run: npm install --prefer-offline
 
       - name: Build backend
         working-directory: ./backend
@@ -131,7 +127,7 @@ jobs:
 
       - name: Validate docker-compose.yml
         run: |
-          docker-compose config > /dev/null
+          docker compose config > /dev/null
           echo "✓ docker-compose.yml is valid"
 
       - name: Validate package.json files
