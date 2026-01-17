@@ -2,38 +2,50 @@ import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
 import { Loader2, RefreshCw, TrendingUp, Users, Target, Clock } from 'lucide-react';
+import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage from './ErrorMessage';
 
 export default function LivePointsView({ teamId, gameweek }) {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, mutate, isValidating } = useSWR(
     ['live-points', teamId, gameweek],
     () => api.getLiveTeamPoints(teamId, gameweek).then(res => res.data),
     {
       refreshInterval: autoRefresh ? 30000 : 0, // Refresh every 30 seconds if enabled
       revalidateOnFocus: true,
-      onSuccess: () => setLastUpdate(new Date())
+      onSuccess: () => {
+        setLastUpdate(new Date());
+        setIsRefreshing(false);
+      },
+      onError: () => setIsRefreshing(false)
     }
   );
 
-  const handleManualRefresh = () => {
-    mutate();
+  const handleManualRefresh = async () => {
+    setIsRefreshing(true);
+    await mutate();
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin text-fpl-purple" size={32} />
-      </div>
+      <LoadingSpinner
+        size="lg"
+        message="Loading live points data..."
+      />
     );
   }
 
   if (error || !data) {
     return (
-      <div className="text-center py-12 text-red-600">
-        Failed to load live points data
-      </div>
+      <ErrorMessage
+        title="Failed to load live points"
+        message="We couldn't load your live points data. Please try again."
+        onRetry={() => mutate()}
+        showHomeButton
+      />
     );
   }
 
@@ -44,10 +56,10 @@ export default function LivePointsView({ teamId, gameweek }) {
   return (
     <div className="space-y-6">
       {/* Live Header */}
-      <div className="bg-gradient-to-r from-fpl-purple to-purple-800 text-white rounded-lg p-6 shadow-lg">
-        <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-fpl-purple to-purple-800 text-white rounded-lg p-4 md:p-6 shadow-lg">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
+            <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
               {hasLiveGames && (
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-fpl-green opacity-75"></span>
@@ -56,34 +68,42 @@ export default function LivePointsView({ teamId, gameweek }) {
               )}
               Gameweek {gameweek} Live Points
             </h2>
-            <p className="text-sm text-fpl-green mt-1">
+            <p className="text-xs md:text-sm text-fpl-green mt-1">
               Last updated: {lastUpdate.toLocaleTimeString()}
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
+          <div className="flex items-center gap-3 md:gap-4 flex-wrap">
+            <label className="flex items-center gap-2 cursor-pointer text-sm">
               <input
                 type="checkbox"
                 checked={autoRefresh}
                 onChange={(e) => setAutoRefresh(e.target.checked)}
-                className="w-4 h-4"
+                className="w-4 h-4 cursor-pointer"
               />
-              <span className="text-sm">Auto-refresh</span>
+              <span className="text-xs md:text-sm">Auto-refresh (30s)</span>
             </label>
+
+            {isValidating && !isRefreshing && (
+              <span className="text-xs text-fpl-green flex items-center gap-1">
+                <Loader2 size={12} className="animate-spin" />
+                Updating...
+              </span>
+            )}
 
             <button
               onClick={handleManualRefresh}
-              className="bg-white text-fpl-purple px-4 py-2 rounded-lg hover:bg-opacity-90 transition flex items-center gap-2"
+              disabled={isRefreshing}
+              className="bg-white text-fpl-purple px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              <RefreshCw size={16} />
-              Refresh
+              <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
+              <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
             </button>
           </div>
         </div>
 
         {/* Live Stats Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mt-4 md:mt-6">
           <StatBox
             icon={<Target />}
             label="Total Points"
@@ -177,28 +197,28 @@ function LivePlayerCard({ player, isBench = false }) {
   const displayPoints = player.is_captain ? stats.total_points * player.multiplier : stats.total_points;
 
   return (
-    <div className={`bg-white rounded-lg border-2 p-4 transition-all ${
+    <div className={`bg-white rounded-lg border-2 p-3 md:p-4 transition-all ${
       isPlaying ? 'border-green-400 shadow-lg' : 'border-gray-200'
     } ${isBench ? 'opacity-75' : ''}`}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-start md:items-center justify-between gap-2">
         {/* Player Info */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-900">{player.web_name}</span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-bold text-gray-900 text-sm md:text-base truncate">{player.web_name}</span>
             {player.is_captain && (
-              <span className="bg-fpl-purple text-white text-xs px-2 py-0.5 rounded font-bold">C</span>
+              <span className="bg-fpl-purple text-white text-xs px-2 py-0.5 rounded font-bold shrink-0">C</span>
             )}
             {player.is_vice_captain && (
-              <span className="bg-gray-600 text-white text-xs px-2 py-0.5 rounded font-bold">V</span>
+              <span className="bg-gray-600 text-white text-xs px-2 py-0.5 rounded font-bold shrink-0">V</span>
             )}
             {isPlaying && (
-              <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded animate-pulse">
+              <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded animate-pulse shrink-0">
                 LIVE
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
+          <div className="flex items-center gap-2 md:gap-4 mt-1 text-xs md:text-sm text-gray-600 flex-wrap">
             <span>{player.team_short}</span>
             <span>{player.position}</span>
             <span>£{player.now_cost}m</span>
@@ -227,17 +247,17 @@ function LivePlayerCard({ player, isBench = false }) {
         </div>
 
         {/* Points */}
-        <div className="text-right ml-4">
-          <div className="text-3xl font-bold text-fpl-purple">
+        <div className="text-right shrink-0">
+          <div className="text-2xl md:text-3xl font-bold text-fpl-purple">
             {displayPoints}
           </div>
           {player.is_captain && stats.total_points > 0 && (
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-gray-500 whitespace-nowrap">
               {stats.total_points} × {player.multiplier}
             </div>
           )}
           {!hasPlayed && yetToPlay && (
-            <div className="text-xs text-blue-600 mt-1">Yet to play</div>
+            <div className="text-xs text-blue-600 mt-1 whitespace-nowrap">Yet to play</div>
           )}
           {!hasPlayed && !yetToPlay && (
             <div className="text-xs text-gray-500 mt-1">DNP</div>
@@ -248,7 +268,7 @@ function LivePlayerCard({ player, isBench = false }) {
       {/* Stats Breakdown */}
       {hasPlayed && (
         <div className="mt-3 pt-3 border-t border-gray-200">
-          <div className="grid grid-cols-4 md:grid-cols-8 gap-2 text-center text-xs">
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 md:gap-2 text-center text-xs">
             <StatItem label="MIN" value={stats.minutes} />
             {stats.goals_scored > 0 && <StatItem label="G" value={stats.goals_scored} highlight />}
             {stats.assists > 0 && <StatItem label="A" value={stats.assists} highlight />}
