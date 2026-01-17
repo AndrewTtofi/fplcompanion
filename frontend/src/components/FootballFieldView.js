@@ -136,35 +136,39 @@ export default function FootballFieldView({ teamId, gameweek }) {
 
       {/* List View */}
       {viewMode === 'list' && (
-        <div className="space-y-6">
+        <div className="grid grid-cols-2 gap-4 h-[calc(100vh-250px)]">
           {/* Starting XI */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Starting XI</h3>
-            <div className="space-y-2">
-              {['FWD', 'MID', 'DEF', 'GK'].map(position => (
-                <div key={position}>
-                  {grouped[position].length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="text-sm font-semibold text-gray-500 uppercase mt-4 mb-2">
-                        {position === 'GK' ? 'Goalkeeper' : position === 'DEF' ? 'Defenders' : position === 'MID' ? 'Midfielders' : 'Forwards'}
-                      </h4>
-                      {grouped[position].map(player => (
-                        <ListPlayerRow key={player.element} player={player} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+          <div className="bg-white rounded-lg shadow-md p-4 flex flex-col">
+            <h3 className="text-lg font-bold text-gray-900 mb-3">Starting XI</h3>
+            <div className="flex-1 overflow-hidden">
+              <div className="space-y-1.5 h-full flex flex-col justify-around">
+                {['FWD', 'MID', 'DEF', 'GK'].map(position => (
+                  <div key={position}>
+                    {grouped[position].length > 0 && (
+                      <div className="space-y-1">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase">
+                          {position === 'GK' ? 'Goalkeeper' : position === 'DEF' ? 'Defenders' : position === 'MID' ? 'Midfielders' : 'Forwards'}
+                        </h4>
+                        {grouped[position].map(player => (
+                          <ListPlayerRow key={player.element} player={player} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Bench */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Substitutes</h3>
-            <div className="space-y-2">
-              {bench.map((player, index) => (
-                <ListPlayerRow key={player.element} player={player} benchPosition={index + 1} />
-              ))}
+          <div className="bg-white rounded-lg shadow-md p-4 flex flex-col">
+            <h3 className="text-lg font-bold text-gray-900 mb-3">Substitutes</h3>
+            <div className="flex-1 overflow-hidden">
+              <div className="space-y-1.5 h-full flex flex-col justify-around">
+                {bench.map((player, index) => (
+                  <ListPlayerRow key={player.element} player={player} benchPosition={index + 1} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -418,69 +422,69 @@ function ListPlayerRow({ player, benchPosition }) {
   };
 
   return (
-    <div className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+    <div className={`flex items-center justify-between p-2 rounded-lg border transition-all ${
       isPlaying ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-gray-300'
     } ${benchPosition ? 'bg-gray-50' : 'bg-white'}`}>
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex items-center gap-2 flex-1 min-w-0">
         {benchPosition && (
-          <div className="bg-gray-600 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center shrink-0">
+          <div className="bg-gray-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
             {benchPosition}
           </div>
         )}
 
-        <div className={`${positionColors[player.position_id]} px-2 py-1 rounded text-xs font-bold shrink-0`}>
+        <div className={`${positionColors[player.position_id]} px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0`}>
           {player.position_name}
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-gray-900 truncate">{player.web_name}</span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold text-sm text-gray-900 truncate">{player.web_name}</span>
             {player.is_captain && (
-              <span className="bg-fpl-purple text-white text-xs px-2 py-0.5 rounded font-bold shrink-0">C</span>
+              <span className="bg-fpl-purple text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">C</span>
             )}
             {player.is_vice_captain && (
-              <span className="bg-gray-600 text-white text-xs px-2 py-0.5 rounded font-bold shrink-0">V</span>
+              <span className="bg-gray-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">V</span>
             )}
             {isPlaying && (
-              <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded animate-pulse shrink-0">
+              <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded animate-pulse shrink-0">
                 LIVE
               </span>
             )}
           </div>
-          <div className="text-sm text-gray-600">
-            {player.team_short} • £{player.now_cost}m
+          <div className="text-xs text-gray-600">
+            {player.team_short}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 shrink-0">
+      <div className="flex items-center gap-2 shrink-0">
         {hasPlayed && (
-          <div className="hidden sm:flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-2 text-xs">
             <div className="text-center">
-              <div className="text-gray-500 text-xs">MIN</div>
-              <div className="font-semibold">{stats.minutes}&apos;</div>
+              <div className="text-gray-500 text-[10px]">MIN</div>
+              <div className="font-semibold text-xs">{stats.minutes}&apos;</div>
             </div>
             {stats.goals_scored > 0 && (
               <div className="text-center">
-                <div className="text-gray-500 text-xs">G</div>
-                <div className="font-semibold text-green-600">{stats.goals_scored}</div>
+                <div className="text-gray-500 text-[10px]">G</div>
+                <div className="font-semibold text-xs text-green-600">{stats.goals_scored}</div>
               </div>
             )}
             {stats.assists > 0 && (
               <div className="text-center">
-                <div className="text-gray-500 text-xs">A</div>
-                <div className="font-semibold text-green-600">{stats.assists}</div>
+                <div className="text-gray-500 text-[10px]">A</div>
+                <div className="font-semibold text-xs text-green-600">{stats.assists}</div>
               </div>
             )}
           </div>
         )}
 
         <div className="text-right">
-          <div className="text-2xl font-bold text-fpl-purple">
+          <div className="text-xl font-bold text-fpl-purple">
             {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
           </div>
           {player.is_captain && stats.total_points > 0 && (
-            <div className="text-xs text-gray-500">
+            <div className="text-[10px] text-gray-500">
               {stats.total_points} × {player.multiplier}
             </div>
           )}
