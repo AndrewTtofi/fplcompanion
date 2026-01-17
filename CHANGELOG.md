@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.0.1] - 2026-01-17
+
+### Changes
+- fix(ci): resolve shell syntax error in changelog generation (7e1d70d)
+
 ## [2.0.0] - 2026-01-17
 
 ### Added - Major Feature Release 🎉
