@@ -473,8 +473,10 @@ function BenchPlayerCard({ player, position }) {
 }
 
 function LivePointsPlayerRow({ player, benchPosition }) {
+  const [showPopup, setShowPopup] = useState(false);
   const stats = player.live_stats || {};
   const isPlaying = player.fixtures?.some(f => f.started && !f.finished);
+  const hasPlayed = stats.minutes > 0;
 
   const positionColors = {
     1: 'bg-yellow-100 text-yellow-800',
@@ -483,50 +485,182 @@ function LivePointsPlayerRow({ player, benchPosition }) {
     4: 'bg-red-100 text-red-800',
   };
 
+  // Calculate points breakdown
+  const getPointsBreakdown = () => {
+    const breakdown = [];
+
+    if (stats.minutes > 0) {
+      breakdown.push({ label: `Minutes (${stats.minutes}')`, points: stats.minutes >= 60 ? 2 : 1, color: 'text-gray-700' });
+    }
+    if (stats.goals_scored > 0) {
+      const pointsPerGoal = player.position_id === 4 ? 4 : player.position_id === 3 ? 5 : 6;
+      breakdown.push({ label: `Goals (${stats.goals_scored})`, points: stats.goals_scored * pointsPerGoal, color: 'text-green-600' });
+    }
+    if (stats.assists > 0) {
+      breakdown.push({ label: `Assists (${stats.assists})`, points: stats.assists * 3, color: 'text-green-600' });
+    }
+    if (stats.clean_sheets > 0 && player.position_id <= 3) {
+      const csPoints = player.position_id === 1 || player.position_id === 2 ? 4 : 1;
+      breakdown.push({ label: 'Clean Sheet', points: csPoints, color: 'text-blue-600' });
+    }
+    if (stats.goals_conceded > 0 && (player.position_id === 1 || player.position_id === 2)) {
+      breakdown.push({ label: `Goals Conceded (${stats.goals_conceded})`, points: -Math.floor(stats.goals_conceded / 2), color: 'text-red-600' });
+    }
+    if (stats.saves >= 3 && player.position_id === 1) {
+      breakdown.push({ label: `Saves (${stats.saves})`, points: Math.floor(stats.saves / 3), color: 'text-gray-700' });
+    }
+    if (stats.penalties_saved > 0) {
+      breakdown.push({ label: `Penalties Saved (${stats.penalties_saved})`, points: stats.penalties_saved * 5, color: 'text-green-600' });
+    }
+    if (stats.penalties_missed > 0) {
+      breakdown.push({ label: `Penalties Missed (${stats.penalties_missed})`, points: stats.penalties_missed * -2, color: 'text-red-600' });
+    }
+    if (stats.yellow_cards > 0) {
+      breakdown.push({ label: `Yellow Cards (${stats.yellow_cards})`, points: stats.yellow_cards * -1, color: 'text-yellow-600' });
+    }
+    if (stats.red_cards > 0) {
+      breakdown.push({ label: `Red Cards (${stats.red_cards})`, points: stats.red_cards * -3, color: 'text-red-600' });
+    }
+    if (stats.own_goals > 0) {
+      breakdown.push({ label: `Own Goals (${stats.own_goals})`, points: stats.own_goals * -2, color: 'text-red-600' });
+    }
+    if (stats.bonus > 0) {
+      breakdown.push({ label: 'Bonus Points', points: stats.bonus, color: 'text-purple-600' });
+    }
+
+    return breakdown;
+  };
+
+  const breakdown = getPointsBreakdown();
+
   return (
-    <div className={`flex items-center justify-between p-2 rounded-lg border transition-all ${
-      isPlaying ? 'border-green-400 bg-green-50' : 'border-gray-200'
-    } ${benchPosition ? 'bg-gray-50' : 'bg-white'}`}>
-      <div className="flex items-center gap-2 flex-1 min-w-0">
-        {benchPosition && (
-          <div className="bg-gray-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
-            {benchPosition}
+    <div className="relative group">
+      <div
+        className={`flex items-center justify-between p-2 rounded-lg border transition-all cursor-pointer ${
+          isPlaying ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-fpl-purple'
+        } ${benchPosition ? 'bg-gray-50' : 'bg-white'}`}
+        onClick={() => setShowPopup(true)}
+      >
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          {benchPosition && (
+            <div className="bg-gray-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+              {benchPosition}
+            </div>
+          )}
+
+          <div className={`${positionColors[player.position_id]} px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0`}>
+            {player.position_name}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-sm text-gray-900 truncate">{player.web_name}</span>
+              {player.is_captain && (
+                <span className="bg-yellow-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">C</span>
+              )}
+              {player.is_vice_captain && (
+                <span className="bg-gray-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">V</span>
+              )}
+              {player.auto_sub && !player.subbed_out && (
+                <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">AUTO</span>
+              )}
+              {isPlaying && (
+                <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded animate-pulse shrink-0">
+                  LIVE
+                </span>
+              )}
+            </div>
+            <div className="text-xs text-gray-600">
+              {player.team_short} • {stats.minutes || 0}&apos;
+            </div>
+          </div>
+        </div>
+
+        <div className="text-right">
+          <div className="text-xl font-bold text-fpl-purple">
+            {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
+          </div>
+        </div>
+
+        {/* Hover Tooltip */}
+        {hasPlayed && breakdown.length > 0 && (
+          <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block z-10 pointer-events-none">
+            <div className="bg-gray-900 text-white text-xs rounded-lg p-2 shadow-xl whitespace-nowrap">
+              <div className="font-semibold mb-1">Quick Points</div>
+              {breakdown.slice(0, 3).map((item, idx) => (
+                <div key={idx} className="flex justify-between gap-3">
+                  <span>{item.label}</span>
+                  <span className="font-semibold">{item.points > 0 ? '+' : ''}{item.points}</span>
+                </div>
+              ))}
+              {breakdown.length > 3 && (
+                <div className="text-gray-400 text-[10px] mt-1">Click for full breakdown</div>
+              )}
+            </div>
           </div>
         )}
-
-        <div className={`${positionColors[player.position_id]} px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0`}>
-          {player.position_name}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1.5">
-            <span className="font-semibold text-sm text-gray-900 truncate">{player.web_name}</span>
-            {player.is_captain && (
-              <span className="bg-yellow-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">C</span>
-            )}
-            {player.is_vice_captain && (
-              <span className="bg-gray-600 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">V</span>
-            )}
-            {player.auto_sub && !player.subbed_out && (
-              <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0">AUTO</span>
-            )}
-            {isPlaying && (
-              <span className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded animate-pulse shrink-0">
-                LIVE
-              </span>
-            )}
-          </div>
-          <div className="text-xs text-gray-600">
-            {player.team_short} • {stats.minutes || 0}&apos;
-          </div>
-        </div>
       </div>
 
-      <div className="text-right">
-        <div className="text-xl font-bold text-fpl-purple">
-          {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
+      {/* Click Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPopup(false)}>
+          <div className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="border-b border-gray-200 pb-4 mb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{player.web_name}</h3>
+                  <p className="text-sm text-gray-600">{player.team_short} • {player.position_name}</p>
+                </div>
+                <button
+                  onClick={() => setShowPopup(false)}
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+
+            {/* Points Summary */}
+            <div className="bg-fpl-purple text-white rounded-lg p-4 mb-4">
+              <div className="text-center">
+                <div className="text-sm opacity-90 mb-1">Total Points</div>
+                <div className="text-4xl font-bold">{stats.total_points}</div>
+                {player.is_captain && (
+                  <div className="text-sm opacity-90 mt-2">
+                    Captain (×{player.multiplier}) = {stats.total_points * player.multiplier} pts
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Points Breakdown */}
+            {hasPlayed ? (
+              <div className="space-y-2">
+                <div className="font-semibold text-gray-900 mb-3">Points Breakdown</div>
+                {breakdown.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className={`text-sm ${item.color}`}>{item.label}</span>
+                    <span className={`font-bold ${item.color}`}>
+                      {item.points > 0 ? '+' : ''}{item.points}
+                    </span>
+                  </div>
+                ))}
+                {stats.bps > 0 && (
+                  <div className="flex justify-between items-center py-2 text-xs text-gray-500">
+                    <span>BPS Score</span>
+                    <span>{stats.bps}</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 py-4">
+                {player.fixtures?.some(f => !f.started) ? 'Match not started' : 'Did not play'}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
