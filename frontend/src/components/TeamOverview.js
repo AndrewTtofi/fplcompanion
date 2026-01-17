@@ -1,7 +1,23 @@
 import { TrendingUp, TrendingDown, Trophy, Users, DollarSign, Repeat } from 'lucide-react';
+import useSWR from 'swr';
+import { api } from '@/lib/api';
 
 export default function TeamOverview({ teamData }) {
   const { team, performance, history } = teamData;
+
+  // Fetch live points for current gameweek
+  const { data: liveData } = useSWR(
+    teamData ? ['overview-live', team.id, teamData.current_gameweek] : null,
+    () => api.getLiveTeamPoints(team.id, teamData.current_gameweek).then(res => res.data),
+    { refreshInterval: 30000, revalidateOnFocus: false }
+  );
+
+  // Calculate live total points
+  const liveTotalPoints = liveData?.total_live_points
+    ? performance.overall_points + (liveData.total_live_points - performance.last_gw_points)
+    : performance.overall_points;
+
+  const currentGwPoints = liveData?.total_live_points ?? performance.last_gw_points;
 
   // Calculate rank change
   const recentHistory = history.current?.slice(-2) || [];
@@ -27,8 +43,9 @@ export default function TeamOverview({ teamData }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           label="Overall Points"
-          value={performance.overall_points?.toLocaleString()}
+          value={liveTotalPoints?.toLocaleString()}
           icon={<Trophy className="text-fpl-purple" />}
+          isLive={liveData?.total_live_points}
         />
         <StatCard
           label="Overall Rank"
@@ -64,24 +81,57 @@ export default function TeamOverview({ teamData }) {
               </tr>
             </thead>
             <tbody>
-              {last5GWs.reverse().map((gw) => (
-                <tr key={gw.event} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-4 font-medium">GW{gw.event}</td>
-                  <td className="py-3 px-4 text-right font-bold text-fpl-purple">{gw.points}</td>
-                  <td className="py-3 px-4 text-right text-sm">{gw.rank?.toLocaleString()}</td>
-                  <td className="py-3 px-4 text-right text-sm">{gw.overall_rank?.toLocaleString()}</td>
-                  <td className="py-3 px-4 text-right text-sm">
-                    {gw.event_transfers > 0 && (
-                      <span className={gw.event_transfers_cost > 0 ? 'text-red-600' : ''}>
-                        {gw.event_transfers} {gw.event_transfers_cost > 0 ? `(-${gw.event_transfers_cost})` : ''}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {last5GWs.reverse().map((gw) => {
+                // Use live points for current gameweek
+                const isCurrentGW = gw.event === teamData.current_gameweek;
+                const gwPoints = isCurrentGW && liveData?.total_live_points
+                  ? liveData.total_live_points
+                  : gw.points;
+
+                return (
+                  <tr key={gw.event} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="py-3 px-4 font-medium">GW{gw.event}</td>
+                    <td className="py-3 px-4 text-right font-bold text-fpl-purple relative group">
+                      {gwPoints}
+                      {isCurrentGW && liveData?.total_live_points && (
+                        <>
+                          <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                          <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">
+                            Live - Gameweek in progress
+                          </div>
+                        </>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right text-sm">
+                      {gw.rank?.toLocaleString()}
+                      {isCurrentGW && (
+                        <span className="ml-1 text-xs text-gray-400" title="Rank updates after gameweek finalization">*</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right text-sm">
+                      {gw.overall_rank?.toLocaleString()}
+                      {isCurrentGW && (
+                        <span className="ml-1 text-xs text-gray-400" title="Rank updates after gameweek finalization">*</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-right text-sm">
+                      {gw.event_transfers > 0 && (
+                        <span className={gw.event_transfers_cost > 0 ? 'text-red-600' : ''}>
+                          {gw.event_transfers} {gw.event_transfers_cost > 0 ? `(-${gw.event_transfers_cost})` : ''}
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
+        {liveData?.total_live_points && (
+          <p className="text-xs text-gray-500 mt-2">
+            * Ranks update after gameweek finalization. Points shown with green dot (●) are live.
+          </p>
+        )}
       </div>
 
       {/* Best/Worst Gameweeks */}
@@ -168,14 +218,24 @@ export default function TeamOverview({ teamData }) {
   );
 }
 
-function StatCard({ label, value, icon, subtitle }) {
+function StatCard({ label, value, icon, subtitle, isLive }) {
   return (
     <div className="stat-card">
       <div className="flex items-center justify-between mb-2">
         <span className="stat-label">{label}</span>
         {icon}
       </div>
-      <div className="stat-value">{value}</div>
+      <div className="stat-value relative group">
+        {value}
+        {isLive && (
+          <>
+            <span className="ml-2 text-sm text-green-600 cursor-help">●</span>
+            <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-0">
+              Live - Gameweek in progress
+            </div>
+          </>
+        )}
+      </div>
       {subtitle && <div className="text-sm text-gray-500 mt-1">{subtitle}</div>}
     </div>
   );

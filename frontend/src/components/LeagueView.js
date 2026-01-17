@@ -112,21 +112,31 @@ function LeagueStandings({ league, userTeamId }) {
               </div>
               <div>
                 <div className="text-sm text-gray-500">GW Points</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-gray-900 relative group">
                   {userLiveData?.total_live_points ?? userEntry.event_total}
                   {userLiveData?.total_live_points && (
-                    <span className="ml-1 text-sm text-green-600">●</span>
+                    <>
+                      <span className="ml-1 text-sm text-green-600 cursor-help">●</span>
+                      <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
+                        Live - Gameweek in progress
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
               <div>
                 <div className="text-sm text-gray-500">Total Points</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-gray-900 relative group">
                   {userLiveData?.total_live_points
                     ? userEntry.total + (userLiveData.total_live_points - userEntry.event_total)
                     : userEntry.total}
                   {userLiveData?.total_live_points && (
-                    <span className="ml-1 text-sm text-green-600">●</span>
+                    <>
+                      <span className="ml-1 text-sm text-green-600 cursor-help">●</span>
+                      <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
+                        Live - Gameweek in progress
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -192,16 +202,26 @@ function LeagueStandings({ league, userTeamId }) {
                     <td className="py-3 px-4 text-sm text-gray-600">
                       {entry.player_name}
                     </td>
-                    <td className="py-3 px-4 text-center text-sm">
+                    <td className="py-3 px-4 text-center text-sm relative group">
                       {gwPoints}
                       {isUser && userLiveData?.total_live_points && (
-                        <span className="ml-1 text-xs text-green-600">●</span>
+                        <>
+                          <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                          <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1">
+                            Live - Gameweek in progress
+                          </div>
+                        </>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right font-bold text-fpl-purple">
+                    <td className="py-3 px-4 text-right font-bold text-fpl-purple relative group">
                       {totalPoints.toLocaleString()}
                       {isUser && userLiveData?.total_live_points && (
-                        <span className="ml-1 text-xs text-green-600">●</span>
+                        <>
+                          <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                          <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">
+                            Live - Gameweek in progress
+                          </div>
+                        </>
                       )}
                     </td>
                   </tr>

@@ -31,18 +31,28 @@ export default function Layout({ children, teamData }) {
 
             {teamData && (
               <div className="flex items-center space-x-6 text-sm">
-                <div>
+                <div className="relative group">
                   <span className="text-fpl-green">Points:</span>{' '}
                   <span className="font-bold">{liveTotalPoints?.toLocaleString()}</span>
                   {liveData?.total_live_points && (
-                    <span className="ml-1 text-xs text-green-400">●</span>
+                    <>
+                      <span className="ml-1 text-xs text-green-400 cursor-help">●</span>
+                      <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap -bottom-8 left-0">
+                        Live - Gameweek in progress
+                      </div>
+                    </>
                   )}
                 </div>
-                <div>
+                <div className="relative group">
                   <span className="text-fpl-green">GW{teamData.current_gameweek}:</span>{' '}
                   <span className="font-bold">{currentGwPoints}</span>
                   {liveData?.total_live_points && (
-                    <span className="ml-1 text-xs text-green-400">●</span>
+                    <>
+                      <span className="ml-1 text-xs text-green-400 cursor-help">●</span>
+                      <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap -bottom-8 left-0">
+                        Live - Gameweek in progress
+                      </div>
+                    </>
                   )}
                 </div>
                 <div>
