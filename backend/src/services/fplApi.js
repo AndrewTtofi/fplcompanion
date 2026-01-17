@@ -53,7 +53,7 @@ class FPLApiService {
    * Get team by ID
    */
   async getTeamById(teamId) {
-    return this.fetchWithCache(`/entry/${teamId}/`, `fpl:team:${teamId}`, 300);
+    return this.fetchWithCache(`/entry/${teamId}/`, `fpl:team:${teamId}`, 30); // 30s cache for fresh team data
   }
 
   /**
@@ -78,7 +78,7 @@ class FPLApiService {
    * Get live gameweek data
    */
   async getLiveGameweekData(gameweek) {
-    return this.fetchWithCache(`/event/${gameweek}/live/`, `fpl:gw:${gameweek}:live`, 60); // 1 min cache for live data
+    return this.fetchWithCache(`/event/${gameweek}/live/`, `fpl:gw:${gameweek}:live`, 30); // 30s cache for live data
   }
 
   /**
@@ -88,7 +88,7 @@ class FPLApiService {
     return this.fetchWithCache(
       `/leagues-classic/${leagueId}/standings/?page_standings=${page}`,
       `fpl:league:classic:${leagueId}:page:${page}`,
-      300
+      30 // 30s cache for fresh league standings
     );
   }
 
@@ -99,7 +99,7 @@ class FPLApiService {
     return this.fetchWithCache(
       `/leagues-h2h/${leagueId}/standings/?page_standings=${page}`,
       `fpl:league:h2h:${leagueId}:page:${page}`,
-      300
+      30 // 30s cache for fresh league standings
     );
   }
 

@@ -1,7 +1,23 @@
 import Link from 'next/link';
+import useSWR from 'swr';
+import { api } from '@/lib/api';
 import { Home, ArrowLeft } from 'lucide-react';
 
 export default function Layout({ children, teamData }) {
+  // Fetch live points for current gameweek if teamData exists
+  const { data: liveData } = useSWR(
+    teamData ? ['live-points', teamData.team.id, teamData.current_gameweek] : null,
+    () => api.getLiveTeamPoints(teamData.team.id, teamData.current_gameweek).then(res => res.data),
+    { refreshInterval: 30000, revalidateOnFocus: false }
+  );
+
+  const currentGwPoints = liveData?.total_live_points ?? teamData?.performance.last_gw_points;
+
+  // Calculate live total points: official total + (live GW points - official GW points)
+  const liveTotalPoints = liveData?.total_live_points
+    ? teamData.performance.overall_points + (liveData.total_live_points - teamData.performance.last_gw_points)
+    : teamData?.performance.overall_points;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -17,11 +33,17 @@ export default function Layout({ children, teamData }) {
               <div className="flex items-center space-x-6 text-sm">
                 <div>
                   <span className="text-fpl-green">Points:</span>{' '}
-                  <span className="font-bold">{teamData.performance.overall_points?.toLocaleString()}</span>
+                  <span className="font-bold">{liveTotalPoints?.toLocaleString()}</span>
+                  {liveData?.total_live_points && (
+                    <span className="ml-1 text-xs text-green-400">●</span>
+                  )}
                 </div>
                 <div>
                   <span className="text-fpl-green">GW{teamData.current_gameweek}:</span>{' '}
-                  <span className="font-bold">{teamData.performance.last_gw_points}</span>
+                  <span className="font-bold">{currentGwPoints}</span>
+                  {liveData?.total_live_points && (
+                    <span className="ml-1 text-xs text-green-400">●</span>
+                  )}
                 </div>
                 <div>
                   <span className="text-fpl-green">Value:</span>{' '}

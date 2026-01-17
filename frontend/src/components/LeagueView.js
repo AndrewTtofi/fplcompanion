@@ -53,7 +53,21 @@ function LeagueStandings({ league, userTeamId }) {
   const { data, error, isLoading } = useSWR(
     ['league', league.id],
     () => api.getClassicLeague(league.id).then(res => res.data),
+    { refreshInterval: 30000, revalidateOnFocus: false }
+  );
+
+  // Fetch current gameweek
+  const { data: currentGwData } = useSWR(
+    'current-gw',
+    () => api.getCurrentGameweek().then(res => res.data),
     { revalidateOnFocus: false }
+  );
+
+  // Fetch live points for the user's team
+  const { data: userLiveData } = useSWR(
+    currentGwData && userTeamId ? ['user-live', userTeamId, currentGwData.current_gameweek] : null,
+    () => api.getLiveTeamPoints(userTeamId, currentGwData.current_gameweek).then(res => res.data),
+    { refreshInterval: 30000, revalidateOnFocus: false }
   );
 
   if (isLoading) {
@@ -97,13 +111,23 @@ function LeagueStandings({ league, userTeamId }) {
                 <div className="text-2xl font-bold text-fpl-purple">{userEntry.rank}</div>
               </div>
               <div>
-                <div className="text-sm text-gray-500">Total Points</div>
-                <div className="text-2xl font-bold text-gray-900">{userEntry.total}</div>
+                <div className="text-sm text-gray-500">GW Points</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {userLiveData?.total_live_points ?? userEntry.event_total}
+                  {userLiveData?.total_live_points && (
+                    <span className="ml-1 text-sm text-green-600">●</span>
+                  )}
+                </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500">Behind Leader</div>
+                <div className="text-sm text-gray-500">Total Points</div>
                 <div className="text-2xl font-bold text-gray-900">
-                  {standings[0].total - userEntry.total}
+                  {userLiveData?.total_live_points
+                    ? userEntry.total + (userLiveData.total_live_points - userEntry.event_total)
+                    : userEntry.total}
+                  {userLiveData?.total_live_points && (
+                    <span className="ml-1 text-sm text-green-600">●</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -128,6 +152,16 @@ function LeagueStandings({ league, userTeamId }) {
               {standings.map((entry, index) => {
                 const isUser = entry.entry === userTeamId;
                 const rankChange = entry.last_rank - entry.rank;
+
+                // Use live points for user's team if available
+                const gwPoints = isUser && userLiveData?.total_live_points
+                  ? userLiveData.total_live_points
+                  : entry.event_total;
+
+                // Calculate live total points for user
+                const totalPoints = isUser && userLiveData?.total_live_points
+                  ? entry.total + (userLiveData.total_live_points - entry.event_total)
+                  : entry.total;
 
                 return (
                   <tr
@@ -159,10 +193,16 @@ function LeagueStandings({ league, userTeamId }) {
                       {entry.player_name}
                     </td>
                     <td className="py-3 px-4 text-center text-sm">
-                      {entry.event_total}
+                      {gwPoints}
+                      {isUser && userLiveData?.total_live_points && (
+                        <span className="ml-1 text-xs text-green-600">●</span>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-right font-bold text-fpl-purple">
-                      {entry.total.toLocaleString()}
+                      {totalPoints.toLocaleString()}
+                      {isUser && userLiveData?.total_live_points && (
+                        <span className="ml-1 text-xs text-green-600">●</span>
+                      )}
                     </td>
                   </tr>
                 );
