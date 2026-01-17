@@ -1,16 +1,14 @@
 import { useState } from 'react';
-import { Activity, LayoutGrid, Users as UsersIcon } from 'lucide-react';
-import LivePointsView from './LivePointsView';
+import { LayoutGrid, Users as UsersIcon } from 'lucide-react';
 import ComparisonView from './ComparisonView';
 import FootballFieldView from './FootballFieldView';
 
 export default function EnhancedGameweekView({ teamData }) {
-  const [subView, setSubView] = useState('field'); // 'field', 'live', 'compare'
+  const [subView, setSubView] = useState('field'); // 'field', 'compare'
   const currentGW = teamData.current_gameweek;
 
   const views = [
     { id: 'field', label: 'Team View', icon: <LayoutGrid size={18} /> },
-    { id: 'live', label: 'Live Points', icon: <Activity size={18} /> },
     { id: 'compare', label: 'Compare', icon: <UsersIcon size={18} /> },
   ];
 
@@ -40,10 +38,6 @@ export default function EnhancedGameweekView({ teamData }) {
         <div className="p-6">
           {subView === 'field' && (
             <FootballFieldView teamId={teamData.team.id} gameweek={currentGW} />
-          )}
-
-          {subView === 'live' && (
-            <LivePointsView teamId={teamData.team.id} gameweek={currentGW} />
           )}
 
           {subView === 'compare' && (
