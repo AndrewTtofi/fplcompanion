@@ -96,7 +96,14 @@ function LeagueStandings({ league, userTeamId }) {
   }
 
   const standings = data.standings.results;
-  const userEntry = standings.find(s => s.entry === userTeamId);
+  // Check if user entry is in current page or use league metadata
+  const userEntryInPage = standings.find(s => s.entry === userTeamId);
+
+  // Try to get user entry from standings or from league's new_entries data
+  const userEntry = userEntryInPage || data.new_entries?.results?.find(s => s.entry === userTeamId);
+
+  // If still not found, try to construct from league metadata if available
+  const userRank = userEntry?.rank || data.standings?.has_next ? null : null;
 
   return (
     <div className="space-y-4">
@@ -121,46 +128,47 @@ function LeagueStandings({ league, userTeamId }) {
           <Trophy className="text-fpl-purple" size={40} />
         </div>
 
-        {userEntry && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-sm text-gray-500">Your Rank</div>
-                <div className="text-2xl font-bold text-fpl-purple">{userEntry.rank}</div>
+        {/* Always show user stats section */}
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <div className="text-sm text-gray-500">Your Rank</div>
+              <div className="text-2xl font-bold text-fpl-purple">
+                {userEntry?.rank || '-'}
               </div>
-              <div>
-                <div className="text-sm text-gray-500">GW Points</div>
-                <div className="text-2xl font-bold text-gray-900 relative group">
-                  {userLiveData?.total_live_points ?? userEntry.event_total}
-                  {userLiveData?.total_live_points && (
-                    <>
-                      <span className="ml-1 text-sm text-green-600 cursor-help">●</span>
-                      <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
-                        Live - Gameweek in progress
-                      </div>
-                    </>
-                  )}
-                </div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-500">GW Points</div>
+              <div className="text-2xl font-bold text-gray-900 relative group">
+                {userLiveData?.total_live_points ?? userEntry?.event_total ?? '-'}
+                {userLiveData?.total_live_points && (
+                  <>
+                    <span className="ml-1 text-sm text-green-600 cursor-help">●</span>
+                    <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
+                      Live - Gameweek in progress
+                    </div>
+                  </>
+                )}
               </div>
-              <div>
-                <div className="text-sm text-gray-500">Total Points</div>
-                <div className="text-2xl font-bold text-gray-900 relative group">
-                  {userLiveData?.total_live_points
-                    ? userEntry.total + (userLiveData.total_live_points - userEntry.event_total)
-                    : userEntry.total}
-                  {userLiveData?.total_live_points && (
-                    <>
-                      <span className="ml-1 text-sm text-green-600 cursor-help">●</span>
-                      <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
-                        Live - Gameweek in progress
-                      </div>
-                    </>
-                  )}
-                </div>
+            </div>
+            <div>
+              <div className="text-sm text-gray-500">Total Points</div>
+              <div className="text-2xl font-bold text-gray-900 relative group">
+                {userLiveData?.total_live_points && userEntry
+                  ? userEntry.total + (userLiveData.total_live_points - userEntry.event_total)
+                  : userEntry?.total ?? '-'}
+                {userLiveData?.total_live_points && (
+                  <>
+                    <span className="ml-1 text-sm text-green-600 cursor-help">●</span>
+                    <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
+                      Live - Gameweek in progress
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
 
       {/* Standings Table */}
