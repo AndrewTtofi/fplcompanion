@@ -69,3 +69,17 @@ body {
 .stat-value {
   @apply text-2xl font-bold text-gray-900 mt-1;
 }
+
+.writing-mode-vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.player-card-hover {
+  z-index: 10;
+  position: relative;
+}
+
+.player-card-hover:hover {
+  z-index: 9999 !important;
+}
