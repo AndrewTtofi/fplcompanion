@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.5.1] - 2026-01-17
+
+### Changes
+- fix: improve field view layout and dimensions (#7) (225ea40)
+
 ## [v2.5.0] - 2026-01-17
 
 ### Changes
