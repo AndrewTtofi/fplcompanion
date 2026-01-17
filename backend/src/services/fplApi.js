@@ -217,10 +217,18 @@ class FPLApiService {
       this.getFixtures(gameweek)
     ]);
 
+    // Convert live data elements array to object for faster lookup
+    const liveDataMap = {};
+    if (liveData && liveData.elements) {
+      liveData.elements.forEach(el => {
+        liveDataMap[el.id] = el;
+      });
+    }
+
     // Enrich picks with player data, live stats, and fixtures
     const enrichedPicks = picks.picks.map(pick => {
       const player = bootstrap.elements.find(p => p.id === pick.element);
-      const liveStats = liveData.elements[pick.element];
+      const liveStats = liveDataMap[pick.element];
       const team = bootstrap.teams.find(t => t.id === player?.team);
       const position = bootstrap.element_types.find(p => p.id === player?.element_type);
 
@@ -248,7 +256,7 @@ class FPLApiService {
         player_name: player ? `${player.first_name} ${player.second_name}` : 'Unknown',
         web_name: player?.web_name || 'Unknown',
         team_short: team?.short_name || 'N/A',
-        position: position?.singular_name_short || 'N/A',
+        position_name: position?.singular_name_short || 'N/A',
         position_id: position?.id,
         now_cost: player?.now_cost / 10,
         fixtures: playerFixtures,
@@ -273,8 +281,88 @@ class FPLApiService {
     });
 
     // Separate starting XI and bench
-    const startingXI = enrichedPicks.filter(p => p.position <= 11);
-    const bench = enrichedPicks.filter(p => p.position > 11);
+    let startingXI = enrichedPicks.filter(p => p.position <= 11);
+    let bench = enrichedPicks.filter(p => p.position > 11).sort((a, b) => a.position - b.position);
+
+    // Apply automatic substitutions
+    // Auto-subs only apply AFTER the entire gameweek is finished
+    // Check if ALL players (starting XI + bench) have finished their matches
+    const allPlayers = [...startingXI, ...bench];
+    const allMatchesFinished = allPlayers.every(p => {
+      return p.fixtures?.every(f => f.finished === true);
+    });
+
+    if (allMatchesFinished) {
+      // Now that all matches are done, find players who didn't play
+      const didNotPlay = startingXI.filter(p => p.live_stats.minutes === 0);
+
+      if (didNotPlay.length > 0) {
+        // Bench is already sorted by position (12, 13, 14, 15) - this is the correct priority order
+        const substitutions = [];
+
+        // For each player that didn't play, try to find a valid substitute from the bench in order
+        for (const nonPlayer of didNotPlay) {
+          for (const sub of bench) {
+            // Skip if this sub was already used
+            if (substitutions.find(s => s.sub.element === sub.element)) continue;
+
+            // Skip if sub also didn't play
+            if (sub.live_stats.minutes === 0) continue;
+
+            // Test if this substitution maintains a valid formation
+            const testXI = startingXI
+              .filter(p => p.element !== nonPlayer.element)
+              .concat([sub]);
+
+            const formation = {
+              GK: testXI.filter(p => p.position_id === 1).length,
+              DEF: testXI.filter(p => p.position_id === 2).length,
+              MID: testXI.filter(p => p.position_id === 3).length,
+              FWD: testXI.filter(p => p.position_id === 4).length
+            };
+
+            // Valid formation rules: 1 GK, 3+ DEF, 2+ MID, 1+ FWD
+            if (formation.GK === 1 && formation.DEF >= 3 && formation.MID >= 2 && formation.FWD >= 1) {
+              substitutions.push({ out: nonPlayer, sub });
+              break; // Found valid sub, move to next non-player
+            }
+          }
+        }
+
+        // Apply all substitutions
+        for (const { out, sub } of substitutions) {
+          // Remove the non-player from starting XI and add to bench
+          startingXI = startingXI.filter(p => p.element !== out.element);
+          bench = bench.filter(p => p.element !== sub.element);
+
+          // Add sub to starting XI with auto_sub flag
+          startingXI.push({
+            ...sub,
+            auto_sub: true,
+            subbed_in_for: out.web_name
+          });
+
+          // Add non-player to bench with subbed_out flag
+          bench.push({
+            ...out,
+            auto_sub: true,
+            subbed_out: true,
+            replaced_by: sub.web_name
+          });
+        }
+      }
+    }
+
+    // Mark players whose matches haven't started yet
+    startingXI = startingXI.map(p => {
+      const hasNotStarted = p.fixtures?.some(f => f.started === false);
+      return { ...p, match_not_started: hasNotStarted };
+    });
+
+    bench = bench.map(p => {
+      const hasNotStarted = p.fixtures?.some(f => f.started === false);
+      return { ...p, match_not_started: hasNotStarted };
+    });
 
     // Find captain and vice-captain
     const captain = enrichedPicks.find(p => p.is_captain);

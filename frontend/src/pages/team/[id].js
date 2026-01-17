@@ -71,26 +71,6 @@ export default function TeamPage() {
   return (
     <Layout teamData={teamData}>
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {teamData.team.name}
-              </h1>
-              <p className="text-lg text-gray-600 mt-1">
-                {teamData.team.player_first_name} {teamData.team.player_last_name}
-              </p>
-            </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-500">Overall Rank</div>
-              <div className="text-3xl font-bold text-fpl-purple">
-                {teamData.performance.overall_rank?.toLocaleString()}
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Tabs */}
         <div className="bg-white rounded-lg shadow-md mb-6">
           <div className="border-b border-gray-200">
