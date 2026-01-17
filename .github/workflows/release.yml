@@ -144,24 +144,22 @@ jobs:
             COMMITS=$(git log --pretty=format:"- %s (%h)" ${LATEST_TAG}..HEAD)
           fi
 
-          # Create changelog entry (write directly to file to avoid YAML issues)
-          cat > /tmp/changelog_entry.md << EOF
-          ## [$NEW_VERSION] - $(date +%Y-%m-%d)
-
-          ### Changes
-          $COMMITS
-
-          EOF
+          # Create changelog entry
+          echo "## [$NEW_VERSION] - $(date +%Y-%m-%d)" > /tmp/changelog_entry.md
+          echo "" >> /tmp/changelog_entry.md
+          echo "### Changes" >> /tmp/changelog_entry.md
+          echo "$COMMITS" >> /tmp/changelog_entry.md
+          echo "" >> /tmp/changelog_entry.md
 
           # Prepend to CHANGELOG.md after the "Unreleased" section
           if [ -f "CHANGELOG.md" ]; then
             # Find line number of first version entry
-            LINE=\$(grep -n "^## \\[" CHANGELOG.md | grep -v "Unreleased" | head -1 | cut -d: -f1)
-            if [ -n "\$LINE" ]; then
+            LINE=$(grep -n "^## \[" CHANGELOG.md | grep -v "Unreleased" | head -1 | cut -d: -f1)
+            if [ -n "$LINE" ]; then
               # Insert new entry before first version
-              head -n \$((LINE - 1)) CHANGELOG.md > /tmp/changelog_temp.md
+              head -n $((LINE - 1)) CHANGELOG.md > /tmp/changelog_temp.md
               cat /tmp/changelog_entry.md >> /tmp/changelog_temp.md
-              tail -n +\$LINE CHANGELOG.md >> /tmp/changelog_temp.md
+              tail -n +$LINE CHANGELOG.md >> /tmp/changelog_temp.md
               mv /tmp/changelog_temp.md CHANGELOG.md
             else
               # No version entries yet, append to end
