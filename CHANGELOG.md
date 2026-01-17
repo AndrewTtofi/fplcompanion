@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.3.0] - 2026-01-17
+
+### Changes
+- feat: Football Field View with Live Points and Auto-Substitutions (#2) (124327d)
+
 ## [v2.2.0] - 2026-01-17
 
 ### Changes
