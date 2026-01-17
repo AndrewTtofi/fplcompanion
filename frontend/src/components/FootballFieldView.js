@@ -166,58 +166,73 @@ export default function FootballFieldView({ teamId, gameweek }) {
 
       {/* Field View */}
       {viewMode === 'field' && (
-        <div className="bg-gradient-to-b from-green-600 via-green-500 to-green-600 rounded-xl p-4 shadow-2xl relative overflow-hidden flex-1 flex flex-col min-h-0">
-          {/* Field Lines */}
-          <div className="absolute inset-0 pointer-events-none">
-            {/* Center circle */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-2 border-white border-opacity-30 rounded-full"></div>
-            {/* Center line - now horizontal */}
-            <div className="absolute left-0 right-0 top-1/2 h-0.5 bg-white opacity-30"></div>
-            {/* Penalty boxes - rotated for horizontal field */}
-            <div className="absolute left-1/2 top-0 transform -translate-x-1/2 h-20 w-40 border-2 border-white border-opacity-30 border-t-0"></div>
-            <div className="absolute left-1/2 bottom-0 transform -translate-x-1/2 h-20 w-40 border-2 border-white border-opacity-30 border-b-0"></div>
+        <div className="flex flex-col h-full">
+          {/* Football Field */}
+          <div className="flex-1 flex items-center justify-center p-4">
+            <div
+              className="relative w-full rounded-lg shadow-xl"
+              style={{
+                background: 'linear-gradient(180deg, #37734a 0%, #4a8c5f 50%, #37734a 100%)',
+                maxWidth: '700px',
+                aspectRatio: '4/3'
+              }}
+            >
+              {/* Grass pattern */}
+              <div
+                className="absolute inset-0 rounded-lg"
+                style={{
+                  backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 60px, transparent 60px, transparent 120px)'
+                }}
+              />
+
+              {/* Field lines */}
+              <div className="absolute inset-0">
+                <div className="absolute left-0 right-0 top-1/2 h-px bg-white/30" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-2 border-white/30" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-16 border-2 border-white/30 border-t-0" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-16 border-2 border-white/30 border-b-0" />
+              </div>
+
+              {/* Players */}
+              <div className="absolute inset-0 p-8">
+                <div className="h-full flex flex-col justify-between">
+                  {/* Goalkeeper */}
+                  <div className="flex justify-center">
+                    {grouped.GK.map(player => (
+                      <PlayerCard key={player.element} player={player} />
+                    ))}
+                  </div>
+
+                  {/* Defenders */}
+                  <div className="flex justify-center gap-6">
+                    {grouped.DEF.map(player => (
+                      <PlayerCard key={player.element} player={player} />
+                    ))}
+                  </div>
+
+                  {/* Midfielders */}
+                  <div className="flex justify-center gap-6">
+                    {grouped.MID.map(player => (
+                      <PlayerCard key={player.element} player={player} />
+                    ))}
+                  </div>
+
+                  {/* Forwards */}
+                  <div className="flex justify-center gap-6">
+                    {grouped.FWD.map(player => (
+                      <PlayerCard key={player.element} player={player} hoverAbove={true} />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Starting XI - Takes up most space */}
-          <div className="relative flex items-center justify-center gap-4 flex-1 min-h-0">
-            {/* Goalkeeper */}
-            <div className="flex flex-col justify-center gap-2">
-              {grouped.GK.map(player => (
-                <PlayerCard key={player.element} player={player} />
-              ))}
-            </div>
-
-            {/* Defenders */}
-            <div className="flex flex-col justify-center gap-2">
-              {grouped.DEF.map(player => (
-                <PlayerCard key={player.element} player={player} />
-              ))}
-            </div>
-
-            {/* Midfielders */}
-            <div className="flex flex-col justify-center gap-2">
-              {grouped.MID.map(player => (
-                <PlayerCard key={player.element} player={player} />
-              ))}
-            </div>
-
-            {/* Forwards */}
-            <div className="flex flex-col justify-center gap-2">
-              {grouped.FWD.map(player => (
-                <PlayerCard key={player.element} player={player} />
-              ))}
-            </div>
-          </div>
-
-          {/* Bench - Compact at bottom */}
-          <div className="mt-3 pt-3 border-t border-white border-opacity-30 flex-shrink-0">
-            <div className="flex items-center gap-2 mb-2">
-              <Users className="text-white" size={14} />
-              <h3 className="text-white font-bold text-sm">Subs</h3>
-            </div>
-            <div className="flex justify-center gap-2">
-              {bench.map((player, index) => (
-                <BenchPlayerCard key={player.element} player={player} position={index + 1} />
+          {/* Substitutes */}
+          <div className="flex-shrink-0 p-4">
+            <div className="bg-gray-100 rounded-lg py-3 px-6 mx-auto flex justify-center gap-8" style={{ maxWidth: '1000px' }}>
+              {bench.map(player => (
+                <PlayerCard key={player.element} player={player} hoverAbove={true} />
               ))}
             </div>
           </div>
@@ -227,13 +242,13 @@ export default function FootballFieldView({ teamId, gameweek }) {
   );
 }
 
-function PlayerCard({ player }) {
+function PlayerCard({ player, hoverAbove = false }) {
   const stats = player.live_stats || {};
   const isPlaying = player.fixtures?.some(f => f.started && !f.finished);
   const hasPlayed = stats.minutes > 0;
 
   return (
-    <div className="relative group">
+    <div className="relative group player-card-hover">
       {/* Auto-sub indicator */}
       {player.auto_sub && !player.subbed_out && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 whitespace-nowrap">
@@ -256,11 +271,10 @@ function PlayerCard({ player }) {
         points={stats.total_points || 0}
         multiplier={player.multiplier}
         isPlaying={isPlaying}
-        size="md"
       />
 
       {/* Hover Card with Points Breakdown */}
-      <div className="absolute z-10 top-full mt-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block">
+      <div className={`absolute z-50 ${hoverAbove ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 hidden group-hover:block`}>
         <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-56 space-y-2">
           {/* Player Info */}
           <div>
