@@ -186,7 +186,7 @@ function EnhancedPlayerJersey({ player, type, showFixtures }) {
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-gray-400">Minutes:</span>
-              <span>{stats.minutes}'</span>
+              <span>{stats.minutes}&apos;</span>
             </div>
             {stats.goals_scored > 0 && (
               <div className="flex justify-between gap-4">
