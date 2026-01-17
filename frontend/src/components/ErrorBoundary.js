@@ -47,7 +47,7 @@ class ErrorBoundary extends Component {
             </h1>
 
             <p className="text-gray-600 text-center mb-6">
-              We encountered an unexpected error. Don't worry, your data is safe.
+              We encountered an unexpected error. Don&apos;t worry, your data is safe.
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (

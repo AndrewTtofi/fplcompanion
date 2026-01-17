@@ -139,10 +139,10 @@ jobs:
 
       - name: Check for secrets
         run: |
-          # Check for common secrets patterns
-          if grep -r "sk-" . --exclude-dir={node_modules,.git,.next} || \
-             grep -r "password.*=.*['\"]" . --exclude-dir={node_modules,.git,.next} || \
-             grep -r "token.*=.*['\"]" . --exclude-dir={node_modules,.git,.next}; then
+          # Check for common secrets patterns (exclude .github directory to avoid false positives)
+          if grep -r "sk-" . --exclude-dir={node_modules,.git,.next,.github} || \
+             grep -r "password.*=.*['\"]" . --exclude-dir={node_modules,.git,.next,.github} || \
+             grep -r "token.*=.*['\"]" . --exclude-dir={node_modules,.git,.next,.github}; then
             echo "⚠️ Potential secrets found in code"
             exit 1
           fi

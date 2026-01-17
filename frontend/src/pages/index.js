@@ -75,7 +75,7 @@ export default function Home() {
             <h3 className="font-semibold text-gray-800 mb-3">How to find your Team ID:</h3>
             <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600">
               <li>Go to the official FPL website and log in</li>
-              <li>Click on "Points" or "My Team"</li>
+              <li>Click on &quot;Points&quot; or &quot;My Team&quot;</li>
               <li>Look at the URL - it will contain /entry/XXXXXX/</li>
               <li>The numbers (XXXXXX) are your Team ID</li>
             </ol>
