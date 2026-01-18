@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.5.6] - 2026-01-18
+
+### Changes
+- fix: prevent popup flash at top-left on first hover (ee7a4f6)
+
 ## [v2.5.5] - 2026-01-18
 
 ### Changes
