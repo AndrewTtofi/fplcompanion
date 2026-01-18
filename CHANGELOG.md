@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.7.0] - 2026-01-18
+
+### Changes
+- feat: add global league filter with URL persistence (#10) (ac75917)
+- Update README.md (db188fc)
+
 ## [v2.6.3] - 2026-01-18
 
 ### Changes
