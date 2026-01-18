@@ -102,7 +102,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
 
       {/* Live Points View */}
       {viewMode === 'live' && (
-        <div className="flex-1 overflow-hidden min-h-0">
+        <div className="flex-1 overflow-y-auto md:overflow-hidden min-h-0">
           {/* Mobile: Stack Stats on Top */}
           <div className="md:hidden mb-3">
             <div className="grid grid-cols-3 gap-2">
@@ -132,7 +132,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 h-full md:h-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 md:h-full">
             {/* Left Column - Summary Stats (Desktop Only) */}
             <div className="hidden md:flex space-y-2 flex-col">
               {/* Total Points Card */}
@@ -169,26 +169,22 @@ export default function FootballFieldView({ teamId, gameweek }) {
             </div>
 
             {/* Middle Column - Starting XI */}
-            <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col min-h-0">
+            <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col">
               <h3 className="text-xs md:text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Starting XI</h3>
-              <div className="flex-1 overflow-y-auto md:overflow-hidden min-h-0">
-                <div className="space-y-0.5 md:h-full md:flex md:flex-col md:justify-around">
-                  {starting_xi.map(player => (
-                    <LivePointsPlayerRow key={player.element} player={player} />
-                  ))}
-                </div>
+              <div className="space-y-0.5">
+                {starting_xi.map(player => (
+                  <LivePointsPlayerRow key={player.element} player={player} />
+                ))}
               </div>
             </div>
 
             {/* Right Column - Bench */}
-            <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col min-h-0">
+            <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col">
               <h3 className="text-xs md:text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Substitutes</h3>
-              <div className="flex-1 overflow-y-auto md:overflow-hidden min-h-0">
-                <div className="space-y-0.5 md:h-full md:flex md:flex-col md:justify-around">
-                  {bench.map((player, index) => (
-                    <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
-                  ))}
-                </div>
+              <div className="space-y-0.5">
+                {bench.map((player, index) => (
+                  <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
+                ))}
               </div>
             </div>
           </div>
