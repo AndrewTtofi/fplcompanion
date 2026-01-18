@@ -601,84 +601,114 @@ function LivePointsPlayerRow({ player, benchPosition }) {
       </div>
 
       {/* Beautiful Hover Popup */}
-      {hasPlayed && breakdown.length > 0 && (
-        <div
-          className="live-points-popup hidden group-hover:block pointer-events-none animate-in fade-in duration-200"
-          style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
-        >
-          <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden pointer-events-auto">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-fpl-purple to-purple-700 text-white px-4 py-3">
-              <div className="font-bold text-sm">{player.web_name}</div>
-              <div className="text-xs opacity-90 flex items-center gap-2 mt-1">
-                <span>{player.team_short}</span>
-                <span>•</span>
-                <span>{player.position_name}</span>
-                <span>•</span>
-                <span>£{player.now_cost}m</span>
-              </div>
-              {player.is_captain && (
-                <div className="mt-2 bg-yellow-500 text-xs font-bold px-2 py-1 rounded inline-block">
-                  CAPTAIN (×{player.multiplier})
-                </div>
-              )}
-              {player.auto_sub && !player.subbed_out && (
-                <div className="mt-2 bg-green-500 text-xs font-bold px-2 py-1 rounded inline-block">
-                  AUTO-SUBSTITUTION
-                </div>
-              )}
+      <div
+        className="live-points-popup hidden group-hover:block pointer-events-none"
+        style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
+      >
+        <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden pointer-events-auto">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-fpl-purple to-purple-700 text-white px-4 py-3">
+            <div className="font-bold text-sm">{player.web_name}</div>
+            <div className="text-xs opacity-90 flex items-center gap-2 mt-1">
+              <span>{player.team_short}</span>
+              <span>•</span>
+              <span>{player.position_name}</span>
+              <span>•</span>
+              <span>£{player.now_cost}m</span>
             </div>
-
-            {/* Total Points Display */}
-            <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-gray-600">Total Points</span>
-                <span className="text-2xl font-bold text-fpl-purple">{stats.total_points}</span>
+            {player.is_captain && (
+              <div className="mt-2 bg-yellow-500 text-xs font-bold px-2 py-1 rounded inline-block">
+                CAPTAIN (×{player.multiplier})
               </div>
-              {player.is_captain && (
-                <div className="text-xs text-gray-600 mt-1">
-                  With captain bonus: <span className="font-bold text-fpl-purple">{stats.total_points * player.multiplier}</span> pts
+            )}
+            {player.auto_sub && !player.subbed_out && (
+              <div className="mt-2 bg-green-500 text-xs font-bold px-2 py-1 rounded inline-block">
+                AUTO-SUBSTITUTION
+              </div>
+            )}
+          </div>
+
+          {/* Match Status / Points Display */}
+          {!hasPlayed && !isPlaying && player.match_not_started ? (
+            <div className="px-4 py-6 text-center">
+              <div className="text-blue-500 mb-2">
+                <svg className="w-12 h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="text-sm font-semibold text-gray-700">Match Not Started</div>
+              <div className="text-xs text-gray-500 mt-1">This player has an upcoming fixture</div>
+            </div>
+          ) : !hasPlayed && !isPlaying ? (
+            <div className="px-4 py-6 text-center">
+              <div className="text-gray-400 mb-2">
+                <svg className="w-12 h-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <div className="text-sm font-semibold text-gray-700">Did Not Play</div>
+              <div className="text-xs text-gray-500 mt-1">This player did not feature in the gameweek</div>
+            </div>
+          ) : (
+            <>
+              {/* Total Points Display */}
+              <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-gray-600">Total Points</span>
+                  <span className="text-2xl font-bold text-fpl-purple">{stats.total_points || 0}</span>
+                </div>
+                {player.is_captain && (
+                  <div className="text-xs text-gray-600 mt-1">
+                    With captain bonus: <span className="font-bold text-fpl-purple">{(stats.total_points || 0) * player.multiplier}</span> pts
+                  </div>
+                )}
+                {isPlaying && (
+                  <div className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                    <span className="animate-pulse">●</span> Match in progress
+                  </div>
+                )}
+              </div>
+
+              {/* Points Breakdown */}
+              {breakdown.length > 0 && (
+                <div className="px-4 py-3 max-h-64 overflow-y-auto">
+                  <div className="text-xs font-semibold text-gray-700 mb-2">Points Breakdown</div>
+                  <div className="space-y-1.5">
+                    {breakdown.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center">
+                        <span className={`text-xs ${item.color}`}>{item.label}</span>
+                        <span className={`text-sm font-bold ${item.color}`}>
+                          {item.points > 0 ? '+' : ''}{item.points}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* BPS Score */}
+                  {stats.bps > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-gray-600">BPS Score</span>
+                        <span className="font-semibold text-purple-600">{stats.bps}</span>
+                      </div>
+                      <div className="text-[10px] text-gray-500 mt-1">
+                        Bonus Points System score
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            </>
+          )}
 
-            {/* Points Breakdown */}
-            <div className="px-4 py-3 max-h-64 overflow-y-auto">
-              <div className="text-xs font-semibold text-gray-700 mb-2">Points Breakdown</div>
-              <div className="space-y-1.5">
-                {breakdown.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center">
-                    <span className={`text-xs ${item.color}`}>{item.label}</span>
-                    <span className={`text-sm font-bold ${item.color}`}>
-                      {item.points > 0 ? '+' : ''}{item.points}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* BPS Score */}
-              {stats.bps > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-200">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-gray-600">BPS Score</span>
-                    <span className="font-semibold text-purple-600">{stats.bps}</span>
-                  </div>
-                  <div className="text-[10px] text-gray-500 mt-1">
-                    Bonus Points System score
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Footer hint */}
-            <div className="bg-gray-50 px-4 py-2 border-t border-gray-200">
-              <div className="text-[10px] text-gray-500 text-center">
-                Click player name for detailed view
-              </div>
+          {/* Footer hint */}
+          <div className="bg-gray-50 px-4 py-2 border-t border-gray-200">
+            <div className="text-[10px] text-gray-500 text-center">
+              Click player name for detailed view
             </div>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Click Popup */}
       {showPopup && (
