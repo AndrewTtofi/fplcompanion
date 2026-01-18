@@ -183,7 +183,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
             {/* Right Column - Bench */}
             <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col min-h-0">
               <h3 className="text-xs md:text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Substitutes</h3>
-              <div className="flex-1 overflow-hidden min-h-0">
+              <div className="flex-1 overflow-y-auto md:overflow-hidden min-h-0">
                 <div className="space-y-0.5 md:h-full md:flex md:flex-col md:justify-around">
                   {bench.map((player, index) => (
                     <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
