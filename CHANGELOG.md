@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.6] - 2026-01-18
+
+### Changes
+- fix: add relative positioning to header for desktop layout (453f1ad)
+
 ## [v2.8.5] - 2026-01-18
 
 ### Changes
