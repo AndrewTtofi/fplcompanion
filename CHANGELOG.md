@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.5.4] - 2026-01-18
+
+### Changes
+- fix: display hover points in Live Points view without breaking layout (427800d)
+- Revert "fix: display hover points popup in Live Points view" (596f2cd)
+
 ## [v2.5.3] - 2026-01-18
 
 ### Changes
