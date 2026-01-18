@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.5.3] - 2026-01-18
+
+### Changes
+- fix: display hover points popup in Live Points view (5d8df02)
+
 ## [v2.5.2] - 2026-01-18
 
 ### Changes
