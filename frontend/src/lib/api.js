@@ -47,6 +47,14 @@ export const api = {
   // Team comparison
   compareTeams: (teamId1, teamId2, gameweek) =>
     apiClient.get(`/compare/${teamId1}/${teamId2}/${gameweek}`),
+
+  // Feeds
+  getDoubleBlankGameweeks: (lookahead = 8) =>
+    apiClient.get(`/feeds/double-blank-gameweeks?lookahead=${lookahead}`),
+  getTeamFeed: (teamId, gameweek = null) => {
+    const url = gameweek ? `/feeds/team/${teamId}?gameweek=${gameweek}` : `/feeds/team/${teamId}`;
+    return apiClient.get(url);
+  },
 };
 
 // Error handler wrapper

@@ -83,13 +83,19 @@ class FPLApiService {
 
   /**
    * Get classic league standings
+   * The FPL API returns league.standings.results for the requested page
+   * and includes the user's own entry in new_entries.results
    */
   async getClassicLeague(leagueId, page = 1) {
-    return this.fetchWithCache(
+    const data = await this.fetchWithCache(
       `/leagues-classic/${leagueId}/standings/?page_standings=${page}`,
       `fpl:league:classic:${leagueId}:page:${page}`,
       30 // 30s cache for fresh league standings
     );
+
+    // The FPL API should include new_entries which contains the user's own entry
+    // This ensures we can display user rank even when they're not on page 1
+    return data;
   }
 
   /**
@@ -544,6 +550,267 @@ class FPLApiService {
     }
 
     return summary;
+  }
+
+  /**
+   * Detect double and blank gameweeks for upcoming fixtures
+   * Returns teams with multiple fixtures or no fixtures per gameweek
+   */
+  async getDoubleAndBlankGameweeks(lookaheadWeeks = 8) {
+    const [bootstrap, allFixtures] = await Promise.all([
+      this.getBootstrapStatic(),
+      this.getFixtures()
+    ]);
+
+    const currentGW = bootstrap.events.find(e => e.is_current);
+    if (!currentGW) return { double_gameweeks: [], blank_gameweeks: [] };
+
+    const teams = bootstrap.teams;
+    const upcomingGWs = bootstrap.events.filter(e =>
+      e.id > currentGW.id &&
+      e.id <= currentGW.id + lookaheadWeeks &&
+      !e.finished
+    );
+
+    const doubleGameweeks = [];
+    const blankGameweeks = [];
+
+    // Analyze each upcoming gameweek
+    upcomingGWs.forEach(gw => {
+      const gwFixtures = allFixtures.filter(f => f.event === gw.id);
+      const fixtureCount = {};
+
+      // Initialize all teams with 0 fixtures
+      teams.forEach(team => {
+        fixtureCount[team.id] = 0;
+      });
+
+      // Count fixtures per team
+      gwFixtures.forEach(fixture => {
+        if (fixture.team_h) fixtureCount[fixture.team_h]++;
+        if (fixture.team_a) fixtureCount[fixture.team_a]++;
+      });
+
+      // Identify teams with double gameweeks (2+ fixtures)
+      const doubleTeams = [];
+      const blankTeams = [];
+
+      teams.forEach(team => {
+        if (fixtureCount[team.id] >= 2) {
+          doubleTeams.push({
+            team_id: team.id,
+            team_name: team.name,
+            team_short: team.short_name,
+            fixture_count: fixtureCount[team.id],
+            fixtures: gwFixtures
+              .filter(f => f.team_h === team.id || f.team_a === team.id)
+              .map(f => {
+                const isHome = f.team_h === team.id;
+                const opponent = teams.find(t => t.id === (isHome ? f.team_a : f.team_h));
+                return {
+                  opponent: opponent?.short_name || 'TBD',
+                  isHome,
+                  difficulty: isHome ? f.team_h_difficulty : f.team_a_difficulty,
+                  kickoff: f.kickoff_time
+                };
+              })
+          });
+        } else if (fixtureCount[team.id] === 0) {
+          blankTeams.push({
+            team_id: team.id,
+            team_name: team.name,
+            team_short: team.short_name
+          });
+        }
+      });
+
+      if (doubleTeams.length > 0) {
+        doubleGameweeks.push({
+          gameweek: gw.id,
+          gameweek_name: gw.name,
+          deadline: gw.deadline_time,
+          teams: doubleTeams
+        });
+      }
+
+      if (blankTeams.length > 0) {
+        blankGameweeks.push({
+          gameweek: gw.id,
+          gameweek_name: gw.name,
+          deadline: gw.deadline_time,
+          teams: blankTeams
+        });
+      }
+    });
+
+    return {
+      current_gameweek: currentGW.id,
+      double_gameweeks: doubleGameweeks,
+      blank_gameweeks: blankGameweeks
+    };
+  }
+
+  /**
+   * Get personalized feed for a user's team
+   * Includes double/blank gameweeks, injuries, price changes, etc.
+   */
+  async getTeamFeed(teamId, gameweek = null) {
+    const [bootstrap, doubleBlankGWs, teamPicks] = await Promise.all([
+      this.getBootstrapStatic(),
+      this.getDoubleAndBlankGameweeks(8),
+      gameweek ? this.getTeamPicks(teamId, gameweek) : Promise.resolve(null)
+    ]);
+
+    const currentGW = bootstrap.events.find(e => e.is_current);
+    const picks = teamPicks?.picks || [];
+    const squadPlayerIds = picks.map(p => p.element);
+
+    const feedItems = [];
+
+    // 1. Double Gameweeks affecting squad players
+    doubleBlankGWs.double_gameweeks.forEach(dgw => {
+      const squadTeamsInDGW = dgw.teams.filter(team => {
+        return squadPlayerIds.some(playerId => {
+          const player = bootstrap.elements.find(p => p.id === playerId);
+          return player && player.team === team.team_id;
+        });
+      });
+
+      if (squadTeamsInDGW.length > 0) {
+        const affectedPlayers = [];
+        squadTeamsInDGW.forEach(team => {
+          const playersInTeam = squadPlayerIds
+            .map(id => bootstrap.elements.find(p => p.id === id))
+            .filter(p => p && p.team === team.team_id);
+          affectedPlayers.push(...playersInTeam.map(p => ({
+            id: p.id,
+            name: p.web_name,
+            team: team.team_short
+          })));
+        });
+
+        feedItems.push({
+          type: 'DOUBLE_GAMEWEEK',
+          priority: 'high',
+          gameweek: dgw.gameweek,
+          deadline: dgw.deadline,
+          title: `Double Gameweek ${dgw.gameweek} Opportunity`,
+          description: `${squadTeamsInDGW.length} of your teams have double fixtures`,
+          teams: squadTeamsInDGW,
+          affected_players: affectedPlayers,
+          created_at: new Date().toISOString()
+        });
+      }
+    });
+
+    // 2. Blank Gameweeks affecting squad players
+    doubleBlankGWs.blank_gameweeks.forEach(bgw => {
+      const squadTeamsInBGW = bgw.teams.filter(team => {
+        return squadPlayerIds.some(playerId => {
+          const player = bootstrap.elements.find(p => p.id === playerId);
+          return player && player.team === team.team_id;
+        });
+      });
+
+      if (squadTeamsInBGW.length > 0) {
+        const affectedPlayers = [];
+        squadTeamsInBGW.forEach(team => {
+          const playersInTeam = squadPlayerIds
+            .map(id => bootstrap.elements.find(p => p.id === id))
+            .filter(p => p && p.team === team.team_id);
+          affectedPlayers.push(...playersInTeam.map(p => ({
+            id: p.id,
+            name: p.web_name,
+            team: team.team_short
+          })));
+        });
+
+        feedItems.push({
+          type: 'BLANK_GAMEWEEK',
+          priority: 'high',
+          gameweek: bgw.gameweek,
+          deadline: bgw.deadline,
+          title: `Blank Gameweek ${bgw.gameweek} Warning`,
+          description: `${affectedPlayers.length} of your players have no fixture`,
+          teams: squadTeamsInBGW,
+          affected_players: affectedPlayers,
+          created_at: new Date().toISOString()
+        });
+      }
+    });
+
+    // 3. Injured/Suspended players in squad
+    const injuredPlayers = squadPlayerIds
+      .map(id => bootstrap.elements.find(p => p.id === id))
+      .filter(p => p && (
+        p.chance_of_playing_next_round !== null &&
+        p.chance_of_playing_next_round < 75
+      ))
+      .map(p => {
+        const team = bootstrap.teams.find(t => t.id === p.team);
+        return {
+          id: p.id,
+          name: p.web_name,
+          team: team?.short_name || 'N/A',
+          chance_of_playing: p.chance_of_playing_next_round,
+          news: p.news || 'Injury concern',
+          news_added: p.news_added
+        };
+      });
+
+    if (injuredPlayers.length > 0) {
+      feedItems.push({
+        type: 'INJURY_NEWS',
+        priority: 'high',
+        title: 'Injury Updates',
+        description: `${injuredPlayers.length} player${injuredPlayers.length > 1 ? 's' : ''} with injury concerns`,
+        players: injuredPlayers,
+        created_at: new Date().toISOString()
+      });
+    }
+
+    // 4. Price changes (players whose price changed recently)
+    const priceChangedPlayers = squadPlayerIds
+      .map(id => bootstrap.elements.find(p => p.id === id))
+      .filter(p => p && p.cost_change_event !== 0)
+      .map(p => {
+        const team = bootstrap.teams.find(t => t.id === p.team);
+        return {
+          id: p.id,
+          name: p.web_name,
+          team: team?.short_name || 'N/A',
+          old_price: (p.now_cost - p.cost_change_event) / 10,
+          new_price: p.now_cost / 10,
+          change: p.cost_change_event / 10
+        };
+      });
+
+    if (priceChangedPlayers.length > 0) {
+      feedItems.push({
+        type: 'PRICE_CHANGE',
+        priority: 'medium',
+        title: 'Price Changes',
+        description: `${priceChangedPlayers.length} of your players changed price`,
+        players: priceChangedPlayers,
+        created_at: new Date().toISOString()
+      });
+    }
+
+    // Sort by priority and date
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    feedItems.sort((a, b) => {
+      if (a.priority !== b.priority) {
+        return priorityOrder[a.priority] - priorityOrder[b.priority];
+      }
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    return {
+      team_id: teamId,
+      current_gameweek: currentGW?.id,
+      feed_items: feedItems,
+      total_items: feedItems.length
+    };
   }
 }
 

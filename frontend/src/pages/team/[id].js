@@ -6,6 +6,7 @@ import TeamOverview from '@/components/TeamOverview';
 import GameweekView from '@/components/GameweekView';
 import EnhancedGameweekView from '@/components/EnhancedGameweekView';
 import LeagueView from '@/components/LeagueView';
+import MyFeeds from '@/components/MyFeeds';
 import Layout from '@/components/Layout';
 import { Loader2 } from 'lucide-react';
 
@@ -74,6 +75,7 @@ export default function TeamPage() {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'gameweek', label: 'Current Gameweek' },
+    { id: 'feeds', label: 'My Feeds' },
     { id: 'leagues', label: 'Leagues' },
   ];
 
@@ -107,6 +109,7 @@ export default function TeamPage() {
           <div className="p-6">
             {activeTab === 'overview' && <TeamOverview teamData={teamData} />}
             {activeTab === 'gameweek' && <EnhancedGameweekView teamData={teamData} />}
+            {activeTab === 'feeds' && <MyFeeds teamId={id} />}
             {activeTab === 'leagues' && <LeagueView teamData={teamData} />}
           </div>
         </div>

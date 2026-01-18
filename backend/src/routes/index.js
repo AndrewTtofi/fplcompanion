@@ -267,4 +267,34 @@ router.get('/compare/:teamId1/:teamId2/:gameweek', async (req, res, next) => {
   }
 });
 
+/**
+ * GET /api/feeds/double-blank-gameweeks
+ * Get upcoming double and blank gameweeks
+ */
+router.get('/feeds/double-blank-gameweeks', async (req, res, next) => {
+  try {
+    const lookahead = parseInt(req.query.lookahead) || 8;
+    const data = await fplApi.getDoubleAndBlankGameweeks(lookahead);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/feeds/team/:teamId
+ * GET /api/feeds/team/:teamId?gameweek=X
+ * Get personalized feed for a team
+ */
+router.get('/feeds/team/:teamId', async (req, res, next) => {
+  try {
+    const teamId = req.params.teamId;
+    const gameweek = req.query.gameweek || null;
+    const data = await fplApi.getTeamFeed(teamId, gameweek);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
