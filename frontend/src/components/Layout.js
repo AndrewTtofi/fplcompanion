@@ -25,19 +25,18 @@ export default function Layout({ children, teamData }) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="gradient-fpl text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-3 md:py-4 relative">
-          {/* Top Row - Logo and Stats */}
-          <div className="flex items-center justify-between mb-3 md:mb-0">
-            <Link href="/" className="flex items-center space-x-2 md:space-x-3 hover:opacity-80 transition">
-              <Home size={20} className="md:w-6 md:h-6" />
-              <span className="text-lg md:text-xl font-bold">FPL Companion</span>
+        <div className="max-w-7xl mx-auto px-4 py-3 md:py-4">
+          {/* Desktop: Single Row with Logo, Stats, and League Filter */}
+          <div className="hidden md:flex items-center justify-between">
+            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
+              <Home size={24} />
+              <span className="text-xl font-bold">FPL Companion</span>
             </Link>
 
             {teamData && (
-              <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm">
+              <div className="flex items-center gap-6 text-sm">
                 <div className="relative group">
-                  <span className="text-fpl-green hidden sm:inline">Points:</span>
-                  <span className="text-fpl-green sm:hidden">Pts:</span>{' '}
+                  <span className="text-fpl-green">Points:</span>{' '}
                   <span className="font-bold">{liveTotalPoints?.toLocaleString()}</span>
                   {liveData?.total_live_points && (
                     <>
@@ -60,9 +59,82 @@ export default function Layout({ children, teamData }) {
                     </>
                   )}
                 </div>
-                <div className="hidden sm:block">
+                <div>
                   <span className="text-fpl-green">Value:</span>{' '}
                   <span className="font-bold">£{teamData.performance.team_value}m</span>
+                </div>
+
+                {/* Desktop League Filter */}
+                {availableLeagues.length > 0 && (
+                  <div className="flex items-center gap-2 ml-4">
+                    <Trophy size={16} className="text-fpl-green" />
+                    <select
+                      value={selectedLeague?.id || ''}
+                      onChange={(e) => {
+                        const leagueId = e.target.value;
+                        if (leagueId) {
+                          const league = availableLeagues.find(l => l.id.toString() === leagueId);
+                          selectLeague(league);
+                        } else {
+                          selectLeague(null);
+                        }
+                      }}
+                      className="bg-white/10 text-white border border-white/30 rounded px-3 py-1 text-sm font-medium cursor-pointer hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-fpl-green transition-all"
+                    >
+                      <option value="" className="bg-fpl-purple text-white">All Leagues</option>
+                      {availableLeagues.map(league => (
+                        <option key={league.id} value={league.id} className="bg-fpl-purple text-white">
+                          {league.name}
+                        </option>
+                      ))}
+                    </select>
+                    {isFiltered && (
+                      <button
+                        onClick={() => selectLeague(null)}
+                        className="p-1 hover:bg-white/20 rounded transition-colors"
+                        title="Clear league filter"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Mobile: Logo and Stats */}
+          <div className="flex md:hidden items-center justify-between mb-3">
+            <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition">
+              <Home size={20} />
+              <span className="text-lg font-bold">FPL Companion</span>
+            </Link>
+
+            {teamData && (
+              <div className="flex items-center gap-3 text-xs">
+                <div className="relative group">
+                  <span className="text-fpl-green">Pts:</span>{' '}
+                  <span className="font-bold">{liveTotalPoints?.toLocaleString()}</span>
+                  {liveData?.total_live_points && (
+                    <>
+                      <span className="ml-1 text-xs text-green-400 cursor-help">●</span>
+                      <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap -bottom-8 left-0">
+                        Live - Gameweek in progress
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="relative group">
+                  <span className="text-fpl-green">GW{teamData.current_gameweek}:</span>{' '}
+                  <span className="font-bold">{currentGwPoints}</span>
+                  {liveData?.total_live_points && (
+                    <>
+                      <span className="ml-1 text-xs text-green-400 cursor-help">●</span>
+                      <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap -bottom-8 left-0">
+                        Live - Gameweek in progress
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -104,41 +176,6 @@ export default function Layout({ children, teamData }) {
             </div>
           )}
 
-          {/* Desktop League Filter (Hidden on Mobile) */}
-          {teamData && availableLeagues.length > 0 && (
-            <div className="hidden md:flex absolute top-4 right-4 items-center gap-2">
-              <Trophy size={16} className="text-fpl-green" />
-              <select
-                value={selectedLeague?.id || ''}
-                onChange={(e) => {
-                  const leagueId = e.target.value;
-                  if (leagueId) {
-                    const league = availableLeagues.find(l => l.id.toString() === leagueId);
-                    selectLeague(league);
-                  } else {
-                    selectLeague(null);
-                  }
-                }}
-                className="bg-white/10 text-white border border-white/30 rounded px-3 py-1 text-sm font-medium cursor-pointer hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-fpl-green transition-all"
-              >
-                <option value="" className="bg-fpl-purple text-white">All Leagues</option>
-                {availableLeagues.map(league => (
-                  <option key={league.id} value={league.id} className="bg-fpl-purple text-white">
-                    {league.name}
-                  </option>
-                ))}
-              </select>
-              {isFiltered && (
-                <button
-                  onClick={() => selectLeague(null)}
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
-                  title="Clear league filter"
-                >
-                  <X size={16} />
-                </button>
-              )}
-            </div>
-          )}
         </div>
       </header>
 
