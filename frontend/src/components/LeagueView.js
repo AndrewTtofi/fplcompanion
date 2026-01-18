@@ -214,7 +214,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
             <thead className="bg-gray-50">
               <tr>
                 <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Rank</th>
-                <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 hidden md:table-cell">Team</th>
+                <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Team</th>
                 <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 hidden md:table-cell">Manager</th>
                 <th className="text-center py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">GW</th>
                 <th className="text-right py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Total</th>
@@ -259,10 +259,10 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                         )}
                       </div>
                     </td>
-                    <td className="py-2 md:py-3 px-2 md:px-4 hidden md:table-cell">
-                      <div className="flex items-center space-x-2">
+                    <td className="py-2 md:py-3 px-2 md:px-4">
+                      <div className="flex items-center space-x-1 md:space-x-2">
                         {isUser && <span className="text-fpl-pink">→</span>}
-                        <span className="text-sm">{entry.entry_name}</span>
+                        <span className="text-xs md:text-sm truncate max-w-[120px] md:max-w-none">{entry.entry_name}</span>
                       </div>
                     </td>
                     <td className="py-2 md:py-3 px-2 md:px-4 text-sm text-gray-600 hidden md:table-cell">
