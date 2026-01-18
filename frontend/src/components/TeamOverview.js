@@ -1,14 +1,23 @@
 import { TrendingUp, TrendingDown, Trophy, Users, DollarSign, Repeat } from 'lucide-react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
+import { useLeague } from '@/contexts/LeagueContext';
 
 export default function TeamOverview({ teamData }) {
   const { team, performance, history } = teamData;
+  const { selectedLeague, isFiltered } = useLeague();
 
   // Fetch live points for current gameweek
   const { data: liveData } = useSWR(
     teamData ? ['overview-live', team.id, teamData.current_gameweek] : null,
     () => api.getLiveTeamPoints(team.id, teamData.current_gameweek).then(res => res.data),
+    { refreshInterval: 30000, revalidateOnFocus: false }
+  );
+
+  // Fetch league standings if a league is selected
+  const { data: leagueData } = useSWR(
+    selectedLeague ? ['league-standings', selectedLeague.id] : null,
+    () => api.getClassicLeague(selectedLeague.id).then(res => res.data),
     { refreshInterval: 30000, revalidateOnFocus: false }
   );
 
@@ -18,6 +27,26 @@ export default function TeamOverview({ teamData }) {
     : performance.overall_points;
 
   const currentGwPoints = liveData?.total_live_points ?? performance.last_gw_points;
+
+  // Get league-specific rank if a league is selected
+  let displayRank = performance.overall_rank;
+  let rankLabel = "Overall Rank";
+
+  if (isFiltered && leagueData) {
+    // Find user's entry in league standings
+    const userEntry = leagueData.standings.results.find(entry => entry.entry === team.id);
+    if (userEntry) {
+      displayRank = userEntry.rank;
+      rankLabel = `${selectedLeague.name} Rank`;
+    } else if (leagueData.new_entries?.results) {
+      // Check new_entries if not in main results
+      const newEntry = leagueData.new_entries.results.find(entry => entry.entry === team.id);
+      if (newEntry) {
+        displayRank = newEntry.rank;
+        rankLabel = `${selectedLeague.name} Rank`;
+      }
+    }
+  }
 
   // Calculate rank change
   const recentHistory = history.current?.slice(-2) || [];
@@ -48,10 +77,10 @@ export default function TeamOverview({ teamData }) {
           isLive={liveData?.total_live_points}
         />
         <StatCard
-          label="Overall Rank"
-          value={performance.overall_rank?.toLocaleString()}
+          label={rankLabel}
+          value={displayRank?.toLocaleString()}
           icon={rankChange < 0 ? <TrendingUp className="text-green-500" /> : <TrendingDown className="text-red-500" />}
-          subtitle={rankChange !== 0 ? `${rankChange > 0 ? '+' : ''}${rankChange.toLocaleString()}` : 'No change'}
+          subtitle={rankChange !== 0 && !isFiltered ? `${rankChange > 0 ? '+' : ''}${rankChange.toLocaleString()}` : isFiltered ? 'League filtered view' : 'No change'}
         />
         <StatCard
           label="Team Value"

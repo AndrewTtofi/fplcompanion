@@ -2,8 +2,10 @@ import { useState } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
 import { Loader2, Users, TrendingUp, Trophy, Target, AlertCircle } from 'lucide-react';
+import { useLeague } from '@/contexts/LeagueContext';
 
 export default function ComparisonView({ myTeamId, myTeamName, gameweek, leagues }) {
+  const { selectedLeague: globalLeague } = useLeague();
   const [opponentId, setOpponentId] = useState('');
   const [selectedOpponentId, setSelectedOpponentId] = useState(null);
 
@@ -33,6 +35,7 @@ export default function ComparisonView({ myTeamId, myTeamName, gameweek, leagues
         leagues={classicLeagues}
         onQuickSelect={handleQuickSelect}
         myTeamId={myTeamId}
+        globalLeague={globalLeague}
       />
     );
   }
@@ -47,8 +50,9 @@ export default function ComparisonView({ myTeamId, myTeamName, gameweek, leagues
   );
 }
 
-function ComparisonSelector({ opponentId, setOpponentId, handleCompare, leagues, onQuickSelect, myTeamId }) {
-  const [selectedLeague, setSelectedLeague] = useState(leagues[0]);
+function ComparisonSelector({ opponentId, setOpponentId, handleCompare, leagues, onQuickSelect, myTeamId, globalLeague }) {
+  // Use global league if set, otherwise use first league
+  const [selectedLeague, setSelectedLeague] = useState(globalLeague || leagues[0]);
 
   const { data: leagueData } = useSWR(
     selectedLeague ? ['league', selectedLeague.id] : null,
