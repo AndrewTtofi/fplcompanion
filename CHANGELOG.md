@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.0] - 2026-01-18
+
+### Changes
+- feat: add Fly.io deployment with GitHub Actions (e7354e0)
+- Mobile Responsive Design (#11) (e218bf5)
+
 ## [v2.7.0] - 2026-01-18
 
 ### Changes
