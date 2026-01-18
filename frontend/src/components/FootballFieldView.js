@@ -601,10 +601,11 @@ function LivePointsPlayerRow({ player, benchPosition }) {
       </div>
 
       {/* Beautiful Hover Popup */}
-      <div
-        className="live-points-popup hidden group-hover:block pointer-events-none"
-        style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
-      >
+      {popupPosition.top > 0 && popupPosition.left > 0 && (
+        <div
+          className="live-points-popup hidden group-hover:block pointer-events-none"
+          style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
+        >
         <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden pointer-events-auto">
           {/* Header */}
           <div className="bg-gradient-to-r from-fpl-purple to-purple-700 text-white px-4 py-3">
@@ -708,7 +709,8 @@ function LivePointsPlayerRow({ player, benchPosition }) {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Click Popup */}
       {showPopup && (
