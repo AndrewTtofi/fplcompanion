@@ -666,10 +666,10 @@ function LivePointsPlayerRow({ player, benchPosition }) {
         </div>
       </div>
 
-      {/* Beautiful Hover Popup */}
+      {/* Beautiful Hover Popup - Desktop only (hidden on touch devices) */}
       {popupPosition.top > 0 && popupPosition.left > 0 && (
         <div
-          className="live-points-popup hidden group-hover:block pointer-events-none"
+          className="live-points-popup hidden md:group-hover:block pointer-events-none"
           style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
         >
         <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden pointer-events-auto">
