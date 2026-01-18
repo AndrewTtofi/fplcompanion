@@ -53,9 +53,9 @@ export default function FootballFieldView({ teamId, gameweek }) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)] md:h-[calc(100vh-200px)]">
-      {/* View Toggle - Fixed Height */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3 md:mb-4 flex-shrink-0">
+    <div className="flex flex-col space-y-4">
+      {/* View Toggle */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h2 className="text-lg md:text-xl font-bold text-gray-900">
           Gameweek {gameweek} Squad
         </h2>
@@ -69,15 +69,14 @@ export default function FootballFieldView({ teamId, gameweek }) {
               const currentView = router.query.view || 'field';
               router.push(`/team/${teamId}?tab=${currentTab}&view=${currentView}&mode=live`, undefined, { shallow: true });
             }}
-            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 rounded-md transition-all text-xs md:text-sm ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 rounded-md transition-all text-xs md:text-sm ${
               viewMode === 'live'
                 ? 'bg-white text-fpl-purple shadow-sm font-semibold'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <TrendingUp size={14} className="md:w-4 md:h-4" />
-            <span className="hidden xs:inline">Live Points</span>
-            <span className="xs:hidden">Live</span>
+            <TrendingUp size={16} className="md:w-5 md:h-5" />
+            <span>Live Points</span>
           </button>
           <button
             onClick={() => {
@@ -87,91 +86,90 @@ export default function FootballFieldView({ teamId, gameweek }) {
               const currentView = router.query.view || 'field';
               router.push(`/team/${teamId}?tab=${currentTab}&view=${currentView}&mode=field`, undefined, { shallow: true });
             }}
-            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 rounded-md transition-all text-xs md:text-sm ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 rounded-md transition-all text-xs md:text-sm ${
               viewMode === 'field'
                 ? 'bg-white text-fpl-purple shadow-sm font-semibold'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <LayoutGrid size={14} className="md:w-4 md:h-4" />
-            <span className="hidden xs:inline">Field View</span>
-            <span className="xs:hidden">Field</span>
+            <LayoutGrid size={16} className="md:w-5 md:h-5" />
+            <span>Field View</span>
           </button>
         </div>
       </div>
 
       {/* Live Points View */}
       {viewMode === 'live' && (
-        <div className="flex-1 overflow-y-auto md:overflow-hidden min-h-0">
+        <div className="space-y-3 md:space-y-4">
           {/* Mobile: Stack Stats on Top */}
-          <div className="md:hidden mb-3">
-            <div className="grid grid-cols-3 gap-2">
+          <div className="md:hidden">
+            <div className="grid grid-cols-3 gap-2 md:gap-3">
               {/* Total Points Card */}
-              <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-2 text-white shadow-lg">
+              <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-3 text-white shadow-lg">
                 <div className="text-center">
-                  <div className="text-[9px] font-semibold uppercase tracking-wide mb-0.5">Total</div>
-                  <div className="text-xl md:text-3xl font-bold">{data.total_live_points}</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide mb-1">Total</div>
+                  <div className="text-2xl font-bold">{data.total_live_points}</div>
                 </div>
               </div>
 
               {/* Bench Points Card */}
-              <div className="bg-white rounded-lg p-2 shadow-md">
+              <div className="bg-white rounded-lg p-3 shadow-md">
                 <div className="text-center">
-                  <div className="text-[9px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Bench</div>
-                  <div className="text-xl md:text-2xl font-bold text-gray-700">{data.bench_points}</div>
+                  <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1">Bench</div>
+                  <div className="text-2xl font-bold text-gray-700">{data.bench_points}</div>
                 </div>
               </div>
 
               {/* Transfers Card */}
-              <div className="bg-white rounded-lg p-2 shadow-md">
+              <div className="bg-white rounded-lg p-3 shadow-md">
                 <div className="text-center">
-                  <div className="text-[9px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Trans</div>
-                  <div className="text-xl md:text-2xl font-bold text-gray-700">{data.transfers.made}</div>
+                  <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1">Trans</div>
+                  <div className="text-2xl font-bold text-gray-700">{data.transfers.made}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 md:h-full">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
             {/* Left Column - Summary Stats (Desktop Only) */}
-            <div className="hidden md:flex space-y-2 flex-col">
+            <div className="hidden md:flex space-y-3 flex-col">
               {/* Total Points Card */}
-              <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-3 text-white shadow-lg flex-1 flex flex-col justify-center">
+              <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-4 text-white shadow-lg flex-1 flex flex-col justify-center">
                 <div className="text-center">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide mb-0.5">Total Live Points</div>
-                  <div className="text-3xl font-bold">{data.total_live_points}</div>
+                  <div className="text-xs font-semibold uppercase tracking-wide mb-2 opacity-90">Total Live Points</div>
+                  <div className="text-4xl font-bold">{data.total_live_points}</div>
                   {data.transfers.cost > 0 && (
-                    <div className="text-[10px] opacity-90 mt-0.5">
-                      -{data.transfers.cost} pts
+                    <div className="text-xs opacity-90 mt-2">
+                      -{data.transfers.cost} pts (transfers)
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Bench Points Card */}
-              <div className="bg-white rounded-lg p-3 shadow-md flex-1 flex flex-col justify-center">
+              <div className="bg-white rounded-lg p-4 shadow-md flex-1 flex flex-col justify-center">
                 <div className="text-center">
-                  <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Bench Points</div>
-                  <div className="text-2xl font-bold text-gray-700">{data.bench_points}</div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Bench Points</div>
+                  <div className="text-3xl font-bold text-gray-700">{data.bench_points}</div>
                 </div>
               </div>
 
               {/* Transfers Card */}
-              <div className="bg-white rounded-lg p-3 shadow-md flex-1 flex flex-col justify-center">
+              <div className="bg-white rounded-lg p-4 shadow-md flex-1 flex flex-col justify-center">
                 <div className="text-center">
-                  <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Transfers Made</div>
-                  <div className="text-2xl font-bold text-gray-700">{data.transfers.made}</div>
+                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Transfers Made</div>
+                  <div className="text-3xl font-bold text-gray-700">{data.transfers.made}</div>
                   {data.transfers.cost > 0 && (
-                    <div className="text-[10px] text-red-600 mt-0.5">-{data.transfers.cost} pts</div>
+                    <div className="text-xs text-red-600 mt-2 font-semibold">-{data.transfers.cost} pts cost</div>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Middle Column - Starting XI */}
-            <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col">
-              <h3 className="text-xs md:text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Starting XI</h3>
-              <div className="space-y-0.5">
+            <div className="bg-white rounded-lg shadow-md p-3 md:p-4 flex flex-col">
+              <h3 className="text-sm md:text-base font-bold text-gray-900 mb-3 flex-shrink-0">Starting XI</h3>
+              <div className="space-y-1.5">
                 {starting_xi.map(player => (
                   <LivePointsPlayerRow key={player.element} player={player} />
                 ))}
@@ -179,9 +177,9 @@ export default function FootballFieldView({ teamId, gameweek }) {
             </div>
 
             {/* Right Column - Bench */}
-            <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col">
-              <h3 className="text-xs md:text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Substitutes</h3>
-              <div className="space-y-0.5">
+            <div className="bg-white rounded-lg shadow-md p-3 md:p-4 flex flex-col">
+              <h3 className="text-sm md:text-base font-bold text-gray-900 mb-3 flex-shrink-0">Substitutes</h3>
+              <div className="space-y-1.5">
                 {bench.map((player, index) => (
                   <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
                 ))}
@@ -193,14 +191,14 @@ export default function FootballFieldView({ teamId, gameweek }) {
 
       {/* Field View */}
       {viewMode === 'field' && (
-        <div className="flex flex-col h-full">
+        <div className="space-y-4">
           {/* Football Field */}
-          <div className="flex-1 flex items-center justify-center p-2 md:p-4" style={{ overflow: 'visible' }}>
+          <div className="flex items-center justify-center w-full py-8">
             <div
               className="relative w-full rounded-lg shadow-xl"
               style={{
                 background: 'linear-gradient(180deg, #37734a 0%, #4a8c5f 50%, #37734a 100%)',
-                maxWidth: '700px',
+                maxWidth: '800px',
                 aspectRatio: '4/3',
                 overflow: 'visible'
               }}
@@ -209,7 +207,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
               <div
                 className="absolute inset-0 rounded-lg"
                 style={{
-                  backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 60px, transparent 60px, transparent 120px)'
+                  backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 30px, transparent 30px, transparent 60px)'
                 }}
               />
 
@@ -222,31 +220,31 @@ export default function FootballFieldView({ teamId, gameweek }) {
               </div>
 
               {/* Players */}
-              <div className="absolute inset-0 p-3 md:p-8">
-                <div className="h-full flex flex-col justify-between">
+              <div className="absolute inset-0 p-4 md:p-8" style={{ overflow: 'visible' }}>
+                <div className="h-full flex flex-col justify-between" style={{ overflow: 'visible' }}>
                   {/* Goalkeeper */}
-                  <div className="flex justify-center">
+                  <div className="flex justify-center" style={{ overflow: 'visible' }}>
                     {grouped.GK.map(player => (
                       <PlayerCard key={player.element} player={player} />
                     ))}
                   </div>
 
                   {/* Defenders */}
-                  <div className="flex justify-center gap-1 md:gap-6">
+                  <div className="flex justify-center gap-2 md:gap-6" style={{ overflow: 'visible' }}>
                     {grouped.DEF.map(player => (
                       <PlayerCard key={player.element} player={player} />
                     ))}
                   </div>
 
                   {/* Midfielders */}
-                  <div className="flex justify-center gap-1 md:gap-6">
+                  <div className="flex justify-center gap-2 md:gap-6" style={{ overflow: 'visible' }}>
                     {grouped.MID.map(player => (
                       <PlayerCard key={player.element} player={player} />
                     ))}
                   </div>
 
                   {/* Forwards */}
-                  <div className="flex justify-center gap-1 md:gap-6">
+                  <div className="flex justify-center gap-2 md:gap-6" style={{ overflow: 'visible' }}>
                     {grouped.FWD.map(player => (
                       <PlayerCard key={player.element} player={player} hoverAbove={true} />
                     ))}
@@ -257,11 +255,11 @@ export default function FootballFieldView({ teamId, gameweek }) {
           </div>
 
           {/* Substitutes */}
-          <div className="flex-shrink-0 p-2 md:p-4">
-            <div className="bg-gray-100 rounded-lg py-3 md:py-3 px-4 md:px-6 mx-auto">
-              <h4 className="text-xs md:text-sm font-semibold text-gray-600 mb-2 md:mb-3 text-center">SUBSTITUTES</h4>
-              <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
-                <div className="flex justify-start md:justify-center gap-4 md:gap-8 min-w-max md:min-w-0 pb-2" style={{ maxWidth: '1000px' }}>
+          <div className="w-full py-8">
+            <div className="bg-gray-100 rounded-lg py-3 md:py-3 px-4 md:px-4 max-w-2xl mx-auto">
+              <h4 className="text-xs md:text-sm font-semibold text-gray-600 mb-4 text-center">SUBSTITUTES</h4>
+              <div className="px-2 md:px-0">
+                <div className="flex justify-center gap-3 md:gap-4 py-4">
                   {bench.map(player => (
                     <PlayerCard key={player.element} player={player} hoverAbove={true} />
                   ))}
@@ -284,14 +282,14 @@ function PlayerCard({ player, hoverAbove = false }) {
     <div className="relative group player-card-hover">
       {/* Auto-sub indicator */}
       {player.auto_sub && !player.subbed_out && (
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 whitespace-nowrap">
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-md z-20 whitespace-nowrap">
           AUTO SUB
         </div>
       )}
 
       {/* Match not started indicator */}
       {player.match_not_started && !player.auto_sub && (
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md z-10 whitespace-nowrap">
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-blue-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-md z-20 whitespace-nowrap">
           NOT STARTED
         </div>
       )}
@@ -307,8 +305,8 @@ function PlayerCard({ player, hoverAbove = false }) {
       />
 
       {/* Hover Card with Points Breakdown */}
-      <div className={`absolute ${hoverAbove ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 hidden group-hover:block`} style={{ zIndex: 9999 }}>
-        <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-56 space-y-2 pointer-events-auto">
+      <div className={`absolute ${hoverAbove ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200`} style={{ zIndex: 9999 }}>
+        <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-56 space-y-2">
           {/* Player Info */}
           <div>
             <div className="font-bold text-sm">{player.web_name}</div>
@@ -619,49 +617,49 @@ function LivePointsPlayerRow({ player, benchPosition }) {
     <div className="relative group">
       <div
         ref={rowRef}
-        className={`flex items-center justify-between p-1 rounded border transition-all cursor-pointer ${
-          isPlaying ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-fpl-purple'
+        className={`flex items-center justify-between p-2 md:p-2.5 rounded-lg border transition-all cursor-pointer ${
+          isPlaying ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-fpl-purple hover:shadow-sm'
         } ${benchPosition ? 'bg-gray-50' : 'bg-white'}`}
         onClick={() => setShowPopup(true)}
         onMouseEnter={handleMouseEnter}
       >
-        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           {benchPosition && (
-            <div className="bg-gray-600 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center shrink-0">
+            <div className="bg-gray-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
               {benchPosition}
             </div>
           )}
 
-          <div className={`${positionColors[player.position_id]} px-1 py-0.5 rounded text-[9px] font-bold shrink-0`}>
+          <div className={`${positionColors[player.position_id]} px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0`}>
             {player.position_name}
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1">
-              <span className="font-semibold text-xs text-gray-900 truncate">{player.web_name}</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-sm text-gray-900 truncate">{player.web_name}</span>
               {player.is_captain && (
-                <span className="bg-yellow-500 text-white text-[8px] px-1 py-0.5 rounded font-bold shrink-0">C</span>
+                <span className="bg-yellow-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">C</span>
               )}
               {player.is_vice_captain && (
-                <span className="bg-gray-600 text-white text-[8px] px-1 py-0.5 rounded font-bold shrink-0">V</span>
+                <span className="bg-gray-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">V</span>
               )}
               {player.auto_sub && !player.subbed_out && (
-                <span className="bg-green-500 text-white text-[8px] px-1 py-0.5 rounded font-bold shrink-0">A</span>
+                <span className="bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">A</span>
               )}
               {isPlaying && (
-                <span className="bg-green-500 text-white text-[8px] px-1 py-0.5 rounded animate-pulse shrink-0">
+                <span className="bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded animate-pulse shrink-0">
                   L
                 </span>
               )}
             </div>
-            <div className="text-[10px] text-gray-600">
+            <div className="text-xs text-gray-600 mt-0.5">
               {player.team_short} • {stats.minutes || 0}&apos;
             </div>
           </div>
         </div>
 
-        <div className="text-right flex-shrink-0">
-          <div className="text-base font-bold text-fpl-purple">
+        <div className="text-right flex-shrink-0 ml-2">
+          <div className="text-lg font-bold text-fpl-purple">
             {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
           </div>
         </div>
