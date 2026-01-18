@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.5.2] - 2026-01-18
+
+### Changes
+- fix: ensure hover points display properly in field view (c653275)
+- Add My Feeds tab and League Comparison features (#8) (5ff7ef5)
+
 ## [v2.5.1] - 2026-01-17
 
 ### Changes
