@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.5.5] - 2026-01-18
+
+### Changes
+- fix: improve Live Points hover - remove animation and show all player states (3366296)
+
 ## [v2.5.4] - 2026-01-18
 
 ### Changes
