@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.4] - 2026-01-18
+
+### Changes
+- fix: use npm install instead of npm ci (no lock files) (fc6a210)
+
 ## [v2.8.3] - 2026-01-18
 
 ### Changes
