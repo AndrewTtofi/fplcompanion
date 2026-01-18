@@ -44,12 +44,12 @@ export default function LeagueView({ teamData }) {
       )}
 
       {/* League Details */}
-      <LeagueStandings league={leagueToShow} userTeamId={teamData.team.id} />
+      <LeagueStandings league={leagueToShow} userTeamId={teamData.team.id} teamData={teamData} />
     </div>
   );
 }
 
-function LeagueStandings({ league, userTeamId }) {
+function LeagueStandings({ league, userTeamId, teamData }) {
   const [comparisonTeamId, setComparisonTeamId] = useState(null);
 
   const { data, error, isLoading } = useSWR(
@@ -97,29 +97,31 @@ function LeagueStandings({ league, userTeamId }) {
 
   const standings = data.standings.results;
 
-  // Debug: log the data structure to understand what we're getting
-  console.log('League data:', data);
-  console.log('User team ID:', userTeamId);
-
-  // The FPL API includes the user's entry in multiple places:
-  // 1. In standings.results if they're on the current page
-  // 2. In new_entries.results (contains the requesting user's entry)
+  // Get user's league entry from multiple sources:
+  // 1. From the standings page (if user is on current page)
   const userEntryInPage = standings.find(s => s.entry === userTeamId);
 
-  // Check all possible locations for user entry
-  const userEntryFromNewEntries = data.new_entries?.results?.[0];
+  // 2. From new_entries (if available)
+  const userEntryFromNewEntries = data.new_entries?.results?.find(s => s.entry === userTeamId);
 
-  console.log('User entry in page:', userEntryInPage);
-  console.log('User entry from new_entries:', userEntryFromNewEntries);
-  console.log('New entries structure:', data.new_entries);
+  // 3. From the team's league data (always available)
+  const userLeagueInfo = teamData.team.leagues?.classic?.find(l => l.id === league.id);
 
-  // Use whichever source has data, prioritizing the one that matches our team ID
-  let userEntry = userEntryInPage;
-  if (!userEntry && userEntryFromNewEntries?.entry === userTeamId) {
-    userEntry = userEntryFromNewEntries;
+  // Construct user entry from team league data if not found in standings
+  let userEntry = userEntryInPage || userEntryFromNewEntries;
+
+  if (!userEntry && userLeagueInfo) {
+    // Build entry object from league info
+    userEntry = {
+      entry: userTeamId,
+      entry_name: teamData.team.name,
+      player_name: `${teamData.team.player_first_name} ${teamData.team.player_last_name}`,
+      rank: userLeagueInfo.entry_rank,
+      last_rank: userLeagueInfo.entry_last_rank,
+      event_total: teamData.team.summary_event_points,
+      total: teamData.team.summary_overall_points
+    };
   }
-
-  console.log('Final user entry:', userEntry);
 
   return (
     <div className="space-y-4">
