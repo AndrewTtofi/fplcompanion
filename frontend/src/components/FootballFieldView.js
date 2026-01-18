@@ -486,10 +486,48 @@ function LivePointsPlayerRow({ player, benchPosition }) {
   const handleMouseEnter = () => {
     if (rowRef.current) {
       const rect = rowRef.current.getBoundingClientRect();
-      setPopupPosition({
-        top: rect.top,
-        left: rect.right + 12 // 12px margin
-      });
+      const popupWidth = 288; // 72 * 4 = 288px (w-72)
+      const popupHeight = 400; // Approximate max height
+      const margin = 12;
+
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      let top = rect.top;
+      let left = rect.right + margin;
+
+      // For substitutes (bench), open to the left if it would go off-screen on right
+      // Or if there's more space on the left
+      if (benchPosition || (rect.right + margin + popupWidth > viewportWidth)) {
+        // Position to the left of the row
+        left = rect.left - popupWidth - margin;
+
+        // If that would go off-screen on the left, try right side anyway
+        if (left < 0) {
+          left = rect.right + margin;
+          // If still off-screen, position at edge with small margin
+          if (left + popupWidth > viewportWidth) {
+            left = viewportWidth - popupWidth - margin;
+          }
+        }
+      }
+
+      // Check if popup would go below viewport
+      if (rect.top + popupHeight > viewportHeight) {
+        // Position it to align bottom of popup with bottom of row
+        top = Math.max(margin, rect.bottom - popupHeight);
+
+        // If that's still too high, align with viewport bottom
+        if (top < margin) {
+          top = viewportHeight - popupHeight - margin;
+        }
+      }
+
+      // Ensure minimum margins
+      top = Math.max(margin, top);
+      left = Math.max(margin, left);
+
+      setPopupPosition({ top, left });
     }
   };
 
