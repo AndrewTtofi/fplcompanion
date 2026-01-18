@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.3] - 2026-01-18
+
+### Changes
+- fix: use --omit=dev instead of deprecated --only=production (deac5cf)
+
 ## [v2.8.2] - 2026-01-18
 
 ### Changes
