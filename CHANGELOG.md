@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.7] - 2026-01-18
+
+### Changes
+- fix: restructure header to prevent league filter overlap on desktop (6a84cd0)
+
 ## [v2.8.6] - 2026-01-18
 
 ### Changes
