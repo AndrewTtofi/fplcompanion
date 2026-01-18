@@ -25,7 +25,7 @@ export default function Layout({ children, teamData }) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="gradient-fpl text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-3 md:py-4">
+        <div className="max-w-7xl mx-auto px-4 py-3 md:py-4 relative">
           {/* Top Row - Logo and Stats */}
           <div className="flex items-center justify-between mb-3 md:mb-0">
             <Link href="/" className="flex items-center space-x-2 md:space-x-3 hover:opacity-80 transition">
