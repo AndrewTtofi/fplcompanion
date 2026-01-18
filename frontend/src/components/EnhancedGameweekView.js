@@ -24,7 +24,7 @@ export default function EnhancedGameweekView({ teamData }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Sub-View Tabs */}
       <div className="bg-white rounded-lg shadow-md">
         <div className="border-b border-gray-200">
@@ -38,20 +38,20 @@ export default function EnhancedGameweekView({ teamData }) {
                   const currentTab = router.query.tab || 'gameweek';
                   router.push(`/team/${teamData.team.id}?tab=${currentTab}&view=${viewItem.id}`, undefined, { shallow: true });
                 }}
-                className={`py-4 px-6 font-medium text-sm border-b-2 transition-colors flex items-center gap-2 ${
+                className={`flex-1 md:flex-initial py-3 md:py-4 px-4 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors flex items-center justify-center gap-1.5 md:gap-2 ${
                   subView === viewItem.id
                     ? 'border-fpl-purple text-fpl-purple'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 {viewItem.icon}
-                {viewItem.label}
+                <span className="hidden sm:inline">{viewItem.label}</span>
               </button>
             ))}
           </nav>
         </div>
 
-        <div className="p-6">
+        <div className="p-3 md:p-6">
           {subView === 'field' && (
             <FootballFieldView teamId={teamData.team.id} gameweek={currentGW} />
           )}

@@ -62,16 +62,16 @@ export default function Jersey({
         <img
           src={shirtUrl}
           alt={`${teamShort} jersey`}
-          className="w-20 h-20 object-contain drop-shadow-lg"
+          className={`${size === 'sm' ? 'w-16 h-16' : 'w-14 h-14 md:w-20 md:h-20'} object-contain drop-shadow-lg`}
         />
 
         {/* Player name overlay */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+        <div className={`absolute ${size === 'sm' ? 'bottom-5' : 'bottom-4 md:bottom-6'} left-1/2 transform -translate-x-1/2 bg-gray-900/80 text-white text-[9px] md:text-[10px] font-bold px-1.5 md:px-2 py-0.5 rounded whitespace-nowrap`}>
           {playerName?.toUpperCase().slice(0, 9)}
         </div>
 
         {/* Points overlay - below name */}
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-gray-900/80 text-white text-[10px] font-bold px-2 py-0.5 rounded whitespace-nowrap">
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-gray-900/80 text-white text-[9px] md:text-[10px] font-bold px-1.5 md:px-2 py-0.5 rounded whitespace-nowrap">
           {isCaptain && multiplier > 1 ? points * multiplier : points}p
         </div>
       </div>

@@ -96,17 +96,26 @@ export default function TeamOverview({ teamData }) {
       </div>
 
       {/* Current Season Form */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Last 5 Gameweeks</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full">
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+        <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">Last 5 Gameweeks</h2>
+        <div className="overflow-x-auto -mx-4 md:mx-0">
+          <table className="w-full min-w-[500px]">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-4 text-sm font-semibold text-gray-600">GW</th>
-                <th className="text-right py-2 px-4 text-sm font-semibold text-gray-600">Points</th>
-                <th className="text-right py-2 px-4 text-sm font-semibold text-gray-600">GW Rank</th>
-                <th className="text-right py-2 px-4 text-sm font-semibold text-gray-600">Overall Rank</th>
-                <th className="text-right py-2 px-4 text-sm font-semibold text-gray-600">Transfers</th>
+                <th className="text-left py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">GW</th>
+                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Points</th>
+                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">
+                  <span className="hidden sm:inline">GW Rank</span>
+                  <span className="sm:hidden">GW</span>
+                </th>
+                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">
+                  <span className="hidden sm:inline">Overall Rank</span>
+                  <span className="sm:hidden">Ovr</span>
+                </th>
+                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">
+                  <span className="hidden sm:inline">Transfers</span>
+                  <span className="sm:hidden">Tr</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -119,8 +128,8 @@ export default function TeamOverview({ teamData }) {
 
                 return (
                   <tr key={gw.event} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4 font-medium">GW{gw.event}</td>
-                    <td className="py-3 px-4 text-right font-bold text-fpl-purple relative group">
+                    <td className="py-2 md:py-3 px-2 md:px-4 font-medium text-sm">GW{gw.event}</td>
+                    <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple relative group text-sm md:text-base">
                       {gwPoints}
                       {isCurrentGW && liveData?.total_live_points && (
                         <>
@@ -131,19 +140,19 @@ export default function TeamOverview({ teamData }) {
                         </>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right text-sm">
+                    <td className="py-2 md:py-3 px-2 md:px-4 text-right text-xs md:text-sm">
                       {gw.rank?.toLocaleString()}
                       {isCurrentGW && (
                         <span className="ml-1 text-xs text-gray-400" title="Rank updates after gameweek finalization">*</span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right text-sm">
+                    <td className="py-2 md:py-3 px-2 md:px-4 text-right text-xs md:text-sm">
                       {gw.overall_rank?.toLocaleString()}
                       {isCurrentGW && (
                         <span className="ml-1 text-xs text-gray-400" title="Rank updates after gameweek finalization">*</span>
                       )}
                     </td>
-                    <td className="py-3 px-4 text-right text-sm">
+                    <td className="py-2 md:py-3 px-2 md:px-4 text-right text-xs md:text-sm">
                       {gw.event_transfers > 0 && (
                         <span className={gw.event_transfers_cost > 0 ? 'text-red-600' : ''}>
                           {gw.event_transfers} {gw.event_transfers_cost > 0 ? `(-${gw.event_transfers_cost})` : ''}
@@ -227,16 +236,18 @@ export default function TeamOverview({ teamData }) {
       </div>
 
       {/* League Summary */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Leagues</h2>
+      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+        <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">Leagues</h2>
         <div className="space-y-3">
           {team.leagues?.classic?.slice(0, 5).map((league) => (
-            <div key={league.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div>
-                <div className="font-medium">{league.name}</div>
-                <div className="text-sm text-gray-500">{league.entry_last_rank?.toLocaleString()} of {league.entry_count?.toLocaleString()} teams</div>
+            <div key={league.id} className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg">
+              <div className="min-w-0 flex-1">
+                <div className="font-medium text-sm md:text-base truncate">{league.name}</div>
+                <div className="text-xs md:text-sm text-gray-500">
+                  {league.entry_last_rank?.toLocaleString()} of {league.entry_count?.toLocaleString()} teams
+                </div>
               </div>
-              <button className="text-fpl-purple hover:underline text-sm font-medium">
+              <button className="text-fpl-purple hover:underline text-xs md:text-sm font-medium flex-shrink-0">
                 View →
               </button>
             </div>
