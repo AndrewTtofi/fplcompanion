@@ -264,10 +264,12 @@ export default function FootballFieldView({ teamId, gameweek }) {
           <div className="flex-shrink-0 p-2 md:p-4">
             <div className="bg-gray-100 rounded-lg py-3 md:py-3 px-4 md:px-6 mx-auto">
               <h4 className="text-xs md:text-sm font-semibold text-gray-600 mb-2 md:mb-3 text-center">SUBSTITUTES</h4>
-              <div className="flex justify-center md:justify-center gap-4 md:gap-8 overflow-x-auto pb-2" style={{ maxWidth: '1000px' }}>
-                {bench.map(player => (
-                  <PlayerCard key={player.element} player={player} hoverAbove={true} />
-                ))}
+              <div className="overflow-x-auto -mx-4 md:mx-0 px-4 md:px-0">
+                <div className="flex justify-start md:justify-center gap-4 md:gap-8 min-w-max md:min-w-0 pb-2" style={{ maxWidth: '1000px' }}>
+                  {bench.map(player => (
+                    <PlayerCard key={player.element} player={player} hoverAbove={true} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
