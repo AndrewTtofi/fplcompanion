@@ -9,7 +9,8 @@ yarn.lock
 # Production
 /build
 /dist
-/.next
+.next/
+*.next/
 
 # Environment
 .env
