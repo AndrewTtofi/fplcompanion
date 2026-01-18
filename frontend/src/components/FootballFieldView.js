@@ -168,13 +168,14 @@ export default function FootballFieldView({ teamId, gameweek }) {
       {viewMode === 'field' && (
         <div className="flex flex-col h-full">
           {/* Football Field */}
-          <div className="flex-1 flex items-center justify-center p-4">
+          <div className="flex-1 flex items-center justify-center p-4" style={{ overflow: 'visible' }}>
             <div
               className="relative w-full rounded-lg shadow-xl"
               style={{
                 background: 'linear-gradient(180deg, #37734a 0%, #4a8c5f 50%, #37734a 100%)',
                 maxWidth: '700px',
-                aspectRatio: '4/3'
+                aspectRatio: '4/3',
+                overflow: 'visible'
               }}
             >
               {/* Grass pattern */}
@@ -274,8 +275,8 @@ function PlayerCard({ player, hoverAbove = false }) {
       />
 
       {/* Hover Card with Points Breakdown */}
-      <div className={`absolute z-50 ${hoverAbove ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 hidden group-hover:block`}>
-        <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-56 space-y-2">
+      <div className={`absolute ${hoverAbove ? 'bottom-full mb-2' : 'top-full mt-2'} left-1/2 transform -translate-x-1/2 hidden group-hover:block`} style={{ zIndex: 9999 }}>
+        <div className="bg-gray-900 text-white text-xs rounded-lg p-3 shadow-xl w-56 space-y-2 pointer-events-auto">
           {/* Player Info */}
           <div>
             <div className="font-bold text-sm">{player.web_name}</div>
