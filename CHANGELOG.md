@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.10] - 2026-01-18
+
+### Changes
+- chore: remove build artifacts from git tracking (#14) (0be2032)
+
 ## [v2.8.9] - 2026-01-18
 
 ### Changes
