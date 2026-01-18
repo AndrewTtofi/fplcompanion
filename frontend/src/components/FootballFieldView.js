@@ -226,7 +226,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
               </div>
 
               {/* Players */}
-              <div className="absolute inset-0 p-4 md:p-8">
+              <div className="absolute inset-0 p-3 md:p-8">
                 <div className="h-full flex flex-col justify-between">
                   {/* Goalkeeper */}
                   <div className="flex justify-center">
@@ -236,21 +236,21 @@ export default function FootballFieldView({ teamId, gameweek }) {
                   </div>
 
                   {/* Defenders */}
-                  <div className="flex justify-center gap-2 md:gap-6">
+                  <div className="flex justify-center gap-1 md:gap-6">
                     {grouped.DEF.map(player => (
                       <PlayerCard key={player.element} player={player} />
                     ))}
                   </div>
 
                   {/* Midfielders */}
-                  <div className="flex justify-center gap-2 md:gap-6">
+                  <div className="flex justify-center gap-1 md:gap-6">
                     {grouped.MID.map(player => (
                       <PlayerCard key={player.element} player={player} />
                     ))}
                   </div>
 
                   {/* Forwards */}
-                  <div className="flex justify-center gap-2 md:gap-6">
+                  <div className="flex justify-center gap-1 md:gap-6">
                     {grouped.FWD.map(player => (
                       <PlayerCard key={player.element} player={player} hoverAbove={true} />
                     ))}
