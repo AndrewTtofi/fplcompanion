@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.5] - 2026-01-18
+
+### Changes
+- refactor: remove Fly.io config, add better deployment options (4685129)
+
 ## [v2.8.4] - 2026-01-18
 
 ### Changes
