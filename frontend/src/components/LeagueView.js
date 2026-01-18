@@ -1,14 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
 import { Loader2, Trophy, TrendingUp, TrendingDown, Users, X } from 'lucide-react';
+import { useLeague } from '@/contexts/LeagueContext';
 
 export default function LeagueView({ teamData }) {
+  const { selectedLeague: globalLeague } = useLeague();
   const [selectedLeague, setSelectedLeague] = useState(null);
   const classicLeagues = teamData.team.leagues?.classic || [];
 
-  // Auto-select first league
-  const leagueToShow = selectedLeague || classicLeagues[0];
+  // Use global league filter if set, otherwise fall back to local selection
+  const leagueToShow = globalLeague || selectedLeague || classicLeagues[0];
+
+  // Update local selection when global league changes
+  useEffect(() => {
+    if (globalLeague) {
+      setSelectedLeague(globalLeague);
+    }
+  }, [globalLeague]);
 
   if (!leagueToShow) {
     return (

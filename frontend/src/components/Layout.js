@@ -1,9 +1,12 @@
 import Link from 'next/link';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
-import { Home, ArrowLeft } from 'lucide-react';
+import { Home, ArrowLeft, Trophy, X } from 'lucide-react';
+import { useLeague } from '@/contexts/LeagueContext';
 
 export default function Layout({ children, teamData }) {
+  const { selectedLeague, selectLeague, availableLeagues, isFiltered } = useLeague();
+
   // Fetch live points for current gameweek if teamData exists
   const { data: liveData } = useSWR(
     teamData ? ['live-points', teamData.team.id, teamData.current_gameweek] : null,
@@ -59,11 +62,73 @@ export default function Layout({ children, teamData }) {
                   <span className="text-fpl-green">Value:</span>{' '}
                   <span className="font-bold">£{teamData.performance.team_value}m</span>
                 </div>
+
+                {/* League Filter Selector */}
+                {availableLeagues.length > 0 && (
+                  <div className="relative group ml-4 pl-4 border-l border-white/30">
+                    <div className="flex items-center space-x-2">
+                      <Trophy size={16} className="text-fpl-green" />
+                      <select
+                        value={selectedLeague?.id || ''}
+                        onChange={(e) => {
+                          const leagueId = e.target.value;
+                          if (leagueId) {
+                            const league = availableLeagues.find(l => l.id.toString() === leagueId);
+                            selectLeague(league);
+                          } else {
+                            selectLeague(null);
+                          }
+                        }}
+                        className="bg-white/10 text-white border border-white/30 rounded px-3 py-1 text-sm font-medium cursor-pointer hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-fpl-green transition-all"
+                      >
+                        <option value="" className="bg-fpl-purple text-white">All Leagues</option>
+                        {availableLeagues.map(league => (
+                          <option key={league.id} value={league.id} className="bg-fpl-purple text-white">
+                            {league.name}
+                          </option>
+                        ))}
+                      </select>
+                      {isFiltered && (
+                        <button
+                          onClick={() => selectLeague(null)}
+                          className="p-1 hover:bg-white/20 rounded transition-colors"
+                          title="Clear league filter"
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
       </header>
+
+      {/* League Filter Indicator Banner */}
+      {isFiltered && selectedLeague && (
+        <div className="bg-fpl-purple/10 border-b border-fpl-purple/20">
+          <div className="max-w-7xl mx-auto px-4 py-2">
+            <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center space-x-2 text-fpl-purple font-medium">
+                <Trophy size={16} />
+                <span>Viewing league: <strong>{selectedLeague.name}</strong></span>
+                <span className="text-xs text-gray-500">
+                  (All data filtered to this league)
+                </span>
+              </div>
+              <button
+                onClick={() => selectLeague(null)}
+                className="flex items-center space-x-1 text-gray-600 hover:text-fpl-purple transition-colors"
+              >
+                <span className="text-xs">Clear filter</span>
+                <X size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main>{children}</main>
