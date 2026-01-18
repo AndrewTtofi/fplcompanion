@@ -140,7 +140,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
             {/* Middle Column - Starting XI */}
             <div className="bg-white rounded-lg shadow-md p-3 flex flex-col min-h-0">
               <h3 className="text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Starting XI</h3>
-              <div className="flex-1 overflow-hidden min-h-0">
+              <div className="flex-1 overflow-y-auto overflow-x-visible min-h-0">
                 <div className="space-y-0.5 h-full flex flex-col justify-around">
                   {starting_xi.map(player => (
                     <LivePointsPlayerRow key={player.element} player={player} />
@@ -152,7 +152,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
             {/* Right Column - Bench */}
             <div className="bg-white rounded-lg shadow-md p-3 flex flex-col min-h-0">
               <h3 className="text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Substitutes</h3>
-              <div className="flex-1 overflow-hidden min-h-0">
+              <div className="flex-1 overflow-y-auto overflow-x-visible min-h-0">
                 <div className="space-y-0.5 h-full flex flex-col justify-around">
                   {bench.map((player, index) => (
                     <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
@@ -587,8 +587,8 @@ function LivePointsPlayerRow({ player, benchPosition }) {
 
       {/* Beautiful Hover Popup */}
       {hasPlayed && breakdown.length > 0 && (
-        <div className="absolute left-full ml-3 top-0 hidden group-hover:block z-30 pointer-events-none animate-in fade-in duration-200">
-          <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden">
+        <div className="absolute left-full ml-3 top-0 hidden group-hover:block pointer-events-none animate-in fade-in duration-200" style={{ zIndex: 9999 }}>
+          <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden pointer-events-auto">
             {/* Header */}
             <div className="bg-gradient-to-r from-fpl-purple to-purple-700 text-white px-4 py-3">
               <div className="font-bold text-sm">{player.web_name}</div>
