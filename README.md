@@ -285,7 +285,7 @@ MIT - See [LICENSE](LICENSE) for details
 
 ## Roadmap
 
-- [ ] Team comparison feature
+- [x] Team comparison feature
 - [ ] Transfer planner
 - [ ] Fixture difficulty analyzer
 - [ ] Player search by name
