@@ -487,12 +487,11 @@ function LivePointsPlayerRow({ player, benchPosition }) {
     if (rowRef.current) {
       const rect = rowRef.current.getBoundingClientRect();
       const popupWidth = 288; // 72 * 4 = 288px (w-72)
-      const popupHeight = 400; // Approximate max height
       const margin = 12;
 
       const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
 
+      // Always align vertically with the player row
       let top = rect.top;
       let left = rect.right + margin;
 
@@ -512,19 +511,7 @@ function LivePointsPlayerRow({ player, benchPosition }) {
         }
       }
 
-      // Check if popup would go below viewport
-      if (rect.top + popupHeight > viewportHeight) {
-        // Position it to align bottom of popup with bottom of row
-        top = Math.max(margin, rect.bottom - popupHeight);
-
-        // If that's still too high, align with viewport bottom
-        if (top < margin) {
-          top = viewportHeight - popupHeight - margin;
-        }
-      }
-
-      // Ensure minimum margins
-      top = Math.max(margin, top);
+      // Ensure minimum left margin
       left = Math.max(margin, left);
 
       setPopupPosition({ top, left });
