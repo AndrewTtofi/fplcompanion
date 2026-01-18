@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.8] - 2026-01-18
+
+### Changes
+- fix: improve team field view UI and functionality (#12) (14da1c2)
+
 ## [v2.8.7] - 2026-01-18
 
 ### Changes
