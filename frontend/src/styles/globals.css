@@ -83,3 +83,9 @@ body {
 .player-card-hover:hover {
   z-index: 9999 !important;
 }
+
+/* Live points hover popup - escape overflow clipping */
+.live-points-popup {
+  position: fixed !important;
+  z-index: 9999 !important;
+}

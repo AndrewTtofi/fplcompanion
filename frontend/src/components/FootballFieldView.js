@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
@@ -476,9 +476,22 @@ function BenchPlayerCard({ player, position }) {
 
 function LivePointsPlayerRow({ player, benchPosition }) {
   const [showPopup, setShowPopup] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+  const rowRef = React.useRef(null);
   const stats = player.live_stats || {};
   const isPlaying = player.fixtures?.some(f => f.started && !f.finished);
   const hasPlayed = stats.minutes > 0;
+
+  // Calculate popup position when hovering
+  const handleMouseEnter = () => {
+    if (rowRef.current) {
+      const rect = rowRef.current.getBoundingClientRect();
+      setPopupPosition({
+        top: rect.top,
+        left: rect.right + 12 // 12px margin
+      });
+    }
+  };
 
   const positionColors = {
     1: 'bg-yellow-100 text-yellow-800',
@@ -538,10 +551,12 @@ function LivePointsPlayerRow({ player, benchPosition }) {
   return (
     <div className="relative group">
       <div
+        ref={rowRef}
         className={`flex items-center justify-between p-1 rounded border transition-all cursor-pointer ${
           isPlaying ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-fpl-purple'
         } ${benchPosition ? 'bg-gray-50' : 'bg-white'}`}
         onClick={() => setShowPopup(true)}
+        onMouseEnter={handleMouseEnter}
       >
         <div className="flex items-center gap-1.5 flex-1 min-w-0">
           {benchPosition && (
@@ -587,8 +602,11 @@ function LivePointsPlayerRow({ player, benchPosition }) {
 
       {/* Beautiful Hover Popup */}
       {hasPlayed && breakdown.length > 0 && (
-        <div className="absolute left-full ml-3 top-0 hidden group-hover:block z-30 pointer-events-none animate-in fade-in duration-200">
-          <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden">
+        <div
+          className="live-points-popup hidden group-hover:block pointer-events-none animate-in fade-in duration-200"
+          style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
+        >
+          <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden pointer-events-auto">
             {/* Header */}
             <div className="bg-gradient-to-r from-fpl-purple to-purple-700 text-white px-4 py-3">
               <div className="font-bold text-sm">{player.web_name}</div>
