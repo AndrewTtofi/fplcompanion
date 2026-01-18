@@ -53,14 +53,14 @@ export default function FootballFieldView({ teamId, gameweek }) {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-200px)]">
+    <div className="flex flex-col h-[calc(100vh-200px)] md:h-[calc(100vh-200px)]">
       {/* View Toggle - Fixed Height */}
-      <div className="flex justify-between items-center mb-4 flex-shrink-0">
-        <h2 className="text-xl font-bold text-gray-900">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3 md:mb-4 flex-shrink-0">
+        <h2 className="text-lg md:text-xl font-bold text-gray-900">
           Gameweek {gameweek} Squad
         </h2>
 
-        <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+        <div className="flex gap-1 md:gap-2 bg-gray-100 p-1 rounded-lg w-full sm:w-auto">
           <button
             onClick={() => {
               setViewMode('live');
@@ -69,14 +69,15 @@ export default function FootballFieldView({ teamId, gameweek }) {
               const currentView = router.query.view || 'field';
               router.push(`/team/${teamId}?tab=${currentTab}&view=${currentView}&mode=live`, undefined, { shallow: true });
             }}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 rounded-md transition-all text-xs md:text-sm ${
               viewMode === 'live'
                 ? 'bg-white text-fpl-purple shadow-sm font-semibold'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <TrendingUp size={16} />
-            <span className="text-sm">Live Points</span>
+            <TrendingUp size={14} className="md:w-4 md:h-4" />
+            <span className="hidden xs:inline">Live Points</span>
+            <span className="xs:hidden">Live</span>
           </button>
           <button
             onClick={() => {
@@ -86,14 +87,15 @@ export default function FootballFieldView({ teamId, gameweek }) {
               const currentView = router.query.view || 'field';
               router.push(`/team/${teamId}?tab=${currentTab}&view=${currentView}&mode=field`, undefined, { shallow: true });
             }}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-all ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 rounded-md transition-all text-xs md:text-sm ${
               viewMode === 'field'
                 ? 'bg-white text-fpl-purple shadow-sm font-semibold'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            <LayoutGrid size={16} />
-            <span className="text-sm">Field View</span>
+            <LayoutGrid size={14} className="md:w-4 md:h-4" />
+            <span className="hidden xs:inline">Field View</span>
+            <span className="xs:hidden">Field</span>
           </button>
         </div>
       </div>
@@ -101,9 +103,38 @@ export default function FootballFieldView({ teamId, gameweek }) {
       {/* Live Points View */}
       {viewMode === 'live' && (
         <div className="flex-1 overflow-hidden min-h-0">
-          <div className="grid grid-cols-3 gap-4 h-full">
-            {/* Left Column - Summary Stats */}
-            <div className="space-y-2 flex flex-col">
+          {/* Mobile: Stack Stats on Top */}
+          <div className="md:hidden mb-3">
+            <div className="grid grid-cols-3 gap-2">
+              {/* Total Points Card */}
+              <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-2 text-white shadow-lg">
+                <div className="text-center">
+                  <div className="text-[9px] font-semibold uppercase tracking-wide mb-0.5">Total</div>
+                  <div className="text-xl md:text-3xl font-bold">{data.total_live_points}</div>
+                </div>
+              </div>
+
+              {/* Bench Points Card */}
+              <div className="bg-white rounded-lg p-2 shadow-md">
+                <div className="text-center">
+                  <div className="text-[9px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Bench</div>
+                  <div className="text-xl md:text-2xl font-bold text-gray-700">{data.bench_points}</div>
+                </div>
+              </div>
+
+              {/* Transfers Card */}
+              <div className="bg-white rounded-lg p-2 shadow-md">
+                <div className="text-center">
+                  <div className="text-[9px] font-semibold text-gray-500 uppercase tracking-wide mb-0.5">Trans</div>
+                  <div className="text-xl md:text-2xl font-bold text-gray-700">{data.transfers.made}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 h-full md:h-auto">
+            {/* Left Column - Summary Stats (Desktop Only) */}
+            <div className="hidden md:flex space-y-2 flex-col">
               {/* Total Points Card */}
               <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-3 text-white shadow-lg flex-1 flex flex-col justify-center">
                 <div className="text-center">
@@ -138,10 +169,10 @@ export default function FootballFieldView({ teamId, gameweek }) {
             </div>
 
             {/* Middle Column - Starting XI */}
-            <div className="bg-white rounded-lg shadow-md p-3 flex flex-col min-h-0">
-              <h3 className="text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Starting XI</h3>
-              <div className="flex-1 overflow-hidden min-h-0">
-                <div className="space-y-0.5 h-full flex flex-col justify-around">
+            <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col min-h-0">
+              <h3 className="text-xs md:text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Starting XI</h3>
+              <div className="flex-1 overflow-y-auto md:overflow-hidden min-h-0">
+                <div className="space-y-0.5 md:h-full md:flex md:flex-col md:justify-around">
                   {starting_xi.map(player => (
                     <LivePointsPlayerRow key={player.element} player={player} />
                   ))}
@@ -150,10 +181,10 @@ export default function FootballFieldView({ teamId, gameweek }) {
             </div>
 
             {/* Right Column - Bench */}
-            <div className="bg-white rounded-lg shadow-md p-3 flex flex-col min-h-0">
-              <h3 className="text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Substitutes</h3>
+            <div className="bg-white rounded-lg shadow-md p-2 md:p-3 flex flex-col min-h-0">
+              <h3 className="text-xs md:text-sm font-bold text-gray-900 mb-2 flex-shrink-0">Substitutes</h3>
               <div className="flex-1 overflow-hidden min-h-0">
-                <div className="space-y-0.5 h-full flex flex-col justify-around">
+                <div className="space-y-0.5 md:h-full md:flex md:flex-col md:justify-around">
                   {bench.map((player, index) => (
                     <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
                   ))}
@@ -168,7 +199,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
       {viewMode === 'field' && (
         <div className="flex flex-col h-full">
           {/* Football Field */}
-          <div className="flex-1 flex items-center justify-center p-4" style={{ overflow: 'visible' }}>
+          <div className="flex-1 flex items-center justify-center p-2 md:p-4" style={{ overflow: 'visible' }}>
             <div
               className="relative w-full rounded-lg shadow-xl"
               style={{
@@ -189,13 +220,13 @@ export default function FootballFieldView({ teamId, gameweek }) {
               {/* Field lines */}
               <div className="absolute inset-0">
                 <div className="absolute left-0 right-0 top-1/2 h-px bg-white/30" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-2 border-white/30" />
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-16 border-2 border-white/30 border-t-0" />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-48 h-16 border-2 border-white/30 border-b-0" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 md:w-24 h-16 md:h-24 rounded-full border-2 border-white/30" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 md:w-48 h-12 md:h-16 border-2 border-white/30 border-t-0" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 md:w-48 h-12 md:h-16 border-2 border-white/30 border-b-0" />
               </div>
 
               {/* Players */}
-              <div className="absolute inset-0 p-8">
+              <div className="absolute inset-0 p-4 md:p-8">
                 <div className="h-full flex flex-col justify-between">
                   {/* Goalkeeper */}
                   <div className="flex justify-center">
@@ -205,21 +236,21 @@ export default function FootballFieldView({ teamId, gameweek }) {
                   </div>
 
                   {/* Defenders */}
-                  <div className="flex justify-center gap-6">
+                  <div className="flex justify-center gap-2 md:gap-6">
                     {grouped.DEF.map(player => (
                       <PlayerCard key={player.element} player={player} />
                     ))}
                   </div>
 
                   {/* Midfielders */}
-                  <div className="flex justify-center gap-6">
+                  <div className="flex justify-center gap-2 md:gap-6">
                     {grouped.MID.map(player => (
                       <PlayerCard key={player.element} player={player} />
                     ))}
                   </div>
 
                   {/* Forwards */}
-                  <div className="flex justify-center gap-6">
+                  <div className="flex justify-center gap-2 md:gap-6">
                     {grouped.FWD.map(player => (
                       <PlayerCard key={player.element} player={player} hoverAbove={true} />
                     ))}
@@ -230,8 +261,8 @@ export default function FootballFieldView({ teamId, gameweek }) {
           </div>
 
           {/* Substitutes */}
-          <div className="flex-shrink-0 p-4">
-            <div className="bg-gray-100 rounded-lg py-3 px-6 mx-auto flex justify-center gap-8" style={{ maxWidth: '1000px' }}>
+          <div className="flex-shrink-0 p-2 md:p-4">
+            <div className="bg-gray-100 rounded-lg py-2 md:py-3 px-3 md:px-6 mx-auto flex justify-center gap-3 md:gap-8 overflow-x-auto" style={{ maxWidth: '1000px' }}>
               {bench.map(player => (
                 <PlayerCard key={player.element} player={player} hoverAbove={true} />
               ))}
