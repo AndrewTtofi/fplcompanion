@@ -25,17 +25,19 @@ export default function Layout({ children, teamData }) {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="gradient-fpl text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition">
-              <Home size={24} />
-              <span className="text-xl font-bold">FPL Companion</span>
+        <div className="max-w-7xl mx-auto px-4 py-3 md:py-4">
+          {/* Top Row - Logo and Stats */}
+          <div className="flex items-center justify-between mb-3 md:mb-0">
+            <Link href="/" className="flex items-center space-x-2 md:space-x-3 hover:opacity-80 transition">
+              <Home size={20} className="md:w-6 md:h-6" />
+              <span className="text-lg md:text-xl font-bold">FPL Companion</span>
             </Link>
 
             {teamData && (
-              <div className="flex items-center space-x-6 text-sm">
+              <div className="flex items-center gap-3 md:gap-6 text-xs md:text-sm">
                 <div className="relative group">
-                  <span className="text-fpl-green">Points:</span>{' '}
+                  <span className="text-fpl-green hidden sm:inline">Points:</span>
+                  <span className="text-fpl-green sm:hidden">Pts:</span>{' '}
                   <span className="font-bold">{liveTotalPoints?.toLocaleString()}</span>
                   {liveData?.total_live_points && (
                     <>
@@ -58,51 +60,85 @@ export default function Layout({ children, teamData }) {
                     </>
                   )}
                 </div>
-                <div>
+                <div className="hidden sm:block">
                   <span className="text-fpl-green">Value:</span>{' '}
                   <span className="font-bold">£{teamData.performance.team_value}m</span>
                 </div>
-
-                {/* League Filter Selector */}
-                {availableLeagues.length > 0 && (
-                  <div className="relative group ml-4 pl-4 border-l border-white/30">
-                    <div className="flex items-center space-x-2">
-                      <Trophy size={16} className="text-fpl-green" />
-                      <select
-                        value={selectedLeague?.id || ''}
-                        onChange={(e) => {
-                          const leagueId = e.target.value;
-                          if (leagueId) {
-                            const league = availableLeagues.find(l => l.id.toString() === leagueId);
-                            selectLeague(league);
-                          } else {
-                            selectLeague(null);
-                          }
-                        }}
-                        className="bg-white/10 text-white border border-white/30 rounded px-3 py-1 text-sm font-medium cursor-pointer hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-fpl-green transition-all"
-                      >
-                        <option value="" className="bg-fpl-purple text-white">All Leagues</option>
-                        {availableLeagues.map(league => (
-                          <option key={league.id} value={league.id} className="bg-fpl-purple text-white">
-                            {league.name}
-                          </option>
-                        ))}
-                      </select>
-                      {isFiltered && (
-                        <button
-                          onClick={() => selectLeague(null)}
-                          className="p-1 hover:bg-white/20 rounded transition-colors"
-                          title="Clear league filter"
-                        >
-                          <X size={16} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
           </div>
+
+          {/* Bottom Row - League Filter (Mobile: Full Width, Desktop: Inline) */}
+          {teamData && availableLeagues.length > 0 && (
+            <div className="md:hidden flex items-center justify-center gap-2 pt-2 border-t border-white/20">
+              <Trophy size={14} className="text-fpl-green" />
+              <select
+                value={selectedLeague?.id || ''}
+                onChange={(e) => {
+                  const leagueId = e.target.value;
+                  if (leagueId) {
+                    const league = availableLeagues.find(l => l.id.toString() === leagueId);
+                    selectLeague(league);
+                  } else {
+                    selectLeague(null);
+                  }
+                }}
+                className="flex-1 bg-white/10 text-white border border-white/30 rounded px-2 py-1 text-xs font-medium cursor-pointer hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-fpl-green transition-all"
+              >
+                <option value="" className="bg-fpl-purple text-white">All Leagues</option>
+                {availableLeagues.map(league => (
+                  <option key={league.id} value={league.id} className="bg-fpl-purple text-white">
+                    {league.name}
+                  </option>
+                ))}
+              </select>
+              {isFiltered && (
+                <button
+                  onClick={() => selectLeague(null)}
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  title="Clear league filter"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Desktop League Filter (Hidden on Mobile) */}
+          {teamData && availableLeagues.length > 0 && (
+            <div className="hidden md:flex absolute top-4 right-4 items-center gap-2">
+              <Trophy size={16} className="text-fpl-green" />
+              <select
+                value={selectedLeague?.id || ''}
+                onChange={(e) => {
+                  const leagueId = e.target.value;
+                  if (leagueId) {
+                    const league = availableLeagues.find(l => l.id.toString() === leagueId);
+                    selectLeague(league);
+                  } else {
+                    selectLeague(null);
+                  }
+                }}
+                className="bg-white/10 text-white border border-white/30 rounded px-3 py-1 text-sm font-medium cursor-pointer hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-fpl-green transition-all"
+              >
+                <option value="" className="bg-fpl-purple text-white">All Leagues</option>
+                {availableLeagues.map(league => (
+                  <option key={league.id} value={league.id} className="bg-fpl-purple text-white">
+                    {league.name}
+                  </option>
+                ))}
+              </select>
+              {isFiltered && (
+                <button
+                  onClick={() => selectLeague(null)}
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  title="Clear league filter"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </header>
 
@@ -110,19 +146,21 @@ export default function Layout({ children, teamData }) {
       {isFiltered && selectedLeague && (
         <div className="bg-fpl-purple/10 border-b border-fpl-purple/20">
           <div className="max-w-7xl mx-auto px-4 py-2">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center space-x-2 text-fpl-purple font-medium">
-                <Trophy size={16} />
-                <span>Viewing league: <strong>{selectedLeague.name}</strong></span>
-                <span className="text-xs text-gray-500">
+            <div className="flex items-center justify-between text-xs md:text-sm">
+              <div className="flex items-center gap-1 md:gap-2 text-fpl-purple font-medium">
+                <Trophy size={14} className="md:w-4 md:h-4 flex-shrink-0" />
+                <span className="truncate">
+                  Viewing: <strong className="truncate">{selectedLeague.name}</strong>
+                </span>
+                <span className="hidden lg:inline text-xs text-gray-500">
                   (All data filtered to this league)
                 </span>
               </div>
               <button
                 onClick={() => selectLeague(null)}
-                className="flex items-center space-x-1 text-gray-600 hover:text-fpl-purple transition-colors"
+                className="flex items-center gap-1 text-gray-600 hover:text-fpl-purple transition-colors flex-shrink-0"
               >
-                <span className="text-xs">Clear filter</span>
+                <span className="text-xs hidden sm:inline">Clear</span>
                 <X size={14} />
               </button>
             </div>
