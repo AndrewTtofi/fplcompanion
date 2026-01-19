@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.14] - 2026-01-19
+
+### Changes
+- fix: make league View buttons navigate to Leagues tab (#18) (9cb20b5)
+
 ## [v2.8.13] - 2026-01-19
 
 ### Changes
