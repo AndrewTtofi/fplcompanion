@@ -216,6 +216,16 @@ function LivePlayerCard({ player, isBench = false }) {
                 LIVE
               </span>
             )}
+            {player.auto_sub && !player.subbed_out && (
+              <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded font-bold shrink-0">
+                AUTO-SUBSTITUTION
+              </span>
+            )}
+            {player.auto_sub && player.subbed_out && (
+              <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded font-bold shrink-0">
+                AUTO-SUBSTITUTION-OFF
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 mt-1 text-xs md:text-sm text-gray-600 flex-wrap">
@@ -223,6 +233,18 @@ function LivePlayerCard({ player, isBench = false }) {
             <span>{player.position_name}</span>
             <span>£{player.now_cost}m</span>
           </div>
+
+          {/* Auto-sub info */}
+          {player.auto_sub && player.subbed_in_for && (
+            <div className="text-xs text-green-600 mt-1">
+              ↑ Subbed in for {player.subbed_in_for}
+            </div>
+          )}
+          {player.auto_sub && player.replaced_by && (
+            <div className="text-xs text-red-600 mt-1">
+              ↓ Replaced by {player.replaced_by}
+            </div>
+          )}
 
           {/* Fixtures */}
           {player.fixtures && player.fixtures.length > 0 && (

@@ -283,7 +283,14 @@ function PlayerCard({ player, hoverAbove = false }) {
       {/* Auto-sub indicator */}
       {player.auto_sub && !player.subbed_out && (
         <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-green-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-md z-20 whitespace-nowrap">
-          AUTO SUB
+          AUTO-SUBSTITUTION
+        </div>
+      )}
+
+      {/* Auto-sub off indicator */}
+      {player.auto_sub && player.subbed_out && (
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-md z-20 whitespace-nowrap">
+          AUTO-SUBSTITUTION-OFF
         </div>
       )}
 
@@ -314,6 +321,11 @@ function PlayerCard({ player, hoverAbove = false }) {
             {player.auto_sub && player.subbed_in_for && (
               <div className="text-green-400 text-[10px] mt-1">
                 ↑ Auto-subbed in for {player.subbed_in_for}
+              </div>
+            )}
+            {player.auto_sub && player.replaced_by && (
+              <div className="text-red-400 text-[10px] mt-1">
+                ↓ Replaced by {player.replaced_by}
               </div>
             )}
           </div>
@@ -644,7 +656,10 @@ function LivePointsPlayerRow({ player, benchPosition }) {
                 <span className="bg-gray-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">V</span>
               )}
               {player.auto_sub && !player.subbed_out && (
-                <span className="bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">A</span>
+                <span className="bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">IN</span>
+              )}
+              {player.auto_sub && player.subbed_out && (
+                <span className="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">OFF</span>
               )}
               {isPlaying && (
                 <span className="bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded animate-pulse shrink-0">
@@ -690,6 +705,21 @@ function LivePointsPlayerRow({ player, benchPosition }) {
             {player.auto_sub && !player.subbed_out && (
               <div className="mt-2 bg-green-500 text-xs font-bold px-2 py-1 rounded inline-block">
                 AUTO-SUBSTITUTION
+              </div>
+            )}
+            {player.auto_sub && player.subbed_out && (
+              <div className="mt-2 bg-red-500 text-xs font-bold px-2 py-1 rounded inline-block">
+                AUTO-SUBSTITUTION-OFF
+              </div>
+            )}
+            {player.auto_sub && player.subbed_in_for && (
+              <div className="text-green-300 text-[10px] mt-1">
+                ↑ Subbed in for {player.subbed_in_for}
+              </div>
+            )}
+            {player.auto_sub && player.replaced_by && (
+              <div className="text-red-300 text-[10px] mt-1">
+                ↓ Replaced by {player.replaced_by}
               </div>
             )}
           </div>
