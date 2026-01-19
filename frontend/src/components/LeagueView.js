@@ -5,7 +5,7 @@ import { Loader2, Trophy, TrendingUp, TrendingDown, Users, X } from 'lucide-reac
 import { useLeague } from '@/contexts/LeagueContext';
 
 export default function LeagueView({ teamData }) {
-  const { selectedLeague: globalLeague } = useLeague();
+  const { selectedLeague: globalLeague, selectLeague } = useLeague();
   const [selectedLeague, setSelectedLeague] = useState(null);
   const classicLeagues = teamData.team.leagues?.classic || [];
 
@@ -40,6 +40,7 @@ export default function LeagueView({ teamData }) {
             onChange={(e) => {
               const league = classicLeagues.find(l => l.id === parseInt(e.target.value));
               setSelectedLeague(league);
+              selectLeague(league); // Sync with global league filter
             }}
             className="w-full md:w-96 px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-fpl-purple focus:border-transparent"
           >
@@ -53,13 +54,18 @@ export default function LeagueView({ teamData }) {
       )}
 
       {/* League Details */}
-      <LeagueStandings league={leagueToShow} userTeamId={teamData.team.id} teamData={teamData} />
+      <LeagueStandings key={leagueToShow.id} league={leagueToShow} userTeamId={teamData.team.id} teamData={teamData} />
     </div>
   );
 }
 
 function LeagueStandings({ league, userTeamId, teamData }) {
   const [comparisonTeamId, setComparisonTeamId] = useState(null);
+
+  // Reset comparison when league changes
+  useEffect(() => {
+    setComparisonTeamId(null);
+  }, [league.id]);
 
   const { data, error, isLoading } = useSWR(
     ['league', league.id],

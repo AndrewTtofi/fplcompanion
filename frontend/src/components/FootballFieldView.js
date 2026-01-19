@@ -197,30 +197,26 @@ export default function FootballFieldView({ teamId, gameweek }) {
             <div
               className="relative w-full rounded-lg shadow-xl"
               style={{
-                background: 'linear-gradient(180deg, #37734a 0%, #4a8c5f 50%, #37734a 100%)',
-                maxWidth: '800px',
-                aspectRatio: '4/3',
+                backgroundImage: 'url(/pitch.png)',
+                backgroundSize: '100% 100%',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                maxWidth: '700px',
+                aspectRatio: '1/1',
                 overflow: 'visible'
               }}
             >
-              {/* Grass pattern */}
-              <div
-                className="absolute inset-0 rounded-lg"
-                style={{
-                  backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 30px, transparent 30px, transparent 60px)'
-                }}
-              />
-
-              {/* Field lines */}
-              <div className="absolute inset-0">
-                <div className="absolute left-0 right-0 top-1/2 h-px bg-white/30" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 md:w-24 h-16 md:h-24 rounded-full border-2 border-white/30" />
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 md:w-48 h-12 md:h-16 border-2 border-white/30 border-t-0" />
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-32 md:w-48 h-12 md:h-16 border-2 border-white/30 border-b-0" />
-              </div>
-
               {/* Players */}
-              <div className="absolute inset-0 p-4 md:p-8" style={{ overflow: 'visible' }}>
+              <div
+                className="absolute inset-0"
+                style={{
+                  overflow: 'visible',
+                  paddingTop: '12%',
+                  paddingBottom: '6%',
+                  paddingLeft: '6%',
+                  paddingRight: '6%'
+                }}
+              >
                 <div className="h-full flex flex-col justify-between" style={{ overflow: 'visible' }}>
                   {/* Goalkeeper */}
                   <div className="flex justify-center" style={{ overflow: 'visible' }}>
