@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Trophy, DollarSign, Repeat } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Trophy, DollarSign, Repeat, Sparkles, Users, Zap, Crown, Check, Clock } from 'lucide-react';
 import useSWR from 'swr';
 import { useRouter } from 'next/router';
 import { api } from '@/lib/api';
@@ -81,7 +81,7 @@ export default function TeamOverview({ teamData }) {
         <StatCard
           label={rankLabel}
           value={displayRank?.toLocaleString()}
-          icon={rankChange > 0 ? <TrendingUp className="text-green-500" /> : rankChange < 0 ? <TrendingDown className="text-red-500" /> : null}
+          icon={rankChange > 0 ? <TrendingUp className="text-green-500" /> : rankChange < 0 ? <TrendingDown className="text-red-500" /> : <Minus className="text-gray-400" />}
           subtitle={rankChange !== 0 && !isFiltered ? `${rankChange > 0 ? '+' : ''}${rankChange.toLocaleString()}` : isFiltered ? 'League filtered view' : 'No change'}
         />
         <StatCard
@@ -207,28 +207,47 @@ export default function TeamOverview({ teamData }) {
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Chips</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {['wildcard', 'bboost', 'freehit', '3xc'].map((chipName) => {
-            const chip = history.chips?.find(c => c.name === chipName);
-            const chipLabels = {
-              wildcard: 'Wildcard',
-              bboost: 'Bench Boost',
-              freehit: 'Free Hit',
-              '3xc': 'Triple Captain'
+          {[
+            { name: 'wildcard', label: 'Wildcard', icon: Sparkles, color: 'purple' },
+            { name: 'bboost', label: 'Bench Boost', icon: Users, color: 'blue' },
+            { name: 'freehit', label: 'Free Hit', icon: Zap, color: 'yellow' },
+            { name: '3xc', label: 'Triple Captain', icon: Crown, color: 'pink' }
+          ].map((chipInfo) => {
+            const chip = history.chips?.find(c => c.name === chipInfo.name);
+            const IconComponent = chipInfo.icon;
+            const isUsed = !!chip;
+
+            const colorClasses = {
+              purple: { used: 'bg-purple-100 border-purple-300', available: 'bg-purple-50 border-purple-400', icon: 'text-purple-500', availableText: 'text-purple-600' },
+              blue: { used: 'bg-blue-100 border-blue-300', available: 'bg-blue-50 border-blue-400', icon: 'text-blue-500', availableText: 'text-blue-600' },
+              yellow: { used: 'bg-yellow-100 border-yellow-300', available: 'bg-yellow-50 border-yellow-400', icon: 'text-yellow-600', availableText: 'text-yellow-700' },
+              pink: { used: 'bg-pink-100 border-pink-300', available: 'bg-pink-50 border-pink-400', icon: 'text-pink-500', availableText: 'text-pink-600' }
             };
+
+            const colors = colorClasses[chipInfo.color];
 
             return (
               <div
-                key={chipName}
-                className={`p-4 rounded-lg border-2 ${
-                  chip ? 'bg-gray-100 border-gray-300' : 'bg-fpl-purple bg-opacity-5 border-fpl-purple'
-                }`}
+                key={chipInfo.name}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  isUsed ? colors.used : colors.available
+                } ${isUsed ? 'opacity-75' : 'shadow-sm'}`}
               >
-                <div className="font-semibold text-sm">{chipLabels[chipName]}</div>
-                <div className="text-xs mt-1">
-                  {chip ? (
-                    <span className="text-gray-600">Used GW{chip.event}</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <IconComponent className={`w-5 h-5 ${colors.icon}`} />
+                  <span className="font-semibold text-sm text-gray-800">{chipInfo.label}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {isUsed ? (
+                    <>
+                      <Check className="w-4 h-4 text-gray-500" />
+                      <span className="text-xs text-gray-600">Used GW{chip.event}</span>
+                    </>
                   ) : (
-                    <span className="text-fpl-purple font-medium">Available</span>
+                    <>
+                      <Clock className="w-4 h-4 text-gray-400" />
+                      <span className={`text-xs font-medium ${colors.availableText}`}>Available</span>
+                    </>
                   )}
                 </div>
               </div>
