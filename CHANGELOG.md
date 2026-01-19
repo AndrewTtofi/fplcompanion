@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.12] - 2026-01-19
+
+### Changes
+- fix: improve auto-substitution display and positioning (#16) (ba73c78)
+
 ## [v2.8.11] - 2026-01-18
 
 ### Changes
