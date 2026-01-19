@@ -1,11 +1,13 @@
-import { TrendingUp, TrendingDown, Trophy, Users, DollarSign, Repeat } from 'lucide-react';
+import { TrendingUp, TrendingDown, Trophy, DollarSign, Repeat } from 'lucide-react';
 import useSWR from 'swr';
+import { useRouter } from 'next/router';
 import { api } from '@/lib/api';
 import { useLeague } from '@/contexts/LeagueContext';
 
 export default function TeamOverview({ teamData }) {
+  const router = useRouter();
   const { team, performance, history } = teamData;
-  const { selectedLeague, isFiltered } = useLeague();
+  const { selectedLeague, selectLeague, isFiltered } = useLeague();
 
   // Fetch live points for current gameweek
   const { data: liveData } = useSWR(
@@ -247,7 +249,13 @@ export default function TeamOverview({ teamData }) {
                   {league.entry_last_rank?.toLocaleString()} of {league.entry_count?.toLocaleString()} teams
                 </div>
               </div>
-              <button className="text-fpl-purple hover:underline text-xs md:text-sm font-medium flex-shrink-0">
+              <button
+                onClick={() => {
+                  selectLeague(league);
+                  router.push(`/team/${team.id}?tab=leagues&league=${league.id}`, undefined, { shallow: true });
+                }}
+                className="text-fpl-purple hover:underline text-xs md:text-sm font-medium flex-shrink-0"
+              >
                 View →
               </button>
             </div>
