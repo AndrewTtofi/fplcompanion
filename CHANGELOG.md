@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.13] - 2026-01-19
+
+### Changes
+- fix: correct overall rank arrow color logic (#17) (2431f52)
+
 ## [v2.8.12] - 2026-01-19
 
 ### Changes
