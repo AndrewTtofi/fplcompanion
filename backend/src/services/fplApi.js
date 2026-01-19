@@ -337,16 +337,20 @@ class FPLApiService {
 
         // Apply all substitutions
         for (const { out, sub } of substitutions) {
-          // Remove the non-player from starting XI and add to bench
-          startingXI = startingXI.filter(p => p.element !== out.element);
+          // Find the index and position of the player being substituted out
+          const outIndex = startingXI.findIndex(p => p.element === out.element);
+          const outPosition = out.position; // Original position (1-11)
+
+          // Remove the sub from bench
           bench = bench.filter(p => p.element !== sub.element);
 
-          // Add sub to starting XI with auto_sub flag
-          startingXI.push({
+          // Replace the non-player in starting XI at the same position
+          startingXI[outIndex] = {
             ...sub,
+            position: outPosition, // Preserve the original position
             auto_sub: true,
             subbed_in_for: out.web_name
-          });
+          };
 
           // Add non-player to bench with subbed_out flag
           bench.push({
