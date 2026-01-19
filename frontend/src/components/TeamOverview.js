@@ -79,7 +79,7 @@ export default function TeamOverview({ teamData }) {
         <StatCard
           label={rankLabel}
           value={displayRank?.toLocaleString()}
-          icon={rankChange < 0 ? <TrendingUp className="text-green-500" /> : <TrendingDown className="text-red-500" />}
+          icon={rankChange > 0 ? <TrendingUp className="text-green-500" /> : rankChange < 0 ? <TrendingDown className="text-red-500" /> : null}
           subtitle={rankChange !== 0 && !isFiltered ? `${rankChange > 0 ? '+' : ''}${rankChange.toLocaleString()}` : isFiltered ? 'League filtered view' : 'No change'}
         />
         <StatCard
