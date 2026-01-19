@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.9.0] - 2026-01-19
+
+### Changes
+- feat: league tab fixes and FPL pitch background (#20) (75e1f8b)
+
 ## [v2.8.15] - 2026-01-19
 
 ### Changes
