@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.15] - 2026-01-19
+
+### Changes
+- fix: improve chips display with icons and fix rank unchanged icon (#19) (009bcfc)
+
 ## [v2.8.14] - 2026-01-19
 
 ### Changes
