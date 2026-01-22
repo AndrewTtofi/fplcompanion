@@ -7,6 +7,7 @@ import GameweekView from '@/components/GameweekView';
 import EnhancedGameweekView from '@/components/EnhancedGameweekView';
 import LeagueView from '@/components/LeagueView';
 import MyFeeds from '@/components/MyFeeds';
+import TransferPlanView from '@/components/TransferPlanView';
 import Layout from '@/components/Layout';
 import { LeagueProvider } from '@/contexts/LeagueContext';
 import { Loader2 } from 'lucide-react';
@@ -83,6 +84,7 @@ export default function TeamPage() {
     { id: 'gameweek', label: 'Current Gameweek' },
     { id: 'feeds', label: 'My Feeds' },
     { id: 'leagues', label: 'Leagues' },
+    { id: 'transfers', label: 'Transfer Plan' },
   ];
 
   return (
@@ -118,6 +120,7 @@ export default function TeamPage() {
               {activeTab === 'gameweek' && <EnhancedGameweekView teamData={teamData} />}
               {activeTab === 'feeds' && <MyFeeds teamId={id} />}
               {activeTab === 'leagues' && <LeagueView teamData={teamData} />}
+              {activeTab === 'transfers' && <TransferPlanView teamData={teamData} />}
             </div>
           </div>
         </div>
