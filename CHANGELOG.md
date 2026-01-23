@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.10.1] - 2026-01-23
+
+### Changes
+- fix: improve transfer plan view with shareable links and mobile responsiveness (#22) (7c35cd2)
+
 ## [v2.10.0] - 2026-01-22
 
 ### Changes
