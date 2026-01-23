@@ -112,6 +112,22 @@ function LeagueStandings({ league, userTeamId, teamData }) {
 
   const standings = data.standings.results;
 
+  // Get gameweek status
+  const gwStatus = userLiveData?.gameweek_status || {};
+  const isLive = gwStatus.is_live;
+  const allMatchesFinished = gwStatus.all_matches_finished;
+  const dataChecked = gwStatus.data_checked;
+
+  // Determine status display
+  const getStatusDisplay = () => {
+    if (dataChecked) return { symbol: '○', color: 'text-gray-500', tooltip: 'Final - Gameweek complete' };
+    if (allMatchesFinished) return { symbol: '◐', color: 'text-blue-600', tooltip: 'Finished - Awaiting bonus confirmation' };
+    if (isLive) return { symbol: '●', color: 'text-green-600', tooltip: 'Live - Matches in progress' };
+    return null;
+  };
+
+  const statusDisplay = getStatusDisplay();
+
   // Get user's league entry from multiple sources:
   // 1. From the standings page (if user is on current page)
   const userEntryInPage = standings.find(s => s.entry === userTeamId);
@@ -180,11 +196,11 @@ function LeagueStandings({ league, userTeamId, teamData }) {
               </div>
               <div className="text-lg md:text-2xl font-bold text-gray-900 relative group">
                 {userLiveData?.total_live_points ?? userEntry?.event_total ?? '-'}
-                {userLiveData?.total_live_points && (
+                {statusDisplay && (
                   <>
-                    <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                    <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                     <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
-                      Live - Gameweek in progress
+                      {statusDisplay.tooltip}
                     </div>
                   </>
                 )}
@@ -199,11 +215,11 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                 {userLiveData?.total_live_points && userEntry
                   ? userEntry.total + (userLiveData.total_live_points - userEntry.event_total)
                   : userEntry?.total ?? '-'}
-                {userLiveData?.total_live_points && (
+                {statusDisplay && (
                   <>
-                    <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                    <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                     <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
-                      Live - Gameweek in progress
+                      {statusDisplay.tooltip}
                     </div>
                   </>
                 )}
@@ -276,22 +292,22 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                     </td>
                     <td className="py-2 md:py-3 px-2 md:px-4 text-center text-xs md:text-sm relative group">
                       {gwPoints}
-                      {isUser && userLiveData?.total_live_points && (
+                      {isUser && statusDisplay && (
                         <>
-                          <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                          <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                           <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1">
-                            Live - Gameweek in progress
+                            {statusDisplay.tooltip}
                           </div>
                         </>
                       )}
                     </td>
                     <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple text-xs md:text-sm relative group">
                       {totalPoints.toLocaleString()}
-                      {isUser && userLiveData?.total_live_points && (
+                      {isUser && statusDisplay && (
                         <>
-                          <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                          <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                           <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">
-                            Live - Gameweek in progress
+                            {statusDisplay.tooltip}
                           </div>
                         </>
                       )}

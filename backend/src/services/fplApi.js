@@ -391,6 +391,15 @@ class FPLApiService {
     // Calculate points on bench
     const benchPoints = bench.reduce((sum, p) => sum + p.live_stats.total_points, 0);
 
+    // Get gameweek status from bootstrap events
+    const gameweekEvent = bootstrap.events.find(e => e.id === parseInt(gameweek));
+
+    // Check if any fixture is currently in progress (started but not finished)
+    const allPlayerFixtures = [...startingXI, ...bench].flatMap(p => p.fixtures || []);
+    const hasLiveMatches = allPlayerFixtures.some(f => f.started && !f.finished);
+    const gwAllMatchesFinished = allPlayerFixtures.length > 0 && allPlayerFixtures.every(f => f.finished);
+    const hasMatchesNotStarted = allPlayerFixtures.some(f => !f.started);
+
     return {
       team_id: teamId,
       gameweek,
@@ -414,7 +423,17 @@ class FPLApiService {
         made: picks.entry_history.event_transfers,
         cost: picks.entry_history.event_transfers_cost
       },
-      net_points: totalPoints - picks.entry_history.event_transfers_cost
+      net_points: totalPoints - picks.entry_history.event_transfers_cost,
+      // Gameweek status info
+      gameweek_status: {
+        is_current: gameweekEvent?.is_current || false,
+        is_live: hasLiveMatches, // Matches currently in progress
+        all_matches_finished: gwAllMatchesFinished, // All fixtures done
+        has_matches_pending: hasMatchesNotStarted, // Some matches haven't started
+        gameweek_finished: gameweekEvent?.finished || false, // GW officially finished
+        data_checked: gameweekEvent?.data_checked || false, // Bonus/final data confirmed
+        deadline_time: gameweekEvent?.deadline_time || null
+      }
     };
   }
 

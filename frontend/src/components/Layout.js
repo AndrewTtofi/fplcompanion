@@ -21,6 +21,22 @@ export default function Layout({ children, teamData }) {
     ? teamData.performance.overall_points + (liveData.total_live_points - teamData.performance.last_gw_points)
     : teamData?.performance.overall_points;
 
+  // Get gameweek status
+  const gwStatus = liveData?.gameweek_status || {};
+  const isLive = gwStatus.is_live;
+  const allMatchesFinished = gwStatus.all_matches_finished;
+  const dataChecked = gwStatus.data_checked;
+
+  // Determine status display
+  const getStatusDisplay = () => {
+    if (dataChecked) return { symbol: '○', color: 'text-gray-400', tooltip: 'Final - Gameweek complete' };
+    if (allMatchesFinished) return { symbol: '◐', color: 'text-blue-400', tooltip: 'Finished - Awaiting bonus confirmation' };
+    if (isLive) return { symbol: '●', color: 'text-green-400', tooltip: 'Live - Matches in progress' };
+    return null;
+  };
+
+  const statusDisplay = getStatusDisplay();
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -38,11 +54,11 @@ export default function Layout({ children, teamData }) {
                 <div className="relative group">
                   <span className="text-fpl-green">Points:</span>{' '}
                   <span className="font-bold">{liveTotalPoints?.toLocaleString()}</span>
-                  {liveData?.total_live_points && (
+                  {statusDisplay && (
                     <>
-                      <span className="ml-1 text-xs text-green-400 cursor-help">●</span>
+                      <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                       <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap -bottom-8 left-0">
-                        Live - Gameweek in progress
+                        {statusDisplay.tooltip}
                       </div>
                     </>
                   )}
@@ -50,11 +66,11 @@ export default function Layout({ children, teamData }) {
                 <div className="relative group">
                   <span className="text-fpl-green">GW{teamData.current_gameweek}:</span>{' '}
                   <span className="font-bold">{currentGwPoints}</span>
-                  {liveData?.total_live_points && (
+                  {statusDisplay && (
                     <>
-                      <span className="ml-1 text-xs text-green-400 cursor-help">●</span>
+                      <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                       <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap -bottom-8 left-0">
-                        Live - Gameweek in progress
+                        {statusDisplay.tooltip}
                       </div>
                     </>
                   )}
@@ -115,11 +131,11 @@ export default function Layout({ children, teamData }) {
                 <div className="relative group">
                   <span className="text-fpl-green">Pts:</span>{' '}
                   <span className="font-bold">{liveTotalPoints?.toLocaleString()}</span>
-                  {liveData?.total_live_points && (
+                  {statusDisplay && (
                     <>
-                      <span className="ml-1 text-xs text-green-400 cursor-help">●</span>
+                      <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                       <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap -bottom-8 left-0">
-                        Live - Gameweek in progress
+                        {statusDisplay.tooltip}
                       </div>
                     </>
                   )}
@@ -127,11 +143,11 @@ export default function Layout({ children, teamData }) {
                 <div className="relative group">
                   <span className="text-fpl-green">GW{teamData.current_gameweek}:</span>{' '}
                   <span className="font-bold">{currentGwPoints}</span>
-                  {liveData?.total_live_points && (
+                  {statusDisplay && (
                     <>
-                      <span className="ml-1 text-xs text-green-400 cursor-help">●</span>
+                      <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                       <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap -bottom-8 left-0">
-                        Live - Gameweek in progress
+                        {statusDisplay.tooltip}
                       </div>
                     </>
                   )}
