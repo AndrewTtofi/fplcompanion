@@ -1,6 +1,6 @@
 {
   "name": "fpl-companion",
-  "version": "2.10.1",
+  "version": "2.10.2",
   "description": "Fantasy Premier League Companion Application",
   "private": true,
   "workspaces": [

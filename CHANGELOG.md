@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.10.2] - 2026-01-23
+
+### Changes
+- fix: add gameweek status indicators and real-time team value calculation (#23) (5c75bfb)
+
 ## [v2.10.1] - 2026-01-23
 
 ### Changes
