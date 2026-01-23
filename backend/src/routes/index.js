@@ -199,6 +199,22 @@ router.get('/team/:id/overview', async (req, res, next) => {
       }
     }
 
+    // Calculate real-time team value from current player prices
+    let currentTeamValue = team.last_deadline_value / 10;
+    let currentBank = team.last_deadline_bank / 10;
+
+    if (currentPicks?.picks && bootstrap.elements) {
+      // Sum up the current price of all 15 squad players
+      const squadValue = currentPicks.picks.reduce((total, pick) => {
+        const player = bootstrap.elements.find(p => p.id === pick.element);
+        return total + (player?.now_cost || 0);
+      }, 0);
+
+      // Convert from tenths to millions and add bank
+      currentTeamValue = squadValue / 10;
+      currentBank = (currentPicks.entry_history?.bank || 0) / 10;
+    }
+
     // Enrich team data
     const overview = {
       team: {
@@ -220,8 +236,9 @@ router.get('/team/:id/overview', async (req, res, next) => {
         overall_rank: team.summary_overall_rank,
         last_gw_points: team.summary_event_points,
         last_gw_rank: team.summary_event_rank,
-        team_value: team.last_deadline_value / 10,
-        bank: team.last_deadline_bank / 10,
+        // Real-time team value based on current player prices
+        team_value: currentTeamValue,
+        bank: currentBank,
         total_transfers: team.last_deadline_total_transfers
       },
       history: {

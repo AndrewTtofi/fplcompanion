@@ -94,7 +94,7 @@ export default function TeamPage() {
           {/* Tabs */}
           <div className="bg-white rounded-lg shadow-md mb-6">
             <div className="border-b border-gray-200">
-              <nav className="flex -mb-px">
+              <nav className="flex flex-wrap -mb-px">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}

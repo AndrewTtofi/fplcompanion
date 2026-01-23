@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
-import { Loader2, RefreshCw, TrendingUp, Users, Target, Clock } from 'lucide-react';
+import { Loader2, RefreshCw, TrendingUp, Users, Target, Clock, CheckCircle, PlayCircle } from 'lucide-react';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';
 
@@ -49,9 +49,24 @@ export default function LivePointsView({ teamId, gameweek }) {
     );
   }
 
-  const hasLiveGames = data.starting_xi.some(p =>
+  // Use gameweek status from API response
+  const gwStatus = data.gameweek_status || {};
+  const hasLiveGames = gwStatus.is_live || data.starting_xi.some(p =>
     p.fixtures?.some(f => f.started && !f.finished)
   );
+  const allMatchesFinished = gwStatus.all_matches_finished;
+  const dataChecked = gwStatus.data_checked;
+
+  // Determine the gameweek state for display
+  const getGameweekState = () => {
+    if (dataChecked) return { label: 'Final', color: 'bg-gray-500', icon: CheckCircle };
+    if (allMatchesFinished) return { label: 'Finished', color: 'bg-blue-500', icon: CheckCircle };
+    if (hasLiveGames) return { label: 'Live', color: 'bg-fpl-green', icon: PlayCircle };
+    if (gwStatus.has_matches_pending) return { label: 'Pending', color: 'bg-yellow-500', icon: Clock };
+    return { label: 'Active', color: 'bg-fpl-purple', icon: null };
+  };
+
+  const gameweekState = getGameweekState();
 
   return (
     <div className="space-y-6">
@@ -66,11 +81,16 @@ export default function LivePointsView({ teamId, gameweek }) {
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-fpl-green"></span>
                 </span>
               )}
-              Gameweek {gameweek} Live Points
+              Gameweek {gameweek} {allMatchesFinished && !dataChecked ? 'Points' : hasLiveGames ? 'Live Points' : 'Points'}
             </h2>
-            <p className="text-xs md:text-sm text-fpl-green mt-1">
-              Last updated: {lastUpdate.toLocaleTimeString()}
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`text-xs px-2 py-0.5 rounded ${gameweekState.color}`}>
+                {gameweekState.label}
+              </span>
+              <p className="text-xs md:text-sm text-white/75">
+                Last updated: {lastUpdate.toLocaleTimeString()}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 md:gap-4 flex-wrap">
@@ -106,7 +126,7 @@ export default function LivePointsView({ teamId, gameweek }) {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mt-4 md:mt-6">
           <StatBox
             icon={<Target />}
-            label="Total Points"
+            label={dataChecked ? "Final Points" : allMatchesFinished ? "Points" : "Total Points"}
             value={data.total_live_points}
             highlight
           />
@@ -122,11 +142,12 @@ export default function LivePointsView({ teamId, gameweek }) {
             subtitle={data.transfers.cost > 0 ? `-${data.transfers.cost} hits` : 'No hits'}
           />
           <StatBox
-            icon={<Clock />}
-            label="Players Yet to Play"
-            value={data.starting_xi.filter(p =>
+            icon={allMatchesFinished ? <CheckCircle /> : <Clock />}
+            label={allMatchesFinished ? "Matches" : "Yet to Play"}
+            value={allMatchesFinished ? "All Done" : data.starting_xi.filter(p =>
               p.fixtures?.some(f => !f.started)
             ).length}
+            subtitle={dataChecked ? "Bonus confirmed" : allMatchesFinished ? "Awaiting bonus" : null}
           />
         </div>
       </div>

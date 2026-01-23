@@ -23,6 +23,12 @@ export default function TeamOverview({ teamData }) {
     { refreshInterval: 30000, revalidateOnFocus: false }
   );
 
+  // Get gameweek status
+  const gwStatus = liveData?.gameweek_status || {};
+  const isLive = gwStatus.is_live;
+  const allMatchesFinished = gwStatus.all_matches_finished;
+  const dataChecked = gwStatus.data_checked;
+
   // Calculate live total points
   const liveTotalPoints = liveData?.total_live_points
     ? performance.overall_points + (liveData.total_live_points - performance.last_gw_points)
@@ -76,7 +82,8 @@ export default function TeamOverview({ teamData }) {
           label="Overall Points"
           value={liveTotalPoints?.toLocaleString()}
           icon={<Trophy className="text-fpl-purple" />}
-          isLive={liveData?.total_live_points}
+          isLive={isLive}
+          status={dataChecked ? 'final' : allMatchesFinished ? 'finished' : isLive ? 'live' : null}
         />
         <StatCard
           label={rankLabel}
@@ -135,9 +142,17 @@ export default function TeamOverview({ teamData }) {
                       {gwPoints}
                       {isCurrentGW && liveData?.total_live_points && (
                         <>
-                          <span className="ml-1 text-xs text-green-600 cursor-help">●</span>
+                          <span className={`ml-1 text-xs cursor-help ${
+                            dataChecked ? 'text-gray-500' : allMatchesFinished ? 'text-blue-600' : 'text-green-600'
+                          }`}>
+                            {dataChecked ? '○' : allMatchesFinished ? '◐' : '●'}
+                          </span>
                           <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">
-                            Live - Gameweek in progress
+                            {dataChecked
+                              ? 'Final - Gameweek complete'
+                              : allMatchesFinished
+                              ? 'Finished - Awaiting bonus'
+                              : 'Live - Matches in progress'}
                           </div>
                         </>
                       )}
@@ -169,7 +184,11 @@ export default function TeamOverview({ teamData }) {
         </div>
         {liveData?.total_live_points && (
           <p className="text-xs text-gray-500 mt-2">
-            * Ranks update after gameweek finalization. Points shown with green dot (●) are live.
+            {dataChecked
+              ? '○ Gameweek finalized. Final points confirmed.'
+              : allMatchesFinished
+              ? '◐ All matches finished. Awaiting bonus confirmation.'
+              : '● Live - Matches in progress. Ranks update after gameweek finalization.'}
           </p>
         )}
       </div>
@@ -285,7 +304,22 @@ export default function TeamOverview({ teamData }) {
   );
 }
 
-function StatCard({ label, value, icon, subtitle, isLive }) {
+function StatCard({ label, value, icon, subtitle, isLive, status }) {
+  const getStatusInfo = () => {
+    switch (status) {
+      case 'live':
+        return { color: 'text-green-600', label: 'Live - Matches in progress' };
+      case 'finished':
+        return { color: 'text-blue-600', label: 'Matches finished - Awaiting bonus confirmation' };
+      case 'final':
+        return { color: 'text-gray-500', label: 'Final - Gameweek complete' };
+      default:
+        return null;
+    }
+  };
+
+  const statusInfo = getStatusInfo();
+
   return (
     <div className="stat-card">
       <div className="flex items-center justify-between mb-2">
@@ -294,11 +328,13 @@ function StatCard({ label, value, icon, subtitle, isLive }) {
       </div>
       <div className="stat-value relative group">
         {value}
-        {isLive && (
+        {statusInfo && (
           <>
-            <span className="ml-2 text-sm text-green-600 cursor-help">●</span>
+            <span className={`ml-2 text-sm ${statusInfo.color} cursor-help`}>
+              {status === 'live' ? '●' : status === 'finished' ? '◐' : '○'}
+            </span>
             <div className="absolute hidden group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-0">
-              Live - Gameweek in progress
+              {statusInfo.label}
             </div>
           </>
         )}
