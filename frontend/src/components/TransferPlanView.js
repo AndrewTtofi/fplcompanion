@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
-import { Loader2, Plus, X, ChevronUp, ChevronDown, Star, Filter } from 'lucide-react';
+import { Loader2, Plus, X, ChevronUp, ChevronDown, Star, Filter, Link2, Check } from 'lucide-react';
 
 const SHORTLIST_STORAGE_KEY = 'fpl_shortlist';
 
@@ -21,9 +21,25 @@ export default function TransferPlanView({ teamData }) {
   // Shortlist (array of player IDs)
   const [shortlistedIds, setShortlistedIds] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
-  // Load shortlist from localStorage on mount
+  // Load shortlist from URL params or localStorage on mount
   useEffect(() => {
+    // Check URL params first (for shared links)
+    const urlParams = new URLSearchParams(window.location.search);
+    const shortlistParam = urlParams.get('shortlist');
+
+    if (shortlistParam) {
+      // Parse shortlist from URL
+      const ids = shortlistParam.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+      if (ids.length > 0) {
+        setShortlistedIds(ids);
+        setIsInitialized(true);
+        return;
+      }
+    }
+
+    // Fall back to localStorage
     try {
       const stored = localStorage.getItem(SHORTLIST_STORAGE_KEY);
       if (stored) {
@@ -35,15 +51,38 @@ export default function TransferPlanView({ teamData }) {
     setIsInitialized(true);
   }, []);
 
-  // Save shortlist to localStorage when it changes (only after initialization)
+  // Save shortlist to localStorage and update URL when it changes
   useEffect(() => {
     if (!isInitialized) return;
+
+    // Save to localStorage
     try {
       localStorage.setItem(SHORTLIST_STORAGE_KEY, JSON.stringify(shortlistedIds));
     } catch (e) {
       console.error('Failed to save shortlist to localStorage:', e);
     }
+
+    // Update URL with shortlist (shallow update, no navigation)
+    const url = new URL(window.location.href);
+    if (shortlistedIds.length > 0) {
+      url.searchParams.set('shortlist', shortlistedIds.join(','));
+    } else {
+      url.searchParams.delete('shortlist');
+    }
+    window.history.replaceState({}, '', url.toString());
   }, [shortlistedIds, isInitialized]);
+
+  // Copy shareable link to clipboard
+  const copyShareableLink = useCallback(() => {
+    const url = new URL(window.location.href);
+    if (shortlistedIds.length > 0) {
+      url.searchParams.set('shortlist', shortlistedIds.join(','));
+    }
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    });
+  }, [shortlistedIds]);
 
   // Fetch bootstrap data
   const { data: bootstrapData, error, isLoading } = useSWR(
@@ -280,7 +319,7 @@ export default function TransferPlanView({ teamData }) {
     }
   };
 
-  // Render fixtures cells
+  // Render fixtures cells (show 3 on mobile, 5 on desktop)
   const renderFixtures = (teamId) => {
     const fixtures = upcomingFixturesMap[teamId] || [];
 
@@ -288,9 +327,10 @@ export default function TransferPlanView({ teamData }) {
       const opponent = teamsMap[fixture.opponent];
       const opponentShort = opponent?.short_name || '???';
       const homeAway = fixture.isHome ? 'H' : 'A';
+      const hiddenOnMobile = idx >= 3 ? 'hidden md:table-cell' : '';
 
       return (
-        <td key={idx} className="py-2 px-1 text-center">
+        <td key={idx} className={`py-2 px-1 text-center ${hiddenOnMobile}`}>
           <div className={`text-[10px] md:text-xs px-1 py-0.5 rounded ${getDifficultyColor(fixture.difficulty)}`}>
             <span className="font-medium">{opponentShort}</span>
             <span className="opacity-75 ml-0.5">({homeAway})</span>
@@ -304,12 +344,17 @@ export default function TransferPlanView({ teamData }) {
   const renderEmptyFixtures = (teamId) => {
     const fixtures = upcomingFixturesMap[teamId] || [];
     const emptyCount = 5 - fixtures.length;
+    const fixtureCount = fixtures.length;
 
-    return Array(emptyCount).fill(null).map((_, idx) => (
-      <td key={`empty-${idx}`} className="py-2 px-1 text-center">
-        <div className="text-[10px] md:text-xs text-gray-400">-</div>
-      </td>
-    ));
+    return Array(emptyCount).fill(null).map((_, idx) => {
+      const actualIdx = fixtureCount + idx;
+      const hiddenOnMobile = actualIdx >= 3 ? 'hidden md:table-cell' : '';
+      return (
+        <td key={`empty-${idx}`} className={`py-2 px-1 text-center ${hiddenOnMobile}`}>
+          <div className="text-[10px] md:text-xs text-gray-400">-</div>
+        </td>
+      );
+    });
   };
 
   return (
@@ -400,13 +445,13 @@ export default function TransferPlanView({ teamData }) {
             All Players ({filteredPlayers.length})
           </h3>
         </div>
-        <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
+        <div className="overflow-x-auto max-h-[400px] overflow-y-auto relative">
           <table className="w-full">
-            <thead className="bg-gray-50 sticky top-0">
+            <thead className="bg-gray-50 sticky top-0 z-20 shadow-sm">
               <tr>
-                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 sticky left-0 bg-gray-50 z-10">Name</th>
-                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600">Team</th>
-                <th className="text-center py-2 px-3 text-xs font-semibold text-gray-600">Pos</th>
+                <th className="text-left py-2 px-2 md:px-3 text-xs font-semibold text-gray-600 sticky left-0 bg-gray-50 z-30">Name</th>
+                <th className="text-left py-2 px-2 md:px-3 text-xs font-semibold text-gray-600 hidden sm:table-cell">Team</th>
+                <th className="text-center py-2 px-1 md:px-3 text-xs font-semibold text-gray-600">Pos</th>
                 <SortableHeader
                   label="Price"
                   field="now_cost"
@@ -424,26 +469,29 @@ export default function TransferPlanView({ teamData }) {
                   field="form"
                   currentSort={searchSort}
                   onSort={toggleSearchSort}
+                  className="hidden md:table-cell"
                 />
                 <SortableHeader
                   label="PPG"
                   field="points_per_game"
                   currentSort={searchSort}
                   onSort={toggleSearchSort}
+                  className="hidden lg:table-cell"
                 />
                 <SortableHeader
                   label="Sel%"
                   field="selected_by_percent"
                   currentSort={searchSort}
                   onSort={toggleSearchSort}
+                  className="hidden lg:table-cell"
                 />
-                {/* Fixture headers */}
-                {[1, 2, 3, 4, 5].map(i => (
-                  <th key={`gw-${i}`} className="text-center py-2 px-1 text-xs font-semibold text-gray-600 whitespace-nowrap">
+                {/* Fixture headers - show 3 on mobile, 5 on desktop */}
+                {[1, 2, 3, 4, 5].map((i, idx) => (
+                  <th key={`gw-${i}`} className={`text-center py-2 px-1 text-xs font-semibold text-gray-600 whitespace-nowrap ${idx >= 3 ? 'hidden md:table-cell' : ''}`}>
                     GW{currentGameweek + i - 1}
                   </th>
                 ))}
-                <th className="text-center py-2 px-3 text-xs font-semibold text-gray-600">Shortlist</th>
+                <th className="text-center py-2 px-2 md:px-3 text-xs font-semibold text-gray-600">+</th>
               </tr>
             </thead>
             <tbody>
@@ -464,38 +512,38 @@ export default function TransferPlanView({ teamData }) {
                         isOwned ? 'bg-blue-50' : isShortlisted ? 'bg-yellow-50' : 'hover:bg-gray-50'
                       }`}
                     >
-                      <td className="py-2 px-3 sticky left-0 bg-inherit">
+                      <td className="py-2 px-2 md:px-3 sticky left-0 bg-inherit z-10">
                         <div className="flex items-center gap-1">
                           {isShortlisted && !isOwned && <Star size={12} className="text-yellow-500 fill-yellow-500 flex-shrink-0" />}
-                          <span className="text-sm font-medium truncate max-w-[100px] md:max-w-[150px]">
+                          <span className="text-sm font-medium truncate max-w-[80px] md:max-w-[150px]">
                             {player.web_name}
                           </span>
                         </div>
                       </td>
-                      <td className="py-2 px-3 text-sm text-gray-600">
+                      <td className="py-2 px-2 md:px-3 text-sm text-gray-600 hidden sm:table-cell">
                         {teamsMap[player.team]?.short_name || '-'}
                       </td>
-                      <td className="py-2 px-3 text-center text-xs text-gray-600">
+                      <td className="py-2 px-1 md:px-3 text-center text-xs text-gray-600">
                         {positionsMap[player.element_type]?.singular_name_short || '-'}
                       </td>
-                      <td className="py-2 px-3 text-center text-sm">
+                      <td className="py-2 px-1 md:px-3 text-center text-sm">
                         {(player.now_cost / 10).toFixed(1)}
                       </td>
-                      <td className="py-2 px-3 text-center text-sm font-semibold text-fpl-purple">
+                      <td className="py-2 px-1 md:px-3 text-center text-sm font-semibold text-fpl-purple">
                         {player.total_points}
                       </td>
-                      <td className="py-2 px-3 text-center text-sm">
+                      <td className="py-2 px-1 md:px-3 text-center text-sm hidden md:table-cell">
                         {player.form}
                       </td>
-                      <td className="py-2 px-3 text-center text-sm">
+                      <td className="py-2 px-1 md:px-3 text-center text-sm hidden lg:table-cell">
                         {player.points_per_game}
                       </td>
-                      <td className="py-2 px-3 text-center text-sm">
+                      <td className="py-2 px-1 md:px-3 text-center text-sm hidden lg:table-cell">
                         {player.selected_by_percent}%
                       </td>
                       {renderFixtures(player.team)}
                       {renderEmptyFixtures(player.team)}
-                      <td className="py-2 px-3 text-center">
+                      <td className="py-2 px-2 md:px-3 text-center">
                         {isOwned ? (
                           <span
                             className="inline-flex items-center justify-center w-7 h-7 text-gray-300 cursor-not-allowed"
@@ -539,22 +587,43 @@ export default function TransferPlanView({ teamData }) {
               Shortlist ({shortlistedPlayers.length})
             </h3>
           </div>
-          {shortlistedPlayers.length > 0 && (
-            <button
-              onClick={() => setShortlistedIds([])}
-              className="text-xs text-red-600 hover:text-red-700 transition-colors"
-            >
-              Clear All
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {shortlistedPlayers.length > 0 && (
+              <>
+                <button
+                  onClick={copyShareableLink}
+                  className="flex items-center gap-1.5 text-xs text-fpl-purple hover:text-purple-700 transition-colors"
+                  title="Copy shareable link"
+                >
+                  {linkCopied ? (
+                    <>
+                      <Check size={14} />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Link2 size={14} />
+                      <span className="hidden sm:inline">Share Link</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => setShortlistedIds([])}
+                  className="text-xs text-red-600 hover:text-red-700 transition-colors"
+                >
+                  Clear All
+                </button>
+              </>
+            )}
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 sticky left-0 bg-gray-50 z-10">Name</th>
-                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600">Team</th>
-                <th className="text-center py-2 px-3 text-xs font-semibold text-gray-600">Pos</th>
+                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 sticky left-0 bg-gray-50 z-20">Name</th>
+                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 hidden sm:table-cell">Team</th>
+                <th className="text-center py-2 px-1 md:px-3 text-xs font-semibold text-gray-600">Pos</th>
                 <SortableHeader
                   label="Price"
                   field="now_cost"
@@ -572,26 +641,29 @@ export default function TransferPlanView({ teamData }) {
                   field="form"
                   currentSort={shortlistSort}
                   onSort={toggleShortlistSort}
+                  className="hidden md:table-cell"
                 />
                 <SortableHeader
                   label="PPG"
                   field="points_per_game"
                   currentSort={shortlistSort}
                   onSort={toggleShortlistSort}
+                  className="hidden lg:table-cell"
                 />
                 <SortableHeader
                   label="Sel%"
                   field="selected_by_percent"
                   currentSort={shortlistSort}
                   onSort={toggleShortlistSort}
+                  className="hidden lg:table-cell"
                 />
-                {/* Fixture headers */}
-                {[1, 2, 3, 4, 5].map(i => (
-                  <th key={`gw-${i}`} className="text-center py-2 px-1 text-xs font-semibold text-gray-600 whitespace-nowrap">
+                {/* Fixture headers - show 3 on mobile, 5 on desktop */}
+                {[1, 2, 3, 4, 5].map((i, idx) => (
+                  <th key={`gw-${i}`} className={`text-center py-2 px-1 text-xs font-semibold text-gray-600 whitespace-nowrap ${idx >= 3 ? 'hidden md:table-cell' : ''}`}>
                     GW{currentGameweek + i - 1}
                   </th>
                 ))}
-                <th className="text-center py-2 px-3 text-xs font-semibold text-gray-600">Remove</th>
+                <th className="text-center py-2 px-2 md:px-3 text-xs font-semibold text-gray-600">X</th>
               </tr>
             </thead>
             <tbody>
@@ -604,35 +676,35 @@ export default function TransferPlanView({ teamData }) {
               ) : (
                 shortlistedPlayers.map((player) => (
                   <tr key={player.id} className="border-t border-gray-100 hover:bg-gray-50">
-                    <td className="py-2 px-3 sticky left-0 bg-inherit">
-                      <span className="text-sm font-medium truncate max-w-[100px] md:max-w-[150px]">
+                    <td className="py-2 px-2 md:px-3 sticky left-0 bg-inherit z-10">
+                      <span className="text-sm font-medium truncate max-w-[80px] md:max-w-[150px]">
                         {player.web_name}
                       </span>
                     </td>
-                    <td className="py-2 px-3 text-sm text-gray-600">
+                    <td className="py-2 px-2 md:px-3 text-sm text-gray-600 hidden sm:table-cell">
                       {teamsMap[player.team]?.short_name || '-'}
                     </td>
-                    <td className="py-2 px-3 text-center text-xs text-gray-600">
+                    <td className="py-2 px-1 md:px-3 text-center text-xs text-gray-600">
                       {positionsMap[player.element_type]?.singular_name_short || '-'}
                     </td>
-                    <td className="py-2 px-3 text-center text-sm">
+                    <td className="py-2 px-1 md:px-3 text-center text-sm">
                       {(player.now_cost / 10).toFixed(1)}
                     </td>
-                    <td className="py-2 px-3 text-center text-sm font-semibold text-fpl-purple">
+                    <td className="py-2 px-1 md:px-3 text-center text-sm font-semibold text-fpl-purple">
                       {player.total_points}
                     </td>
-                    <td className="py-2 px-3 text-center text-sm">
+                    <td className="py-2 px-1 md:px-3 text-center text-sm hidden md:table-cell">
                       {player.form}
                     </td>
-                    <td className="py-2 px-3 text-center text-sm">
+                    <td className="py-2 px-1 md:px-3 text-center text-sm hidden lg:table-cell">
                       {player.points_per_game}
                     </td>
-                    <td className="py-2 px-3 text-center text-sm">
+                    <td className="py-2 px-1 md:px-3 text-center text-sm hidden lg:table-cell">
                       {player.selected_by_percent}%
                     </td>
                     {renderFixtures(player.team)}
                     {renderEmptyFixtures(player.team)}
-                    <td className="py-2 px-3 text-center">
+                    <td className="py-2 px-2 md:px-3 text-center">
                       <button
                         onClick={() => removeFromShortlist(player.id)}
                         className="inline-flex items-center justify-center w-7 h-7 text-red-600 hover:bg-red-50 rounded transition-colors"
