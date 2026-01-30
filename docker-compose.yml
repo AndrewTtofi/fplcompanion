@@ -29,6 +29,7 @@ services:
       - REDIS_PORT=6379
       - FPL_API_BASE_URL=https://fantasy.premierleague.com/api
       - CACHE_TTL=300
+      - GOOGLE_AI_API_KEY=<replace-with-your-api-key>
     volumes:
       - ./backend:/app
       - /app/node_modules

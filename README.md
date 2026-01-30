@@ -11,6 +11,7 @@ A fully containerized Fantasy Premier League companion application that helps FP
 - **Transfer History**: Review all transfers, hits, and chip usage
 - **Global Stats**: Highest FPL scorers and gameweek top performers
 - **Real-time Data**: Cached data from official FPL API with automatic refresh
+- **Podcast Insights**: Auto-transcribed Official FPL Podcast episodes (requires Google AI API key)
 
 ## Tech Stack
 
@@ -117,6 +118,8 @@ The backend exposes the following endpoints:
 - `GET /api/players/top/gameweek/:gw` - Get gameweek top scorers
 - `GET /api/player/:id` - Get player details
 - `GET /api/fixtures` - Get fixtures
+- `GET /api/podcast/transcript` - Get latest podcast transcript
+- `GET /api/podcast/status` - Get podcast processing status
 
 ## Configuration
 
@@ -135,7 +138,44 @@ CACHE_TTL=300
 
 # Frontend
 NEXT_PUBLIC_API_URL=http://localhost:3001
+
+# Optional: Podcast Insights (see below)
+GOOGLE_AI_API_KEY=your_api_key_here
 ```
+
+### Podcast Insights
+
+The app can automatically extract FPL insights (transfers, captaincy picks, chip strategy) from the Official FPL Podcast using Google's Gemini AI. This feature is **optional** - the app works fine without it.
+
+**To enable podcast insights:**
+
+1. **Get a Google AI API key** (free):
+   - Go to https://aistudio.google.com/apikey
+   - Sign in with your Google account
+   - Click "Create API Key"
+   - Copy the generated key
+
+2. **Add the key to your configuration**:
+
+   Option A - In `docker-compose.yml`:
+   ```yaml
+   environment:
+     - GOOGLE_AI_API_KEY=your_actual_api_key_here
+   ```
+
+   Option B - In `.env` file:
+   ```bash
+   GOOGLE_AI_API_KEY=your_actual_api_key_here
+   ```
+
+3. **Restart the containers**:
+   ```bash
+   docker-compose down && docker-compose up -d
+   ```
+
+The latest podcast episode will be automatically processed on startup - transcribed and analyzed for FPL insights. Results are cached for 7 days.
+
+**Cost**: Google AI provides a free tier with 1,000 requests/day, which is more than enough for this feature.
 
 ### Cache Configuration
 
@@ -286,6 +326,8 @@ MIT - See [LICENSE](LICENSE) for details
 ## Roadmap
 
 - [x] Team comparison feature
+- [x] Podcast insights (transcript)
+- [x] Podcast insights (AI-extracted picks)
 - [ ] Transfer planner
 - [ ] Fixture difficulty analyzer
 - [ ] Player search by name

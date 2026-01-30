@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const fplApi = require('../services/fplApi');
+const podcastProcessor = require('../services/podcastProcessor');
+const redisClient = require('../config/redis');
 
 /**
  * GET /api/bootstrap
@@ -309,6 +311,119 @@ router.get('/feeds/team/:teamId', async (req, res, next) => {
     const gameweek = req.query.gameweek || null;
     const data = await fplApi.getTeamFeed(teamId, gameweek);
     res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ============================================
+// Podcast Transcript Routes
+// ============================================
+
+/**
+ * GET /api/podcast/transcript
+ * Get the latest FPL Podcast transcript (auto-processed on startup)
+ */
+router.get('/podcast/transcript', async (req, res, next) => {
+  try {
+    // Check if feature is enabled
+    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    if (!apiKey || apiKey === 'your_api_key_here') {
+      return res.status(503).json({
+        disabled: true,
+        error: 'Podcast feature disabled',
+        message: 'Podcast transcription is not configured. Set GOOGLE_AI_API_KEY to enable.'
+      });
+    }
+
+    const cached = await redisClient.get('podcast:fpl:transcript');
+
+    if (cached) {
+      return res.json(JSON.parse(cached));
+    }
+
+    // Check if still processing
+    const status = podcastProcessor.getStatus();
+    if (status.isProcessing) {
+      return res.status(202).json({
+        processing: true,
+        status: status.status,
+        message: 'Podcast is being processed. Please check back shortly.'
+      });
+    }
+
+    return res.status(404).json({
+      error: 'No transcript available',
+      message: 'Podcast transcript is not available yet.'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/podcast/insights
+ * Get the latest FPL Podcast structured insights
+ */
+router.get('/podcast/insights', async (req, res, next) => {
+  try {
+    // Check if feature is enabled
+    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    if (!apiKey || apiKey === 'your_api_key_here') {
+      return res.status(503).json({
+        disabled: true,
+        error: 'Podcast feature disabled',
+        message: 'Podcast insights are not configured. Set GOOGLE_AI_API_KEY to enable.'
+      });
+    }
+
+    const cached = await redisClient.get('podcast:fpl:insights');
+
+    if (cached) {
+      return res.json(JSON.parse(cached));
+    }
+
+    // Check if still processing
+    const status = podcastProcessor.getStatus();
+    if (status.isProcessing) {
+      return res.status(202).json({
+        processing: true,
+        status: status.status,
+        message: 'Podcast is being processed. Please check back shortly.'
+      });
+    }
+
+    return res.status(404).json({
+      error: 'No insights available',
+      message: 'Podcast insights are not available yet.'
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/podcast/status
+ * Get podcast processing status
+ */
+router.get('/podcast/status', async (req, res, next) => {
+  try {
+    // Check if feature is enabled
+    const apiKey = process.env.GOOGLE_AI_API_KEY;
+    const featureEnabled = apiKey && apiKey !== 'your_api_key_here';
+
+    const cachedTranscript = await redisClient.get('podcast:fpl:transcript');
+    const cachedInsights = await redisClient.get('podcast:fpl:insights');
+    const status = podcastProcessor.getStatus();
+
+    res.json({
+      ...status,
+      featureEnabled,
+      hasTranscript: !!cachedTranscript,
+      hasInsights: !!cachedInsights,
+      lastProcessed: cachedTranscript ? JSON.parse(cachedTranscript).processedAt : null,
+      episode: cachedTranscript ? JSON.parse(cachedTranscript).episode : null
+    });
   } catch (error) {
     next(error);
   }
