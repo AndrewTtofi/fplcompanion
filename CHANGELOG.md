@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.11.0] - 2026-01-31
+
+### Changes
+- feat(backend): add Official FPL Podcast insights extraction (#24) (c364dfb)
+
 ## [v2.10.2] - 2026-01-23
 
 ### Changes
