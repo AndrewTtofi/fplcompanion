@@ -55,6 +55,11 @@ export const api = {
     const url = gameweek ? `/feeds/team/${teamId}?gameweek=${gameweek}` : `/feeds/team/${teamId}`;
     return apiClient.get(url);
   },
+
+  // Podcast transcript and insights (auto-processed on backend startup)
+  getPodcastTranscript: () => apiClient.get('/podcast/transcript'),
+  getPodcastInsights: () => apiClient.get('/podcast/insights'),
+  getPodcastStatus: () => apiClient.get('/podcast/status'),
 };
 
 // Error handler wrapper

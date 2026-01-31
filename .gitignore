@@ -39,3 +39,13 @@ coverage/
 
 # Misc
 .cache/
+
+# Audio/temp files (podcast processing)
+backend/temp/
+*.mp3
+*.wav
+*.m4a
+*.mp4
+*.aac
+*.ogg
+*.flac

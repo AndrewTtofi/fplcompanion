@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
 import { Loader2, Plus, X, ChevronUp, ChevronDown, Star, Filter, Link2, Check } from 'lucide-react';
+import PodcastInsights from './PodcastInsights';
 
 const SHORTLIST_STORAGE_KEY = 'fpl_shortlist';
 
@@ -720,6 +721,9 @@ export default function TransferPlanView({ teamData }) {
           </table>
         </div>
       </div>
+
+      {/* Podcast Insights */}
+      <PodcastInsights />
     </div>
   );
 }
