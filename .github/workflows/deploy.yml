@@ -116,30 +116,25 @@ jobs:
             GOOGLE_AI_API_KEY=${{ secrets.GOOGLE_AI_API_KEY }}
             EOF
 
-            # Ensure SSL cert exists (self-signed placeholder if no real cert yet)
-            echo "[4/6] Ensuring SSL certificates..."
+            # Ensure SSL cert exists so nginx can start
+            echo "[4/7] Ensuring SSL certificates..."
             cd "$APP_DIR"
-            CERT_VOLUME="fplcompanion_certbot-etc"
-            docker volume create "$CERT_VOLUME" 2>/dev/null || true
-            HAS_CERT=$(docker run --rm -v "$CERT_VOLUME":/etc/letsencrypt alpine sh -c \
-              "test -f /etc/letsencrypt/live/fplcompanion.com/fullchain.pem && echo yes || echo no")
-            if [ "$HAS_CERT" = "no" ]; then
-              echo "No SSL cert found. Creating self-signed placeholder..."
-              docker run --rm -v "$CERT_VOLUME":/etc/letsencrypt alpine sh -c "
-                apk add --no-cache openssl > /dev/null 2>&1
+            docker compose -f docker-compose.prod.yml run --rm --entrypoint "" certbot sh -c "
+              if [ ! -f /etc/letsencrypt/live/fplcompanion.com/fullchain.pem ]; then
+                echo 'No SSL cert found. Creating self-signed placeholder...'
                 mkdir -p /etc/letsencrypt/live/fplcompanion.com
                 openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
                   -keyout /etc/letsencrypt/live/fplcompanion.com/privkey.pem \
                   -out /etc/letsencrypt/live/fplcompanion.com/fullchain.pem \
                   -subj '/CN=fplcompanion.com' 2>/dev/null
-              "
-              echo "Placeholder cert created. Run certbot to get a real certificate."
-            else
-              echo "SSL certificate exists."
-            fi
+                touch /etc/letsencrypt/live/fplcompanion.com/.placeholder
+              else
+                echo 'SSL certificate exists.'
+              fi
+            "
 
             # Build and deploy containers
-            echo "[5/6] Building and starting containers..."
+            echo "[5/7] Building and starting containers..."
 
             # Build new images
             docker compose -f docker-compose.prod.yml build --no-cache
@@ -150,8 +145,30 @@ jobs:
             # Clean up old images to save disk space
             docker image prune -f
 
+            # If using a placeholder cert, attempt to get a real one now that nginx is up
+            echo "[6/7] Checking SSL certificate..."
+            IS_PLACEHOLDER=$(docker compose -f docker-compose.prod.yml run --rm --entrypoint "" certbot sh -c \
+              "test -f /etc/letsencrypt/live/fplcompanion.com/.placeholder && echo yes || echo no")
+            if [ "$IS_PLACEHOLDER" = "yes" ]; then
+              echo "Attempting to obtain real SSL certificate..."
+              docker compose -f docker-compose.prod.yml run --rm --entrypoint "" certbot \
+                certbot certonly --webroot -w /var/www/certbot \
+                --cert-name fplcompanion.com \
+                -d fplcompanion.com -d www.fplcompanion.com \
+                --non-interactive --agree-tos --email admin@fplcompanion.com --no-eff-email \
+                && {
+                  echo "Real SSL certificate obtained. Reloading nginx..."
+                  docker compose -f docker-compose.prod.yml exec -T nginx nginx -s reload
+                  # Remove placeholder marker
+                  docker compose -f docker-compose.prod.yml run --rm --entrypoint "" certbot \
+                    rm -f /etc/letsencrypt/live/fplcompanion.com/.placeholder
+                } || echo "Certbot failed (DNS may not be ready). Using self-signed placeholder."
+            else
+              echo "Valid SSL certificate already in place."
+            fi
+
             # Wait for services to be healthy
-            echo "[6/6] Verifying deployment..."
+            echo "[7/7] Verifying deployment..."
             sleep 10
 
             # Check backend health (node is available in the container, wget/curl are not)
