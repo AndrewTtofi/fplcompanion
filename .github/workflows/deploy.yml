@@ -116,9 +116,30 @@ jobs:
             GOOGLE_AI_API_KEY=${{ secrets.GOOGLE_AI_API_KEY }}
             EOF
 
-            # Build and deploy containers with zero-downtime strategy
-            echo "[4/5] Building and starting containers..."
+            # Ensure SSL cert exists (self-signed placeholder if no real cert yet)
+            echo "[4/6] Ensuring SSL certificates..."
             cd "$APP_DIR"
+            CERT_VOLUME="fplcompanion_certbot-etc"
+            docker volume create "$CERT_VOLUME" 2>/dev/null || true
+            HAS_CERT=$(docker run --rm -v "$CERT_VOLUME":/etc/letsencrypt alpine sh -c \
+              "test -f /etc/letsencrypt/live/fplcompanion.com/fullchain.pem && echo yes || echo no")
+            if [ "$HAS_CERT" = "no" ]; then
+              echo "No SSL cert found. Creating self-signed placeholder..."
+              docker run --rm -v "$CERT_VOLUME":/etc/letsencrypt alpine sh -c "
+                apk add --no-cache openssl > /dev/null 2>&1
+                mkdir -p /etc/letsencrypt/live/fplcompanion.com
+                openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
+                  -keyout /etc/letsencrypt/live/fplcompanion.com/privkey.pem \
+                  -out /etc/letsencrypt/live/fplcompanion.com/fullchain.pem \
+                  -subj '/CN=fplcompanion.com' 2>/dev/null
+              "
+              echo "Placeholder cert created. Run certbot to get a real certificate."
+            else
+              echo "SSL certificate exists."
+            fi
+
+            # Build and deploy containers
+            echo "[5/6] Building and starting containers..."
 
             # Build new images
             docker compose -f docker-compose.prod.yml build --no-cache
@@ -130,7 +151,7 @@ jobs:
             docker image prune -f
 
             # Wait for services to be healthy
-            echo "[5/5] Verifying deployment..."
+            echo "[6/6] Verifying deployment..."
             sleep 10
 
             # Check backend health (node is available in the container, wget/curl are not)
