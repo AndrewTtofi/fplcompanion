@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.12.4] - 2026-02-07
+
+### Changes
+- fix(ci): create self-signed placeholder SSL cert on first deploy (3800f46)
+
 ## [v2.12.3] - 2026-02-07
 
 ### Changes
