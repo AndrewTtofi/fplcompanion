@@ -99,6 +99,54 @@ class FPLApiService {
   }
 
   /**
+   * Get live GW points for all teams in a classic league.
+   * Fetches picks for each team and calculates points from the shared live data.
+   */
+  async getLeagueLivePoints(leagueId, gameweek, page = 1) {
+    const [leagueData, liveData] = await Promise.all([
+      this.getClassicLeague(leagueId, page),
+      this.getLiveGameweekData(gameweek)
+    ]);
+
+    // Build a map of element id -> total_points from live data
+    const livePointsMap = {};
+    if (liveData?.elements) {
+      liveData.elements.forEach(el => {
+        livePointsMap[el.id] = el.stats?.total_points || 0;
+      });
+    }
+
+    const standings = leagueData.standings?.results || [];
+
+    // Fetch picks for all teams in parallel
+    const picksPromises = standings.map(entry =>
+      this.getTeamPicks(entry.entry, gameweek).catch(() => null)
+    );
+    const allPicks = await Promise.all(picksPromises);
+
+    // Calculate live points for each team
+    const livePoints = {};
+    standings.forEach((entry, idx) => {
+      const picks = allPicks[idx];
+      if (!picks?.picks) return;
+
+      const startingPicks = picks.picks.filter(p => p.position <= 11);
+      let total = 0;
+      for (const pick of startingPicks) {
+        const pts = livePointsMap[pick.element] || 0;
+        total += pick.is_captain ? pts * pick.multiplier : pts;
+      }
+
+      livePoints[entry.entry] = {
+        live_gw_points: total,
+        transfers_cost: picks.entry_history?.event_transfers_cost || 0
+      };
+    });
+
+    return { gameweek, live_points: livePoints };
+  }
+
+  /**
    * Get H2H league standings
    */
   async getHeadToHeadLeague(leagueId, page = 1) {

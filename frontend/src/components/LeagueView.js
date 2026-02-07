@@ -87,6 +87,13 @@ function LeagueStandings({ league, userTeamId, teamData }) {
     { refreshInterval: 30000, revalidateOnFocus: false }
   );
 
+  // Fetch live points for ALL teams in the league
+  const { data: leagueLiveData } = useSWR(
+    currentGwData && league.id ? ['league-live', league.id, currentGwData.current_gameweek] : null,
+    () => api.getLeagueLivePoints(league.id, currentGwData.current_gameweek).then(res => res.data),
+    { refreshInterval: 30000, revalidateOnFocus: false }
+  );
+
   // Fetch comparison data
   const { data: comparisonData, isLoading: comparisonLoading } = useSWR(
     comparisonTeamId && currentGwData ? ['compare', userTeamId, comparisonTeamId, currentGwData.current_gameweek] : null,
@@ -249,17 +256,24 @@ function LeagueStandings({ league, userTeamId, teamData }) {
             <tbody>
               {standings.map((entry, index) => {
                 const isUser = entry.entry === userTeamId;
+                const teamLive = leagueLiveData?.live_points?.[entry.entry];
                 const rankChange = entry.last_rank - entry.rank;
 
-                // Use live points for user's team if available
-                const gwPoints = isUser && userLiveData?.total_live_points
-                  ? userLiveData.total_live_points
-                  : entry.event_total;
+                // Use live points: user's detailed live data, league-wide live data, or FPL API fallback
+                let gwPoints = entry.event_total;
+                if (isUser && userLiveData?.total_live_points) {
+                  gwPoints = userLiveData.total_live_points;
+                } else if (teamLive) {
+                  gwPoints = teamLive.live_gw_points;
+                }
 
-                // Calculate live total points for user
-                const totalPoints = isUser && userLiveData?.total_live_points
-                  ? entry.total + (userLiveData.total_live_points - entry.event_total)
-                  : entry.total;
+                // Calculate live total points
+                let totalPoints = entry.total;
+                if (isUser && userLiveData?.total_live_points) {
+                  totalPoints = entry.total + (userLiveData.total_live_points - entry.event_total);
+                } else if (teamLive) {
+                  totalPoints = entry.total + (teamLive.live_gw_points - entry.event_total);
+                }
 
                 return (
                   <tr
@@ -292,7 +306,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                     </td>
                     <td className="py-2 md:py-3 px-2 md:px-4 text-center text-xs md:text-sm relative group">
                       {gwPoints}
-                      {isUser && statusDisplay && (
+                      {(isUser || teamLive) && statusDisplay && (
                         <>
                           <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                           <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1">
@@ -303,7 +317,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                     </td>
                     <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple dark:text-fpl-green text-xs md:text-sm relative group">
                       {totalPoints.toLocaleString()}
-                      {isUser && statusDisplay && (
+                      {(isUser || teamLive) && statusDisplay && (
                         <>
                           <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                           <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">

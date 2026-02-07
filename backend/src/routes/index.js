@@ -102,6 +102,21 @@ router.get('/league/classic/:id', async (req, res, next) => {
 });
 
 /**
+ * GET /api/league/classic/:id/live/:gameweek
+ * Get live GW points for all teams in a classic league
+ */
+router.get('/league/classic/:id/live/:gameweek', async (req, res, next) => {
+  try {
+    const { id: leagueId, gameweek } = req.params;
+    const page = req.query.page || 1;
+    const data = await fplApi.getLeagueLivePoints(leagueId, gameweek, page);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/league/h2h/:id
  * Get H2H league standings
  */
