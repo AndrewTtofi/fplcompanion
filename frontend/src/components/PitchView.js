@@ -43,8 +43,8 @@ export default function PitchView({ startingXI, bench }) {
       </div>
 
       {/* Bench */}
-      <div className="bg-gray-100 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Substitutes</h3>
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Substitutes</h3>
         <div className="flex justify-center items-center gap-4">
           {bench.map(player => (
             <PlayerJersey key={player.element} player={player} type="bench" isBench />

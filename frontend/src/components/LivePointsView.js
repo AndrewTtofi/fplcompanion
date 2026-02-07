@@ -114,7 +114,7 @@ export default function LivePointsView({ teamId, gameweek }) {
             <button
               onClick={handleManualRefresh}
               disabled={isRefreshing}
-              className="bg-white text-fpl-purple px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="bg-white dark:bg-gray-200 text-fpl-purple dark:text-fpl-green px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
               <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
@@ -154,15 +154,15 @@ export default function LivePointsView({ teamId, gameweek }) {
 
       {/* Captain Info */}
       {data.captain && (
-        <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4">
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-400 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-sm font-medium text-yellow-800">Captain (C)</span>
-              <h3 className="text-lg font-bold text-yellow-900">{data.captain.name}</h3>
+              <span className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Captain (C)</span>
+              <h3 className="text-lg font-bold text-yellow-900 dark:text-yellow-200">{data.captain.name}</h3>
             </div>
             <div className="text-right">
-              <div className="text-sm text-yellow-700">Points</div>
-              <div className="text-2xl font-bold text-yellow-900">
+              <div className="text-sm text-yellow-700 dark:text-yellow-400">Points</div>
+              <div className="text-2xl font-bold text-yellow-900 dark:text-yellow-200">
                 {data.captain.points} × 2 = {data.captain.multiplied_points}
               </div>
             </div>
@@ -172,7 +172,7 @@ export default function LivePointsView({ teamId, gameweek }) {
 
       {/* Starting XI */}
       <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Starting XI</h3>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Starting XI</h3>
         <div className="space-y-3">
           {data.starting_xi.map((player) => (
             <LivePlayerCard key={player.element} player={player} />
@@ -182,7 +182,7 @@ export default function LivePointsView({ teamId, gameweek }) {
 
       {/* Bench */}
       <div>
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Bench</h3>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Bench</h3>
         <div className="space-y-3">
           {data.bench.map((player) => (
             <LivePlayerCard key={player.element} player={player} isBench />
@@ -218,14 +218,14 @@ function LivePlayerCard({ player, isBench = false }) {
   const displayPoints = player.is_captain ? stats.total_points * player.multiplier : stats.total_points;
 
   return (
-    <div className={`bg-white rounded-lg border-2 p-3 md:p-4 transition-all ${
-      isPlaying ? 'border-green-400 shadow-lg' : 'border-gray-200'
+    <div className={`bg-white dark:bg-gray-800 rounded-lg border-2 p-3 md:p-4 transition-all ${
+      isPlaying ? 'border-green-400 shadow-lg' : 'border-gray-200 dark:border-gray-700'
     } ${isBench ? 'opacity-75' : ''}`}>
       <div className="flex items-start md:items-center justify-between gap-2">
         {/* Player Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-gray-900 text-sm md:text-base truncate">{player.web_name}</span>
+            <span className="font-bold text-gray-900 dark:text-white text-sm md:text-base truncate">{player.web_name}</span>
             {player.is_captain && (
               <span className="bg-fpl-purple text-white text-xs px-2 py-0.5 rounded font-bold shrink-0">C</span>
             )}
@@ -249,7 +249,7 @@ function LivePlayerCard({ player, isBench = false }) {
             )}
           </div>
 
-          <div className="flex items-center gap-2 md:gap-4 mt-1 text-xs md:text-sm text-gray-600 flex-wrap">
+          <div className="flex items-center gap-2 md:gap-4 mt-1 text-xs md:text-sm text-gray-600 dark:text-gray-300 flex-wrap">
             <span>{player.team_short}</span>
             <span>{player.position_name}</span>
             <span>£{player.now_cost}m</span>
@@ -275,10 +275,10 @@ function LivePlayerCard({ player, isBench = false }) {
                   key={idx}
                   className={`text-xs px-2 py-1 rounded ${
                     fixture.started && !fixture.finished
-                      ? 'bg-green-100 text-green-800 font-bold'
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 font-bold'
                       : fixture.finished
-                      ? 'bg-gray-100 text-gray-700'
-                      : 'bg-blue-100 text-blue-700'
+                      ? 'bg-gray-100 text-gray-700 dark:bg-gray-600 dark:text-gray-200'
+                      : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                   }`}
                 >
                   {fixture.isHome ? 'vs' : '@'} {fixture.opponent}
@@ -291,11 +291,11 @@ function LivePlayerCard({ player, isBench = false }) {
 
         {/* Points */}
         <div className="text-right shrink-0">
-          <div className="text-2xl md:text-3xl font-bold text-fpl-purple">
+          <div className="text-2xl md:text-3xl font-bold text-fpl-purple dark:text-fpl-green">
             {displayPoints}
           </div>
           {player.is_captain && stats.total_points > 0 && (
-            <div className="text-xs text-gray-500 whitespace-nowrap">
+            <div className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
               {stats.total_points} × {player.multiplier}
             </div>
           )}
@@ -303,14 +303,14 @@ function LivePlayerCard({ player, isBench = false }) {
             <div className="text-xs text-blue-600 mt-1 whitespace-nowrap">Yet to play</div>
           )}
           {!hasPlayed && !yetToPlay && (
-            <div className="text-xs text-gray-500 mt-1">DNP</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">DNP</div>
           )}
         </div>
       </div>
 
       {/* Stats Breakdown */}
       {hasPlayed && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
+        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 md:gap-2 text-center text-xs">
             <StatItem label="MIN" value={stats.minutes} />
             {stats.goals_scored > 0 && <StatItem label="G" value={stats.goals_scored} highlight />}
@@ -324,8 +324,8 @@ function LivePlayerCard({ player, isBench = false }) {
 
           {/* Points Breakdown */}
           {player.points_breakdown && player.points_breakdown.length > 0 && (
-            <div className="mt-2 pt-2 border-t border-gray-100">
-              <div className="text-xs text-gray-600 space-y-1">
+            <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+              <div className="text-xs text-gray-600 dark:text-gray-300 space-y-1">
                 {player.points_breakdown.map((item, idx) => (
                   <div key={idx} className="flex justify-between">
                     <span>{item.name}</span>
@@ -343,11 +343,11 @@ function LivePlayerCard({ player, isBench = false }) {
 
 function StatItem({ label, value, highlight = false, negative = false }) {
   return (
-    <div className={`${highlight ? 'bg-green-50' : negative ? 'bg-red-50' : ''} rounded p-1`}>
-      <div className={`text-xs ${highlight ? 'text-green-700' : negative ? 'text-red-700' : 'text-gray-500'}`}>
+    <div className={`${highlight ? 'bg-green-50 dark:bg-green-900/20' : negative ? 'bg-red-50 dark:bg-red-900/20' : ''} rounded p-1`}>
+      <div className={`text-xs ${highlight ? 'text-green-700 dark:text-green-400' : negative ? 'text-red-700' : 'text-gray-500 dark:text-gray-400'}`}>
         {label}
       </div>
-      <div className={`font-bold ${highlight ? 'text-green-900' : negative ? 'text-red-900' : 'text-gray-900'}`}>
+      <div className={`font-bold ${highlight ? 'text-green-900 dark:text-green-300' : negative ? 'text-red-900' : 'text-gray-900 dark:text-white'}`}>
         {value}
       </div>
     </div>

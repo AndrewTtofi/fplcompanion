@@ -10,11 +10,15 @@
 }
 
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
 }
 
 .gradient-fpl {
   background: linear-gradient(135deg, var(--fpl-purple) 0%, #4a0050 100%);
+}
+
+.dark .gradient-fpl {
+  background: linear-gradient(135deg, #1a0020 0%, #2d0035 100%);
 }
 
 .pitch-view {
@@ -28,6 +32,19 @@ body {
       rgba(255, 255, 255, 0.1) 51px
     ),
     linear-gradient(90deg, #0f9d58 0%, #0f9d58 100%);
+}
+
+.dark .pitch-view {
+  background: linear-gradient(180deg, #0a7a42 0%, #0a7a42 100%);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 50px,
+      rgba(255, 255, 255, 0.07) 50px,
+      rgba(255, 255, 255, 0.07) 51px
+    ),
+    linear-gradient(90deg, #0a7a42 0%, #0a7a42 100%);
 }
 
 .jersey {
@@ -59,15 +76,15 @@ body {
 }
 
 .stat-card {
-  @apply bg-white rounded-lg shadow p-4 border border-gray-200;
+  @apply bg-white rounded-lg shadow p-4 border border-gray-200 dark:bg-gray-800 dark:border-gray-700;
 }
 
 .stat-label {
-  @apply text-sm text-gray-500 font-medium;
+  @apply text-sm text-gray-500 font-medium dark:text-gray-400;
 }
 
 .stat-value {
-  @apply text-2xl font-bold text-gray-900 mt-1;
+  @apply text-2xl font-bold text-gray-900 mt-1 dark:text-white;
 }
 
 .writing-mode-vertical {

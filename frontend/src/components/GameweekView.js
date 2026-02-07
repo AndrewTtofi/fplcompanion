@@ -31,7 +31,7 @@ export default function GameweekView({ teamData }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin text-fpl-purple" size={32} />
+        <Loader2 className="animate-spin text-fpl-purple dark:text-fpl-green" size={32} />
       </div>
     );
   }
@@ -83,18 +83,18 @@ export default function GameweekView({ teamData }) {
       {/* Gameweek Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Gameweek {currentGW}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Gameweek {currentGW}</h2>
           <div className="flex items-center space-x-6 mt-2 text-sm">
             <div>
-              <span className="text-gray-500">GW Points:</span>{' '}
-              <span className="font-bold text-fpl-purple text-lg">{totalPoints}</span>
+              <span className="text-gray-500 dark:text-gray-400">GW Points:</span>{' '}
+              <span className="font-bold text-fpl-purple dark:text-fpl-green text-lg">{totalPoints}</span>
             </div>
             <div>
-              <span className="text-gray-500">On Bench:</span>{' '}
-              <span className="font-bold text-gray-700">{pointsOnBench}</span>
+              <span className="text-gray-500 dark:text-gray-400">On Bench:</span>{' '}
+              <span className="font-bold text-gray-700 dark:text-gray-200">{pointsOnBench}</span>
             </div>
             <div>
-              <span className="text-gray-500">Transfers:</span>{' '}
+              <span className="text-gray-500 dark:text-gray-400">Transfers:</span>{' '}
               <span className="font-bold">{picks.entry_history.event_transfers}</span>
               {picks.entry_history.event_transfers_cost > 0 && (
                 <span className="text-red-600 ml-1">(-{picks.entry_history.event_transfers_cost})</span>
@@ -104,11 +104,11 @@ export default function GameweekView({ teamData }) {
         </div>
 
         {/* View Mode Toggle */}
-        <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-1">
+        <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
           <button
             onClick={() => setViewMode('list')}
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition ${
-              viewMode === 'list' ? 'bg-white shadow text-fpl-purple' : 'text-gray-600 hover:text-gray-900'
+              viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow text-fpl-purple dark:text-fpl-green' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
             }`}
           >
             <List size={18} />
@@ -117,7 +117,7 @@ export default function GameweekView({ teamData }) {
           <button
             onClick={() => setViewMode('pitch')}
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition ${
-              viewMode === 'pitch' ? 'bg-white shadow text-fpl-purple' : 'text-gray-600 hover:text-gray-900'
+              viewMode === 'pitch' ? 'bg-white dark:bg-gray-700 shadow text-fpl-purple dark:text-fpl-green' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
             }`}
           >
             <Grid3x3 size={18} />
@@ -143,29 +143,29 @@ function ListView({ startingXI, bench }) {
   return (
     <div className="space-y-4">
       {/* Starting XI */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="bg-fpl-purple text-white px-4 py-3 font-semibold">
           Starting XI
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Position</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Player</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Team</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">£</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">Min</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">G</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">A</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">CS</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">Bonus</th>
-                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-600">Points</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Position</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Player</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Team</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">£</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Min</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">G</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">A</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">CS</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Bonus</th>
+                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Points</th>
               </tr>
             </thead>
             <tbody>
               {startingXI.map((pick) => (
-                <tr key={pick.element} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr key={pick.element} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="py-3 px-4 text-sm font-medium">{pick.position}</td>
                   <td className="py-3 px-4">
                     <div className="flex items-center space-x-2">
@@ -182,7 +182,7 @@ function ListView({ startingXI, bench }) {
                   <td className="py-3 px-4 text-sm text-center">{pick.clean_sheets}</td>
                   <td className="py-3 px-4 text-sm text-center">{pick.bonus}</td>
                   <td className="py-3 px-4 text-right">
-                    <span className="font-bold text-fpl-purple">
+                    <span className="font-bold text-fpl-purple dark:text-fpl-green">
                       {pick.is_captain ? pick.live_points * pick.multiplier : pick.live_points}
                     </span>
                   </td>
@@ -194,32 +194,32 @@ function ListView({ startingXI, bench }) {
       </div>
 
       {/* Bench */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="bg-gray-600 text-white px-4 py-3 font-semibold">
           Bench
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Position</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Player</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">Team</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">£</th>
-                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600">Min</th>
-                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-600">Points</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Position</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Player</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Team</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">£</th>
+                <th className="text-center py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Min</th>
+                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-600 dark:text-gray-300">Points</th>
               </tr>
             </thead>
             <tbody>
               {bench.map((pick) => (
-                <tr key={pick.element} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr key={pick.element} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="py-3 px-4 text-sm font-medium">{pick.position - 11}</td>
                   <td className="py-3 px-4 font-medium">{pick.web_name}</td>
                   <td className="py-3 px-4 text-sm">{pick.team_short}</td>
                   <td className="py-3 px-4 text-sm text-center">{pick.now_cost}</td>
                   <td className="py-3 px-4 text-sm text-center">{pick.minutes}</td>
                   <td className="py-3 px-4 text-right">
-                    <span className="font-bold text-gray-600">{pick.live_points}</span>
+                    <span className="font-bold text-gray-600 dark:text-gray-300">{pick.live_points}</span>
                   </td>
                 </tr>
               ))}

@@ -8,18 +8,18 @@ export default function ErrorMessage({
 }) {
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-xl shadow-lg p-8">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
         <div className="flex items-center justify-center mb-6">
-          <div className="bg-red-100 p-4 rounded-full">
+          <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-full">
             <AlertTriangle className="text-red-600" size={40} />
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-3">
           {title}
         </h2>
 
-        <p className="text-gray-600 text-center mb-6">
+        <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
           {message}
         </p>
 
@@ -37,7 +37,7 @@ export default function ErrorMessage({
           {showHomeButton && (
             <button
               onClick={() => window.location.href = '/'}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-6 rounded-lg transition-all flex items-center gap-2"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-semibold py-2 px-6 rounded-lg transition-all flex items-center gap-2"
             >
               <Home size={18} />
               Go Home
@@ -45,8 +45,8 @@ export default function ErrorMessage({
           )}
         </div>
 
-        <div className="mt-6 pt-4 border-t border-gray-200 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             If this problem persists, please check your internet connection or try again later.
           </p>
         </div>

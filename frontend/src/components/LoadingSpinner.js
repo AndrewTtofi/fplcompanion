@@ -17,11 +17,11 @@ export default function LoadingSpinner({
   const content = (
     <div className="flex flex-col items-center justify-center gap-4">
       <Loader2
-        className="animate-spin text-fpl-purple"
+        className="animate-spin text-fpl-purple dark:text-fpl-green"
         size={spinnerSize}
       />
       {message && (
-        <p className="text-gray-600 text-sm font-medium animate-pulse">
+        <p className="text-gray-600 dark:text-gray-300 text-sm font-medium animate-pulse">
           {message}
         </p>
       )}
@@ -30,7 +30,7 @@ export default function LoadingSpinner({
 
   if (fullScreen) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         {content}
       </div>
     );
