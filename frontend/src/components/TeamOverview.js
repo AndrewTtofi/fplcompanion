@@ -81,7 +81,7 @@ export default function TeamOverview({ teamData }) {
         <StatCard
           label="Overall Points"
           value={liveTotalPoints?.toLocaleString()}
-          icon={<Trophy className="text-fpl-purple" />}
+          icon={<Trophy className="text-fpl-purple dark:text-fpl-green" />}
           isLive={isLive}
           status={dataChecked ? 'final' : allMatchesFinished ? 'finished' : isLive ? 'live' : null}
         />
@@ -138,7 +138,7 @@ export default function TeamOverview({ teamData }) {
                 return (
                   <tr key={gw.event} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-2 md:py-3 px-2 md:px-4 font-medium text-sm">GW{gw.event}</td>
-                    <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple relative group text-sm md:text-base">
+                    <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple dark:text-fpl-green relative group text-sm md:text-base">
                       {gwPoints}
                       {isCurrentGW && liveData?.total_live_points && (
                         <>
@@ -292,7 +292,7 @@ export default function TeamOverview({ teamData }) {
                   selectLeague(league);
                   router.push(`/team/${team.id}?tab=leagues&league=${league.id}`, undefined, { shallow: true });
                 }}
-                className="text-fpl-purple hover:underline text-xs md:text-sm font-medium flex-shrink-0"
+                className="text-fpl-purple dark:text-fpl-green hover:underline text-xs md:text-sm font-medium flex-shrink-0"
               >
                 View →
               </button>

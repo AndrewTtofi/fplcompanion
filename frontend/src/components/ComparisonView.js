@@ -126,7 +126,7 @@ function ComparisonSelector({ opponentId, setOpponentId, handleCompare, leagues,
                         </div>
                         <div className="text-right">
                           <div className="text-sm text-gray-500 dark:text-gray-400">Rank {team.rank}</div>
-                          <div className="font-bold text-fpl-purple">{team.total} pts</div>
+                          <div className="font-bold text-fpl-purple dark:text-fpl-green">{team.total} pts</div>
                         </div>
                       </div>
                     </button>
@@ -150,7 +150,7 @@ function ComparisonResults({ myTeamId, opponentId, gameweek, onBack }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin text-fpl-purple" size={32} />
+        <Loader2 className="animate-spin text-fpl-purple dark:text-fpl-green" size={32} />
       </div>
     );
   }
@@ -159,7 +159,7 @@ function ComparisonResults({ myTeamId, opponentId, gameweek, onBack }) {
     return (
       <div className="text-center py-12">
         <div className="text-red-600 mb-4">Failed to load comparison</div>
-        <button onClick={onBack} className="text-fpl-purple hover:underline">
+        <button onClick={onBack} className="text-fpl-purple dark:text-fpl-green hover:underline">
           Try Again
         </button>
       </div>
@@ -174,7 +174,7 @@ function ComparisonResults({ myTeamId, opponentId, gameweek, onBack }) {
       {/* Back Button */}
       <button
         onClick={onBack}
-        className="text-fpl-purple hover:underline flex items-center gap-2"
+        className="text-fpl-purple dark:text-fpl-green hover:underline flex items-center gap-2"
       >
         ← Change Opponent
       </button>
@@ -325,7 +325,7 @@ function TeamCard({ team, label, highlight = false }) {
       <div className="mt-4 space-y-2">
         <div className="flex justify-between">
           <span className="text-sm text-gray-600 dark:text-gray-300">GW Points:</span>
-          <span className="font-bold text-fpl-purple">{team.gameweek_points}</span>
+          <span className="font-bold text-fpl-purple dark:text-fpl-green">{team.gameweek_points}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-sm text-gray-600 dark:text-gray-300">Net Points:</span>

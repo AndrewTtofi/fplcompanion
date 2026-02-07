@@ -71,7 +71,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
             }}
             className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 rounded-md transition-all text-xs md:text-sm ${
               viewMode === 'live'
-                ? 'bg-white dark:bg-gray-700 text-fpl-purple shadow-sm font-semibold'
+                ? 'bg-white dark:bg-gray-700 text-fpl-purple dark:text-fpl-green shadow-sm font-semibold'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
             }`}
           >
@@ -88,7 +88,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
             }}
             className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 rounded-md transition-all text-xs md:text-sm ${
               viewMode === 'field'
-                ? 'bg-white dark:bg-gray-700 text-fpl-purple shadow-sm font-semibold'
+                ? 'bg-white dark:bg-gray-700 text-fpl-purple dark:text-fpl-green shadow-sm font-semibold'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
             }`}
           >
@@ -670,7 +670,7 @@ function LivePointsPlayerRow({ player, benchPosition }) {
         </div>
 
         <div className="text-right flex-shrink-0 ml-2">
-          <div className="text-lg font-bold text-fpl-purple">
+          <div className="text-lg font-bold text-fpl-purple dark:text-fpl-green">
             {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
           </div>
         </div>
@@ -747,11 +747,11 @@ function LivePointsPlayerRow({ player, benchPosition }) {
               <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">Total Points</span>
-                  <span className="text-2xl font-bold text-fpl-purple">{stats.total_points || 0}</span>
+                  <span className="text-2xl font-bold text-fpl-purple dark:text-fpl-green">{stats.total_points || 0}</span>
                 </div>
                 {player.is_captain && (
                   <div className="text-xs text-gray-600 dark:text-gray-300 mt-1">
-                    With captain bonus: <span className="font-bold text-fpl-purple">{(stats.total_points || 0) * player.multiplier}</span> pts
+                    With captain bonus: <span className="font-bold text-fpl-purple dark:text-fpl-green">{(stats.total_points || 0) * player.multiplier}</span> pts
                   </div>
                 )}
                 {isPlaying && (

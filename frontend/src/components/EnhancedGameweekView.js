@@ -40,7 +40,7 @@ export default function EnhancedGameweekView({ teamData }) {
                 }}
                 className={`flex-1 md:flex-initial py-3 md:py-4 px-4 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors flex items-center justify-center gap-1.5 md:gap-2 ${
                   subView === viewItem.id
-                    ? 'border-fpl-purple text-fpl-purple'
+                    ? 'border-fpl-purple text-fpl-purple dark:border-fpl-green dark:text-fpl-green'
                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300'
                 }`}
               >

@@ -44,7 +44,7 @@ export default function TeamPage() {
         <Layout>
           <div className="flex items-center justify-center min-h-[60vh]">
             <div className="text-center">
-              <Loader2 className="animate-spin mx-auto mb-4 text-fpl-purple" size={48} />
+              <Loader2 className="animate-spin mx-auto mb-4 text-fpl-purple dark:text-fpl-green" size={48} />
               <p className="text-lg text-gray-600 dark:text-gray-300">Loading team data...</p>
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function TeamPage() {
                     }}
                     className={`py-3 md:py-4 px-4 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors whitespace-nowrap ${
                       activeTab === tab.id
-                        ? 'border-fpl-purple text-fpl-purple'
+                        ? 'border-fpl-purple text-fpl-purple dark:border-fpl-green dark:text-fpl-green'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-500'
                     }`}
                   >

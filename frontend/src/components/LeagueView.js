@@ -97,7 +97,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin text-fpl-purple" size={32} />
+        <Loader2 className="animate-spin text-fpl-purple dark:text-fpl-green" size={32} />
       </div>
     );
   }
@@ -174,7 +174,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
               {standings.length} teams
             </p>
           </div>
-          <Trophy className="text-fpl-purple" size={32} />
+          <Trophy className="text-fpl-purple dark:text-fpl-green" size={32} />
         </div>
 
         {/* Always show user stats section */}
@@ -185,7 +185,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                 <span className="hidden sm:inline">Your Rank</span>
                 <span className="sm:hidden">Rank</span>
               </div>
-              <div className="text-lg md:text-2xl font-bold text-fpl-purple">
+              <div className="text-lg md:text-2xl font-bold text-fpl-purple dark:text-fpl-green">
                 {userEntry?.rank || '-'}
               </div>
             </div>
@@ -270,7 +270,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                   >
                     <td className="py-2 md:py-3 px-2 md:px-4">
                       <div className="flex items-center space-x-1 md:space-x-2">
-                        <span className={`text-xs md:text-sm ${index < 3 ? 'font-bold text-fpl-purple' : ''}`}>
+                        <span className={`text-xs md:text-sm ${index < 3 ? 'font-bold text-fpl-purple dark:text-fpl-green' : ''}`}>
                           {entry.rank}
                         </span>
                         {rankChange > 0 && (
@@ -301,7 +301,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                         </>
                       )}
                     </td>
-                    <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple text-xs md:text-sm relative group">
+                    <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple dark:text-fpl-green text-xs md:text-sm relative group">
                       {totalPoints.toLocaleString()}
                       {isUser && statusDisplay && (
                         <>
@@ -316,7 +316,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                       {!isUser && (
                         <button
                           onClick={() => setComparisonTeamId(entry.entry)}
-                          className="inline-flex items-center gap-1 px-2 md:px-3 py-1 text-xs md:text-sm font-medium text-fpl-purple hover:bg-fpl-purple hover:text-white border border-fpl-purple rounded-md transition-colors dark:hover:bg-fpl-purple/20 dark:hover:text-white"
+                          className="inline-flex items-center gap-1 px-2 md:px-3 py-1 text-xs md:text-sm font-medium text-fpl-purple dark:text-fpl-green hover:bg-fpl-purple hover:text-white border border-fpl-purple rounded-md transition-colors dark:hover:bg-fpl-purple/20 dark:hover:text-white"
                         >
                           <Users size={14} className="hidden sm:inline" />
                           <span className="hidden sm:inline">Compare</span>
@@ -363,7 +363,7 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 md:p-8">
-          <Loader2 className="animate-spin text-fpl-purple mx-auto" size={40} />
+          <Loader2 className="animate-spin text-fpl-purple dark:text-fpl-green mx-auto" size={40} />
           <p className="mt-4 text-sm md:text-base text-gray-600 dark:text-gray-300">Loading comparison...</p>
         </div>
       </div>
@@ -456,7 +456,7 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 md:p-4">
                 <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-1 md:mb-2">Your Captain</div>
                 <div className="font-bold text-xs md:text-lg truncate dark:text-white">{comparison.captain_difference.team1_captain.name}</div>
-                <div className="text-lg md:text-2xl font-bold text-fpl-purple mt-1 md:mt-2">
+                <div className="text-lg md:text-2xl font-bold text-fpl-purple dark:text-fpl-green mt-1 md:mt-2">
                   {comparison.captain_difference.team1_captain.multiplied_points} pts
                 </div>
               </div>
@@ -507,14 +507,14 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
                         <span className="bg-yellow-500 text-white text-[10px] md:text-xs px-1 rounded">C</span>
                       )}
                     </div>
-                    <span className="font-bold text-xs md:text-sm text-fpl-purple flex-shrink-0 ml-2">{player.multiplied_points} pts</span>
+                    <span className="font-bold text-xs md:text-sm text-fpl-purple dark:text-fpl-green flex-shrink-0 ml-2">{player.multiplied_points} pts</span>
                   </div>
                 ))}
               </div>
               <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-xs md:text-sm dark:text-white">Total:</span>
-                  <span className="font-bold text-fpl-purple text-sm md:text-lg">
+                  <span className="font-bold text-fpl-purple dark:text-fpl-green text-sm md:text-lg">
                     {comparison.differential_points.team1} pts
                   </span>
                 </div>

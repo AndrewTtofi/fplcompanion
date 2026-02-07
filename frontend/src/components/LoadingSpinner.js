@@ -17,7 +17,7 @@ export default function LoadingSpinner({
   const content = (
     <div className="flex flex-col items-center justify-center gap-4">
       <Loader2
-        className="animate-spin text-fpl-purple"
+        className="animate-spin text-fpl-purple dark:text-fpl-green"
         size={spinnerSize}
       />
       {message && (

@@ -293,7 +293,7 @@ export default function TransferPlanView({ teamData }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin text-fpl-purple" size={32} />
+        <Loader2 className="animate-spin text-fpl-purple dark:text-fpl-green" size={32} />
       </div>
     );
   }
@@ -530,7 +530,7 @@ export default function TransferPlanView({ teamData }) {
                       <td className="py-2 px-1 md:px-3 text-center text-sm">
                         {(player.now_cost / 10).toFixed(1)}
                       </td>
-                      <td className="py-2 px-1 md:px-3 text-center text-sm font-semibold text-fpl-purple">
+                      <td className="py-2 px-1 md:px-3 text-center text-sm font-semibold text-fpl-purple dark:text-fpl-green">
                         {player.total_points}
                       </td>
                       <td className="py-2 px-1 md:px-3 text-center text-sm hidden md:table-cell">
@@ -563,7 +563,7 @@ export default function TransferPlanView({ teamData }) {
                         ) : (
                           <button
                             onClick={() => addToShortlist(player.id)}
-                            className="inline-flex items-center justify-center w-7 h-7 text-fpl-purple hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+                            className="inline-flex items-center justify-center w-7 h-7 text-fpl-purple dark:text-fpl-green hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
                             title="Add to shortlist"
                           >
                             <Plus size={16} />
@@ -593,7 +593,7 @@ export default function TransferPlanView({ teamData }) {
               <>
                 <button
                   onClick={copyShareableLink}
-                  className="flex items-center gap-1.5 text-xs text-fpl-purple hover:text-purple-700 transition-colors"
+                  className="flex items-center gap-1.5 text-xs text-fpl-purple dark:text-fpl-green hover:text-purple-700 dark:hover:text-fpl-green transition-colors"
                   title="Copy shareable link"
                 >
                   {linkCopied ? (
@@ -691,7 +691,7 @@ export default function TransferPlanView({ teamData }) {
                     <td className="py-2 px-1 md:px-3 text-center text-sm">
                       {(player.now_cost / 10).toFixed(1)}
                     </td>
-                    <td className="py-2 px-1 md:px-3 text-center text-sm font-semibold text-fpl-purple">
+                    <td className="py-2 px-1 md:px-3 text-center text-sm font-semibold text-fpl-purple dark:text-fpl-green">
                       {player.total_points}
                     </td>
                     <td className="py-2 px-1 md:px-3 text-center text-sm hidden md:table-cell">
@@ -743,11 +743,11 @@ function SortableHeader({ label, field, currentSort, onSort, className = '' }) {
         <span className="flex flex-col">
           <ChevronUp
             size={10}
-            className={isActive && !isDesc ? 'text-fpl-purple' : 'text-gray-300 dark:text-gray-500'}
+            className={isActive && !isDesc ? 'text-fpl-purple dark:text-fpl-green' : 'text-gray-300 dark:text-gray-500'}
           />
           <ChevronDown
             size={10}
-            className={`-mt-1 ${isActive && isDesc ? 'text-fpl-purple' : 'text-gray-300 dark:text-gray-500'}`}
+            className={`-mt-1 ${isActive && isDesc ? 'text-fpl-purple dark:text-fpl-green' : 'text-gray-300 dark:text-gray-500'}`}
           />
         </span>
       </div>

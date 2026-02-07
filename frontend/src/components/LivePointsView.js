@@ -114,7 +114,7 @@ export default function LivePointsView({ teamId, gameweek }) {
             <button
               onClick={handleManualRefresh}
               disabled={isRefreshing}
-              className="bg-white dark:bg-gray-200 text-fpl-purple px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="bg-white dark:bg-gray-200 text-fpl-purple dark:text-fpl-green px-3 md:px-4 py-2 rounded-lg hover:bg-opacity-90 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
               <span className="hidden sm:inline">{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
@@ -291,7 +291,7 @@ function LivePlayerCard({ player, isBench = false }) {
 
         {/* Points */}
         <div className="text-right shrink-0">
-          <div className="text-2xl md:text-3xl font-bold text-fpl-purple">
+          <div className="text-2xl md:text-3xl font-bold text-fpl-purple dark:text-fpl-green">
             {displayPoints}
           </div>
           {player.is_captain && stats.total_points > 0 && (

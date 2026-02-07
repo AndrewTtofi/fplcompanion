@@ -31,7 +31,7 @@ export default function GameweekView({ teamData }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="animate-spin text-fpl-purple" size={32} />
+        <Loader2 className="animate-spin text-fpl-purple dark:text-fpl-green" size={32} />
       </div>
     );
   }
@@ -87,7 +87,7 @@ export default function GameweekView({ teamData }) {
           <div className="flex items-center space-x-6 mt-2 text-sm">
             <div>
               <span className="text-gray-500 dark:text-gray-400">GW Points:</span>{' '}
-              <span className="font-bold text-fpl-purple text-lg">{totalPoints}</span>
+              <span className="font-bold text-fpl-purple dark:text-fpl-green text-lg">{totalPoints}</span>
             </div>
             <div>
               <span className="text-gray-500 dark:text-gray-400">On Bench:</span>{' '}
@@ -108,7 +108,7 @@ export default function GameweekView({ teamData }) {
           <button
             onClick={() => setViewMode('list')}
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition ${
-              viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow text-fpl-purple' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+              viewMode === 'list' ? 'bg-white dark:bg-gray-700 shadow text-fpl-purple dark:text-fpl-green' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
             }`}
           >
             <List size={18} />
@@ -117,7 +117,7 @@ export default function GameweekView({ teamData }) {
           <button
             onClick={() => setViewMode('pitch')}
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition ${
-              viewMode === 'pitch' ? 'bg-white dark:bg-gray-700 shadow text-fpl-purple' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+              viewMode === 'pitch' ? 'bg-white dark:bg-gray-700 shadow text-fpl-purple dark:text-fpl-green' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
             }`}
           >
             <Grid3x3 size={18} />
@@ -182,7 +182,7 @@ function ListView({ startingXI, bench }) {
                   <td className="py-3 px-4 text-sm text-center">{pick.clean_sheets}</td>
                   <td className="py-3 px-4 text-sm text-center">{pick.bonus}</td>
                   <td className="py-3 px-4 text-right">
-                    <span className="font-bold text-fpl-purple">
+                    <span className="font-bold text-fpl-purple dark:text-fpl-green">
                       {pick.is_captain ? pick.live_points * pick.multiplier : pick.live_points}
                     </span>
                   </td>
