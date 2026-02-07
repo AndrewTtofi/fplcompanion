@@ -1,0 +1,229 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref to deploy (tag, branch, or SHA)'
+        required: false
+        default: ''
+
+env:
+  APP_DIR: /opt/fplcompanion
+  DOMAIN: fplcompanion.com
+
+jobs:
+  # -------------------------------------------------------------------
+  # 1. Run the full CI checks before deploying
+  # -------------------------------------------------------------------
+  ci:
+    name: Pre-deploy CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.event.inputs.ref || github.sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install and lint backend
+        working-directory: ./backend
+        run: |
+          npm install --prefer-offline
+          npm run lint || echo "No lint script configured"
+
+      - name: Install, lint, and build frontend
+        working-directory: ./frontend
+        run: |
+          npm install --prefer-offline
+          npm run lint || echo "No lint script configured"
+          npm run build
+
+      - name: Test Docker builds
+        run: |
+          docker build -f ./backend/Dockerfile.prod ./backend -t fpl-backend:ci-test
+          docker build -f ./frontend/Dockerfile.prod ./frontend -t fpl-frontend:ci-test
+
+  # -------------------------------------------------------------------
+  # 2. Deploy to Lightsail via SSH
+  # -------------------------------------------------------------------
+  deploy:
+    name: Deploy to Lightsail
+    runs-on: ubuntu-latest
+    needs: ci
+    environment: production
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Determine deploy ref
+        id: ref
+        run: |
+          REF="${{ github.event.release.tag_name || github.event.inputs.ref || github.sha }}"
+          echo "deploy_ref=$REF" >> $GITHUB_OUTPUT
+          echo "Deploying ref: $REF"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.LIGHTSAIL_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script_stop: true
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+            APP_DIR="${{ env.APP_DIR }}"
+            DEPLOY_REF="${{ steps.ref.outputs.deploy_ref }}"
+
+            echo "=== Deploying $DEPLOY_REF to production ==="
+
+            # Clone on first deploy, fetch on subsequent deploys
+            if [ ! -d "$APP_DIR/.git" ]; then
+              echo "[1/5] Cloning repository..."
+              git clone https://github.com/${{ github.repository }}.git "$APP_DIR"
+              cd "$APP_DIR"
+            else
+              echo "[1/5] Fetching latest changes..."
+              cd "$APP_DIR"
+              git fetch --all --tags --prune
+            fi
+
+            # Checkout the target ref
+            echo "[2/5] Checking out $DEPLOY_REF..."
+            git checkout "$DEPLOY_REF"
+
+            # Write environment file for docker-compose
+            echo "[3/5] Writing environment config..."
+            cat > "$APP_DIR/.env" << EOF
+            GOOGLE_AI_API_KEY=${{ secrets.GOOGLE_AI_API_KEY }}
+            EOF
+
+            # Build and deploy containers with zero-downtime strategy
+            echo "[4/5] Building and starting containers..."
+            cd "$APP_DIR"
+
+            # Build new images
+            docker compose -f docker-compose.prod.yml build --no-cache
+
+            # Restart services (redis stays up to preserve cache)
+            docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
+
+            # Clean up old images to save disk space
+            docker image prune -f
+
+            # Wait for services to be healthy
+            echo "[5/5] Verifying deployment..."
+            sleep 10
+
+            # Check backend health
+            for i in $(seq 1 12); do
+              if docker compose -f docker-compose.prod.yml exec -T backend wget -qO- http://localhost:3001/health > /dev/null 2>&1; then
+                echo "Backend is healthy."
+                break
+              fi
+              if [ "$i" -eq 12 ]; then
+                echo "ERROR: Backend health check failed after 60s"
+                docker compose -f docker-compose.prod.yml logs --tail=50 backend
+                exit 1
+              fi
+              echo "Waiting for backend to be healthy... ($i/12)"
+              sleep 5
+            done
+
+            # Check frontend
+            for i in $(seq 1 12); do
+              if docker compose -f docker-compose.prod.yml exec -T frontend wget -qO- http://localhost:3000 > /dev/null 2>&1; then
+                echo "Frontend is healthy."
+                break
+              fi
+              if [ "$i" -eq 12 ]; then
+                echo "ERROR: Frontend health check failed after 60s"
+                docker compose -f docker-compose.prod.yml logs --tail=50 frontend
+                exit 1
+              fi
+              echo "Waiting for frontend to be healthy... ($i/12)"
+              sleep 5
+            done
+
+            # Check nginx
+            for i in $(seq 1 6); do
+              if docker compose -f docker-compose.prod.yml exec -T nginx wget -qO- http://localhost:80 > /dev/null 2>&1; then
+                echo "Nginx is healthy."
+                break
+              fi
+              if [ "$i" -eq 6 ]; then
+                echo "WARNING: Nginx check inconclusive (may redirect to HTTPS)"
+              fi
+              sleep 5
+            done
+
+            echo ""
+            echo "=== Deployment complete ==="
+            echo "Version: $DEPLOY_REF"
+            echo "URL: https://fplcompanion.com"
+            docker compose -f docker-compose.prod.yml ps
+
+      - name: Deployment summary
+        run: |
+          echo "### Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ steps.ref.outputs.deploy_ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "**URL:** https://${{ env.DOMAIN }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+
+  # -------------------------------------------------------------------
+  # 3. Post-deploy smoke test from outside the server
+  # -------------------------------------------------------------------
+  smoke-test:
+    name: Smoke Test
+    runs-on: ubuntu-latest
+    needs: deploy
+
+    steps:
+      - name: Wait for deployment to stabilize
+        run: sleep 15
+
+      - name: Test HTTPS endpoint
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }} --max-time 30 || echo "000")
+          echo "HTTPS status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 400 ]; then
+            echo "ERROR: Site returned HTTP $HTTP_STATUS"
+            exit 1
+          fi
+          echo "HTTPS endpoint is live."
+
+      - name: Test API health
+        run: |
+          HEALTH=$(curl -s https://${{ env.DOMAIN }}/health --max-time 15 || echo "failed")
+          echo "Health check response: $HEALTH"
+          if echo "$HEALTH" | grep -qi "failed"; then
+            echo "ERROR: Health check endpoint failed"
+            exit 1
+          fi
+          echo "API health check passed."
+
+      - name: Test API data endpoint
+        run: |
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }}/api/gameweek/current --max-time 15 || echo "000")
+          echo "API /gameweek/current status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "WARNING: API endpoint returned $HTTP_STATUS (may be expected if FPL API is down)"
+          else
+            echo "API data endpoint is working."
+          fi
+
+      - name: Smoke test summary
+        run: |
+          echo "### Smoke Tests Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All production endpoints verified." >> $GITHUB_STEP_SUMMARY

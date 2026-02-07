@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:18-slim AS builder
 
 WORKDIR /app
 
@@ -8,9 +8,18 @@ RUN npm ci --only=production
 
 COPY . .
 
-FROM node:18-alpine
+FROM node:18-slim
+
+# Install ffmpeg for podcast audio compression
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+# Create temp directory for audio files
+RUN mkdir -p temp/audio && chown -R node:node temp
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
