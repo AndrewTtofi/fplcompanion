@@ -14,6 +14,10 @@ jobs:
       contents: write
       pull-requests: write
 
+    outputs:
+      new_version: ${{ steps.new_version.outputs.new_version }}
+      should_release: ${{ steps.new_version.outputs.should_release }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -203,3 +207,12 @@ jobs:
           echo "**Type:** ${{ steps.version_bump.outputs.bump_type }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "See the [release page](https://github.com/${{ github.repository }}/releases/tag/${{ steps.new_version.outputs.new_version }}) for details." >> $GITHUB_STEP_SUMMARY
+
+  deploy:
+    name: Deploy to Production
+    needs: release
+    if: needs.release.outputs.should_release == 'true'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      deploy_ref: ${{ needs.release.outputs.new_version }}
+    secrets: inherit
