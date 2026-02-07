@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.12.6] - 2026-02-07
+
+### Changes
+- fix(ci): idempotent SSL handling, remove duplicate CI, fix compose warning (af215c5)
+
 ## [v2.12.5] - 2026-02-07
 
 ### Changes
