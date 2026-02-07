@@ -29,6 +29,7 @@ export const api = {
 
   // League endpoints
   getClassicLeague: (leagueId, page = 1) => apiClient.get(`/league/classic/${leagueId}?page=${page}`),
+  getLeagueLivePoints: (leagueId, gameweek) => apiClient.get(`/league/classic/${leagueId}/live/${gameweek}`),
   getHeadToHeadLeague: (leagueId, page = 1) => apiClient.get(`/league/h2h/${leagueId}?page=${page}`),
 
   // Player endpoints
