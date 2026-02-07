@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.12.3] - 2026-02-07
+
+### Changes
+- fix(ci): use node for container health checks instead of wget (3d9c72f)
+
 ## [v2.12.2] - 2026-02-07
 
 ### Changes
