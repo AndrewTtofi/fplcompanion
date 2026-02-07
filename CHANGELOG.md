@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.12.5] - 2026-02-07
+
+### Changes
+- fix(ci): allow self-signed certs in smoke tests and fix curl syntax (dfc0fa2)
+
 ## [v2.12.4] - 2026-02-07
 
 ### Changes
