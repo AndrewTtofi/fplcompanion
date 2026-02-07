@@ -21,7 +21,7 @@ export default function LoadingSpinner({
         size={spinnerSize}
       />
       {message && (
-        <p className="text-gray-600 text-sm font-medium animate-pulse">
+        <p className="text-gray-600 dark:text-gray-300 text-sm font-medium animate-pulse">
           {message}
         </p>
       )}
@@ -30,7 +30,7 @@ export default function LoadingSpinner({
 
   if (fullScreen) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         {content}
       </div>
     );

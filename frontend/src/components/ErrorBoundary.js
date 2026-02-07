@@ -34,26 +34,26 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-          <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
+          <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
             <div className="flex items-center justify-center mb-6">
-              <div className="bg-red-100 p-4 rounded-full">
+              <div className="bg-red-100 dark:bg-red-900/20 p-4 rounded-full">
                 <AlertTriangle className="text-red-600" size={48} />
               </div>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-900 text-center mb-4">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-4">
               Oops! Something went wrong
             </h1>
 
-            <p className="text-gray-600 text-center mb-6">
+            <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
               We encountered an unexpected error. Don&apos;t worry, your data is safe.
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 overflow-auto">
-                <h3 className="font-semibold text-red-900 mb-2">Error Details:</h3>
-                <pre className="text-xs text-red-800 whitespace-pre-wrap">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6 overflow-auto">
+                <h3 className="font-semibold text-red-900 dark:text-red-300 mb-2">Error Details:</h3>
+                <pre className="text-xs text-red-800 dark:text-red-300 whitespace-pre-wrap">
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>
@@ -71,14 +71,14 @@ class ErrorBoundary extends Component {
 
               <button
                 onClick={() => window.location.href = '/'}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-all"
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-semibold py-3 px-6 rounded-lg transition-all"
               >
                 Go Home
               </button>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-              <p className="text-sm text-gray-500">
+            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 If this problem persists, please try refreshing the page or clearing your browser cache.
               </p>
             </div>

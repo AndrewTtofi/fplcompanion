@@ -313,10 +313,10 @@ export default function TransferPlanView({ teamData }) {
     switch (difficulty) {
       case 1: return 'bg-green-600 text-white';
       case 2: return 'bg-green-400 text-white';
-      case 3: return 'bg-gray-300 text-gray-800';
+      case 3: return 'bg-gray-300 dark:bg-gray-500 text-gray-800 dark:text-gray-100';
       case 4: return 'bg-red-400 text-white';
       case 5: return 'bg-red-600 text-white';
-      default: return 'bg-gray-200 text-gray-600';
+      default: return 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300';
     }
   };
 
@@ -352,7 +352,7 @@ export default function TransferPlanView({ teamData }) {
       const hiddenOnMobile = actualIdx >= 3 ? 'hidden md:table-cell' : '';
       return (
         <td key={`empty-${idx}`} className={`py-2 px-1 text-center ${hiddenOnMobile}`}>
-          <div className="text-[10px] md:text-xs text-gray-400">-</div>
+          <div className="text-[10px] md:text-xs text-gray-400 dark:text-gray-500">-</div>
         </td>
       );
     });
@@ -361,19 +361,19 @@ export default function TransferPlanView({ teamData }) {
   return (
     <div className="space-y-6">
       {/* Filter Controls */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex items-center gap-2 mb-3">
-          <Filter size={18} className="text-gray-500" />
-          <h3 className="font-semibold text-gray-900">Filters</h3>
+          <Filter size={18} className="text-gray-500 dark:text-gray-400" />
+          <h3 className="font-semibold text-gray-900 dark:text-white">Filters</h3>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {/* Team Filter */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Team</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1">Team</label>
             <select
               value={filters.team || ''}
               onChange={(e) => setFilters({ ...filters, team: e.target.value ? parseInt(e.target.value) : null })}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
               <option value="">All Teams</option>
               {bootstrapData?.teams?.map(team => (
@@ -384,11 +384,11 @@ export default function TransferPlanView({ teamData }) {
 
           {/* Position Filter */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Position</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1">Position</label>
             <select
               value={filters.position || ''}
               onChange={(e) => setFilters({ ...filters, position: e.target.value ? parseInt(e.target.value) : null })}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
               <option value="">All Positions</option>
               {bootstrapData?.element_types?.map(pos => (
@@ -399,7 +399,7 @@ export default function TransferPlanView({ teamData }) {
 
           {/* Min Price */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Min Price</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1">Min Price</label>
             <input
               type="number"
               step="0.1"
@@ -408,13 +408,13 @@ export default function TransferPlanView({ teamData }) {
               placeholder="e.g. 5.0"
               value={filters.minPrice ?? ''}
               onChange={(e) => setFilters({ ...filters, minPrice: e.target.value ? parseFloat(e.target.value) : null })}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
           {/* Max Price */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Max Price</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1">Max Price</label>
             <input
               type="number"
               step="0.1"
@@ -423,7 +423,7 @@ export default function TransferPlanView({ teamData }) {
               placeholder="e.g. 10.0"
               value={filters.maxPrice ?? ''}
               onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value ? parseFloat(e.target.value) : null })}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
           </div>
 
@@ -431,7 +431,7 @@ export default function TransferPlanView({ teamData }) {
           <div className="flex items-end">
             <button
               onClick={clearFilters}
-              className="w-full px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+              className="w-full px-3 py-1.5 text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               Clear Filters
             </button>
@@ -440,19 +440,19 @@ export default function TransferPlanView({ teamData }) {
       </div>
 
       {/* Player Search Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="p-4 border-b border-gray-200">
-          <h3 className="font-semibold text-gray-900">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="font-semibold text-gray-900 dark:text-white">
             All Players ({filteredPlayers.length})
           </h3>
         </div>
         <div className="overflow-x-auto max-h-[400px] overflow-y-auto relative">
           <table className="w-full">
-            <thead className="bg-gray-50 sticky top-0 z-20 shadow-sm">
+            <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-20 shadow-sm">
               <tr>
-                <th className="text-left py-2 px-2 md:px-3 text-xs font-semibold text-gray-600 sticky left-0 bg-gray-50 z-30">Name</th>
-                <th className="text-left py-2 px-2 md:px-3 text-xs font-semibold text-gray-600 hidden sm:table-cell">Team</th>
-                <th className="text-center py-2 px-1 md:px-3 text-xs font-semibold text-gray-600">Pos</th>
+                <th className="text-left py-2 px-2 md:px-3 text-xs font-semibold text-gray-600 dark:text-gray-300 sticky left-0 bg-gray-50 dark:bg-gray-700 z-30">Name</th>
+                <th className="text-left py-2 px-2 md:px-3 text-xs font-semibold text-gray-600 dark:text-gray-300 hidden sm:table-cell">Team</th>
+                <th className="text-center py-2 px-1 md:px-3 text-xs font-semibold text-gray-600 dark:text-gray-300">Pos</th>
                 <SortableHeader
                   label="Price"
                   field="now_cost"
@@ -488,17 +488,17 @@ export default function TransferPlanView({ teamData }) {
                 />
                 {/* Fixture headers - show 3 on mobile, 5 on desktop */}
                 {[1, 2, 3, 4, 5].map((i, idx) => (
-                  <th key={`gw-${i}`} className={`text-center py-2 px-1 text-xs font-semibold text-gray-600 whitespace-nowrap ${idx >= 3 ? 'hidden md:table-cell' : ''}`}>
+                  <th key={`gw-${i}`} className={`text-center py-2 px-1 text-xs font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap ${idx >= 3 ? 'hidden md:table-cell' : ''}`}>
                     GW{currentGameweek + i - 1}
                   </th>
                 ))}
-                <th className="text-center py-2 px-2 md:px-3 text-xs font-semibold text-gray-600">+</th>
+                <th className="text-center py-2 px-2 md:px-3 text-xs font-semibold text-gray-600 dark:text-gray-300">+</th>
               </tr>
             </thead>
             <tbody>
               {filteredPlayers.length === 0 ? (
                 <tr>
-                  <td colSpan="14" className="py-8 text-center text-gray-500">
+                  <td colSpan="14" className="py-8 text-center text-gray-500 dark:text-gray-400">
                     No players found matching your filters
                   </td>
                 </tr>
@@ -509,8 +509,8 @@ export default function TransferPlanView({ teamData }) {
                   return (
                     <tr
                       key={player.id}
-                      className={`border-t border-gray-100 ${
-                        isOwned ? 'bg-blue-50' : isShortlisted ? 'bg-yellow-50' : 'hover:bg-gray-50'
+                      className={`border-t border-gray-100 dark:border-gray-700 ${
+                        isOwned ? 'bg-blue-50 dark:bg-blue-900/20' : isShortlisted ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                     >
                       <td className="py-2 px-2 md:px-3 sticky left-0 bg-inherit z-10">
@@ -521,10 +521,10 @@ export default function TransferPlanView({ teamData }) {
                           </span>
                         </div>
                       </td>
-                      <td className="py-2 px-2 md:px-3 text-sm text-gray-600 hidden sm:table-cell">
+                      <td className="py-2 px-2 md:px-3 text-sm text-gray-600 dark:text-gray-300 hidden sm:table-cell">
                         {teamsMap[player.team]?.short_name || '-'}
                       </td>
-                      <td className="py-2 px-1 md:px-3 text-center text-xs text-gray-600">
+                      <td className="py-2 px-1 md:px-3 text-center text-xs text-gray-600 dark:text-gray-300">
                         {positionsMap[player.element_type]?.singular_name_short || '-'}
                       </td>
                       <td className="py-2 px-1 md:px-3 text-center text-sm">
@@ -547,7 +547,7 @@ export default function TransferPlanView({ teamData }) {
                       <td className="py-2 px-2 md:px-3 text-center">
                         {isOwned ? (
                           <span
-                            className="inline-flex items-center justify-center w-7 h-7 text-gray-300 cursor-not-allowed"
+                            className="inline-flex items-center justify-center w-7 h-7 text-gray-300 dark:text-gray-500 cursor-not-allowed"
                             title="Already in your squad"
                           >
                             <Plus size={16} />
@@ -555,7 +555,7 @@ export default function TransferPlanView({ teamData }) {
                         ) : isShortlisted ? (
                           <button
                             onClick={() => removeFromShortlist(player.id)}
-                            className="inline-flex items-center justify-center w-7 h-7 text-red-600 hover:bg-red-50 rounded transition-colors"
+                            className="inline-flex items-center justify-center w-7 h-7 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                             title="Remove from shortlist"
                           >
                             <X size={16} />
@@ -563,7 +563,7 @@ export default function TransferPlanView({ teamData }) {
                         ) : (
                           <button
                             onClick={() => addToShortlist(player.id)}
-                            className="inline-flex items-center justify-center w-7 h-7 text-fpl-purple hover:bg-purple-50 rounded transition-colors"
+                            className="inline-flex items-center justify-center w-7 h-7 text-fpl-purple hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
                             title="Add to shortlist"
                           >
                             <Plus size={16} />
@@ -580,11 +580,11 @@ export default function TransferPlanView({ teamData }) {
       </div>
 
       {/* Shortlist Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Star size={18} className="text-yellow-500 fill-yellow-500" />
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="font-semibold text-gray-900 dark:text-white">
               Shortlist ({shortlistedPlayers.length})
             </h3>
           </div>
@@ -620,11 +620,11 @@ export default function TransferPlanView({ teamData }) {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 sticky left-0 bg-gray-50 z-20">Name</th>
-                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 hidden sm:table-cell">Team</th>
-                <th className="text-center py-2 px-1 md:px-3 text-xs font-semibold text-gray-600">Pos</th>
+                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 dark:text-gray-300 sticky left-0 bg-gray-50 dark:bg-gray-700 z-20">Name</th>
+                <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 dark:text-gray-300 hidden sm:table-cell">Team</th>
+                <th className="text-center py-2 px-1 md:px-3 text-xs font-semibold text-gray-600 dark:text-gray-300">Pos</th>
                 <SortableHeader
                   label="Price"
                   field="now_cost"
@@ -660,32 +660,32 @@ export default function TransferPlanView({ teamData }) {
                 />
                 {/* Fixture headers - show 3 on mobile, 5 on desktop */}
                 {[1, 2, 3, 4, 5].map((i, idx) => (
-                  <th key={`gw-${i}`} className={`text-center py-2 px-1 text-xs font-semibold text-gray-600 whitespace-nowrap ${idx >= 3 ? 'hidden md:table-cell' : ''}`}>
+                  <th key={`gw-${i}`} className={`text-center py-2 px-1 text-xs font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap ${idx >= 3 ? 'hidden md:table-cell' : ''}`}>
                     GW{currentGameweek + i - 1}
                   </th>
                 ))}
-                <th className="text-center py-2 px-2 md:px-3 text-xs font-semibold text-gray-600">X</th>
+                <th className="text-center py-2 px-2 md:px-3 text-xs font-semibold text-gray-600 dark:text-gray-300">X</th>
               </tr>
             </thead>
             <tbody>
               {shortlistedPlayers.length === 0 ? (
                 <tr>
-                  <td colSpan="14" className="py-8 text-center text-gray-500">
+                  <td colSpan="14" className="py-8 text-center text-gray-500 dark:text-gray-400">
                     No players shortlisted yet. Click the + button to add players.
                   </td>
                 </tr>
               ) : (
                 shortlistedPlayers.map((player) => (
-                  <tr key={player.id} className="border-t border-gray-100 hover:bg-gray-50">
+                  <tr key={player.id} className="border-t border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-2 px-2 md:px-3 sticky left-0 bg-inherit z-10">
                       <span className="text-sm font-medium truncate max-w-[80px] md:max-w-[150px]">
                         {player.web_name}
                       </span>
                     </td>
-                    <td className="py-2 px-2 md:px-3 text-sm text-gray-600 hidden sm:table-cell">
+                    <td className="py-2 px-2 md:px-3 text-sm text-gray-600 dark:text-gray-300 hidden sm:table-cell">
                       {teamsMap[player.team]?.short_name || '-'}
                     </td>
-                    <td className="py-2 px-1 md:px-3 text-center text-xs text-gray-600">
+                    <td className="py-2 px-1 md:px-3 text-center text-xs text-gray-600 dark:text-gray-300">
                       {positionsMap[player.element_type]?.singular_name_short || '-'}
                     </td>
                     <td className="py-2 px-1 md:px-3 text-center text-sm">
@@ -708,7 +708,7 @@ export default function TransferPlanView({ teamData }) {
                     <td className="py-2 px-2 md:px-3 text-center">
                       <button
                         onClick={() => removeFromShortlist(player.id)}
-                        className="inline-flex items-center justify-center w-7 h-7 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        className="inline-flex items-center justify-center w-7 h-7 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                         title="Remove from shortlist"
                       >
                         <X size={16} />
@@ -735,7 +735,7 @@ function SortableHeader({ label, field, currentSort, onSort, className = '' }) {
 
   return (
     <th
-      className={`text-center py-2 px-3 text-xs font-semibold text-gray-600 cursor-pointer hover:bg-gray-100 select-none ${className}`}
+      className={`text-center py-2 px-3 text-xs font-semibold text-gray-600 dark:text-gray-300 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 select-none ${className}`}
       onClick={() => onSort(field)}
     >
       <div className="flex items-center justify-center gap-1">
@@ -743,11 +743,11 @@ function SortableHeader({ label, field, currentSort, onSort, className = '' }) {
         <span className="flex flex-col">
           <ChevronUp
             size={10}
-            className={isActive && !isDesc ? 'text-fpl-purple' : 'text-gray-300'}
+            className={isActive && !isDesc ? 'text-fpl-purple' : 'text-gray-300 dark:text-gray-500'}
           />
           <ChevronDown
             size={10}
-            className={`-mt-1 ${isActive && isDesc ? 'text-fpl-purple' : 'text-gray-300'}`}
+            className={`-mt-1 ${isActive && isDesc ? 'text-fpl-purple' : 'text-gray-300 dark:text-gray-500'}`}
           />
         </span>
       </div>

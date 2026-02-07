@@ -26,8 +26,8 @@ export default function EnhancedGameweekView({ teamData }) {
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Sub-View Tabs */}
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        <div className="border-b border-gray-200 dark:border-gray-700">
           <nav className="flex -mb-px">
             {views.map((viewItem) => (
               <button
@@ -41,7 +41,7 @@ export default function EnhancedGameweekView({ teamData }) {
                 className={`flex-1 md:flex-initial py-3 md:py-4 px-4 md:px-6 font-medium text-xs md:text-sm border-b-2 transition-colors flex items-center justify-center gap-1.5 md:gap-2 ${
                   subView === viewItem.id
                     ? 'border-fpl-purple text-fpl-purple'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300'
                 }`}
               >
                 {viewItem.icon}

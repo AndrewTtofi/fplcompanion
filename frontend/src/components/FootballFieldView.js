@@ -56,11 +56,11 @@ export default function FootballFieldView({ teamId, gameweek }) {
     <div className="flex flex-col space-y-4">
       {/* View Toggle */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900">
+        <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white">
           Gameweek {gameweek} Squad
         </h2>
 
-        <div className="flex gap-1 md:gap-2 bg-gray-100 p-1 rounded-lg w-full sm:w-auto">
+        <div className="flex gap-1 md:gap-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg w-full sm:w-auto">
           <button
             onClick={() => {
               setViewMode('live');
@@ -71,8 +71,8 @@ export default function FootballFieldView({ teamId, gameweek }) {
             }}
             className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 rounded-md transition-all text-xs md:text-sm ${
               viewMode === 'live'
-                ? 'bg-white text-fpl-purple shadow-sm font-semibold'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white dark:bg-gray-700 text-fpl-purple shadow-sm font-semibold'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
             }`}
           >
             <TrendingUp size={16} className="md:w-5 md:h-5" />
@@ -88,8 +88,8 @@ export default function FootballFieldView({ teamId, gameweek }) {
             }}
             className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 rounded-md transition-all text-xs md:text-sm ${
               viewMode === 'field'
-                ? 'bg-white text-fpl-purple shadow-sm font-semibold'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white dark:bg-gray-700 text-fpl-purple shadow-sm font-semibold'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
             }`}
           >
             <LayoutGrid size={16} className="md:w-5 md:h-5" />
@@ -113,18 +113,18 @@ export default function FootballFieldView({ teamId, gameweek }) {
               </div>
 
               {/* Bench Points Card */}
-              <div className="bg-white rounded-lg p-3 shadow-md">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
                 <div className="text-center">
-                  <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1">Bench</div>
-                  <div className="text-2xl font-bold text-gray-700">{data.bench_points}</div>
+                  <div className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Bench</div>
+                  <div className="text-2xl font-bold text-gray-700 dark:text-gray-200">{data.bench_points}</div>
                 </div>
               </div>
 
               {/* Transfers Card */}
-              <div className="bg-white rounded-lg p-3 shadow-md">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
                 <div className="text-center">
-                  <div className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide mb-1">Trans</div>
-                  <div className="text-2xl font-bold text-gray-700">{data.transfers.made}</div>
+                  <div className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Trans</div>
+                  <div className="text-2xl font-bold text-gray-700 dark:text-gray-200">{data.transfers.made}</div>
                 </div>
               </div>
             </div>
@@ -147,18 +147,18 @@ export default function FootballFieldView({ teamId, gameweek }) {
               </div>
 
               {/* Bench Points Card */}
-              <div className="bg-white rounded-lg p-4 shadow-md flex-1 flex flex-col justify-center">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md flex-1 flex flex-col justify-center">
                 <div className="text-center">
-                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Bench Points</div>
-                  <div className="text-3xl font-bold text-gray-700">{data.bench_points}</div>
+                  <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Bench Points</div>
+                  <div className="text-3xl font-bold text-gray-700 dark:text-gray-200">{data.bench_points}</div>
                 </div>
               </div>
 
               {/* Transfers Card */}
-              <div className="bg-white rounded-lg p-4 shadow-md flex-1 flex flex-col justify-center">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md flex-1 flex flex-col justify-center">
                 <div className="text-center">
-                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Transfers Made</div>
-                  <div className="text-3xl font-bold text-gray-700">{data.transfers.made}</div>
+                  <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Transfers Made</div>
+                  <div className="text-3xl font-bold text-gray-700 dark:text-gray-200">{data.transfers.made}</div>
                   {data.transfers.cost > 0 && (
                     <div className="text-xs text-red-600 mt-2 font-semibold">-{data.transfers.cost} pts cost</div>
                   )}
@@ -167,8 +167,8 @@ export default function FootballFieldView({ teamId, gameweek }) {
             </div>
 
             {/* Middle Column - Starting XI */}
-            <div className="bg-white rounded-lg shadow-md p-3 md:p-4 flex flex-col">
-              <h3 className="text-sm md:text-base font-bold text-gray-900 mb-3 flex-shrink-0">Starting XI</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 md:p-4 flex flex-col">
+              <h3 className="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-3 flex-shrink-0">Starting XI</h3>
               <div className="space-y-1.5">
                 {starting_xi.map(player => (
                   <LivePointsPlayerRow key={player.element} player={player} />
@@ -177,8 +177,8 @@ export default function FootballFieldView({ teamId, gameweek }) {
             </div>
 
             {/* Right Column - Bench */}
-            <div className="bg-white rounded-lg shadow-md p-3 md:p-4 flex flex-col">
-              <h3 className="text-sm md:text-base font-bold text-gray-900 mb-3 flex-shrink-0">Substitutes</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 md:p-4 flex flex-col">
+              <h3 className="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-3 flex-shrink-0">Substitutes</h3>
               <div className="space-y-1.5">
                 {bench.map((player, index) => (
                   <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
@@ -252,8 +252,8 @@ export default function FootballFieldView({ teamId, gameweek }) {
 
           {/* Substitutes */}
           <div className="w-full py-8">
-            <div className="bg-gray-100 rounded-lg py-3 md:py-3 px-4 md:px-4 max-w-2xl mx-auto">
-              <h4 className="text-xs md:text-sm font-semibold text-gray-600 mb-4 text-center">SUBSTITUTES</h4>
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg py-3 md:py-3 px-4 md:px-4 max-w-2xl mx-auto">
+              <h4 className="text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300 mb-4 text-center">SUBSTITUTES</h4>
               <div className="px-2 md:px-0">
                 <div className="flex justify-center gap-3 md:gap-4 py-4">
                   {bench.map(player => (
@@ -626,8 +626,8 @@ function LivePointsPlayerRow({ player, benchPosition }) {
       <div
         ref={rowRef}
         className={`flex items-center justify-between p-2 md:p-2.5 rounded-lg border transition-all cursor-pointer ${
-          isPlaying ? 'border-green-400 bg-green-50' : 'border-gray-200 hover:border-fpl-purple hover:shadow-sm'
-        } ${benchPosition ? 'bg-gray-50' : 'bg-white'}`}
+          isPlaying ? 'border-green-400 bg-green-50 dark:bg-green-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-fpl-purple hover:shadow-sm'
+        } ${benchPosition ? 'bg-gray-50 dark:bg-gray-900' : 'bg-white dark:bg-gray-800'}`}
         onClick={() => setShowPopup(true)}
         onMouseEnter={handleMouseEnter}
       >
@@ -644,7 +644,7 @@ function LivePointsPlayerRow({ player, benchPosition }) {
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-sm text-gray-900 truncate">{player.web_name}</span>
+              <span className="font-semibold text-sm text-gray-900 dark:text-white truncate">{player.web_name}</span>
               {player.is_captain && (
                 <span className="bg-yellow-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">C</span>
               )}
@@ -663,7 +663,7 @@ function LivePointsPlayerRow({ player, benchPosition }) {
                 </span>
               )}
             </div>
-            <div className="text-xs text-gray-600 mt-0.5">
+            <div className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
               {player.team_short} • {stats.minutes || 0}&apos;
             </div>
           </div>
@@ -682,7 +682,7 @@ function LivePointsPlayerRow({ player, benchPosition }) {
           className="live-points-popup hidden md:group-hover:block pointer-events-none"
           style={{ top: `${popupPosition.top}px`, left: `${popupPosition.left}px` }}
         >
-        <div className="bg-white border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden pointer-events-auto">
+        <div className="bg-white dark:bg-gray-800 border-2 border-fpl-purple rounded-xl shadow-2xl w-72 overflow-hidden pointer-events-auto">
           {/* Header */}
           <div className="bg-gradient-to-r from-fpl-purple to-purple-700 text-white px-4 py-3">
             <div className="font-bold text-sm">{player.web_name}</div>
@@ -728,8 +728,8 @@ function LivePointsPlayerRow({ player, benchPosition }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-sm font-semibold text-gray-700">Match Not Started</div>
-              <div className="text-xs text-gray-500 mt-1">This player has an upcoming fixture</div>
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-200">Match Not Started</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">This player has an upcoming fixture</div>
             </div>
           ) : !hasPlayed && !isPlaying ? (
             <div className="px-4 py-6 text-center">
@@ -738,19 +738,19 @@ function LivePointsPlayerRow({ player, benchPosition }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </div>
-              <div className="text-sm font-semibold text-gray-700">Did Not Play</div>
-              <div className="text-xs text-gray-500 mt-1">This player did not feature in the gameweek</div>
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-200">Did Not Play</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">This player did not feature in the gameweek</div>
             </div>
           ) : (
             <>
               {/* Total Points Display */}
-              <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-gray-600">Total Points</span>
+                  <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">Total Points</span>
                   <span className="text-2xl font-bold text-fpl-purple">{stats.total_points || 0}</span>
                 </div>
                 {player.is_captain && (
-                  <div className="text-xs text-gray-600 mt-1">
+                  <div className="text-xs text-gray-600 dark:text-gray-300 mt-1">
                     With captain bonus: <span className="font-bold text-fpl-purple">{(stats.total_points || 0) * player.multiplier}</span> pts
                   </div>
                 )}
@@ -764,7 +764,7 @@ function LivePointsPlayerRow({ player, benchPosition }) {
               {/* Points Breakdown */}
               {breakdown.length > 0 && (
                 <div className="px-4 py-3 max-h-64 overflow-y-auto">
-                  <div className="text-xs font-semibold text-gray-700 mb-2">Points Breakdown</div>
+                  <div className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-2">Points Breakdown</div>
                   <div className="space-y-1.5">
                     {breakdown.map((item, idx) => (
                       <div key={idx} className="flex justify-between items-center">
@@ -778,12 +778,12 @@ function LivePointsPlayerRow({ player, benchPosition }) {
 
                   {/* BPS Score */}
                   {stats.bps > 0 && (
-                    <div className="mt-3 pt-3 border-t border-gray-200">
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-gray-600">BPS Score</span>
+                        <span className="text-gray-600 dark:text-gray-300">BPS Score</span>
                         <span className="font-semibold text-purple-600">{stats.bps}</span>
                       </div>
-                      <div className="text-[10px] text-gray-500 mt-1">
+                      <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
                         Bonus Points System score
                       </div>
                     </div>
@@ -794,8 +794,8 @@ function LivePointsPlayerRow({ player, benchPosition }) {
           )}
 
           {/* Footer hint */}
-          <div className="bg-gray-50 px-4 py-2 border-t border-gray-200">
-            <div className="text-[10px] text-gray-500 text-center">
+          <div className="bg-gray-50 dark:bg-gray-700 px-4 py-2 border-t border-gray-200 dark:border-gray-600">
+            <div className="text-[10px] text-gray-500 dark:text-gray-400 text-center">
               Click player name for detailed view
             </div>
           </div>
@@ -806,17 +806,17 @@ function LivePointsPlayerRow({ player, benchPosition }) {
       {/* Click Popup */}
       {showPopup && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowPopup(false)}>
-          <div className="bg-white rounded-lg shadow-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
-            <div className="border-b border-gray-200 pb-4 mb-4">
+            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">{player.web_name}</h3>
-                  <p className="text-sm text-gray-600">{player.team_short} • {player.position_name}</p>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">{player.web_name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{player.team_short} • {player.position_name}</p>
                 </div>
                 <button
                   onClick={() => setShowPopup(false)}
-                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl font-bold"
                 >
                   ×
                 </button>
@@ -839,9 +839,9 @@ function LivePointsPlayerRow({ player, benchPosition }) {
             {/* Points Breakdown */}
             {hasPlayed ? (
               <div className="space-y-2">
-                <div className="font-semibold text-gray-900 mb-3">Points Breakdown</div>
+                <div className="font-semibold text-gray-900 dark:text-white mb-3">Points Breakdown</div>
                 {breakdown.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700">
                     <span className={`text-sm ${item.color}`}>{item.label}</span>
                     <span className={`font-bold ${item.color}`}>
                       {item.points > 0 ? '+' : ''}{item.points}
@@ -849,14 +849,14 @@ function LivePointsPlayerRow({ player, benchPosition }) {
                   </div>
                 ))}
                 {stats.bps > 0 && (
-                  <div className="flex justify-between items-center py-2 text-xs text-gray-500">
+                  <div className="flex justify-between items-center py-2 text-xs text-gray-500 dark:text-gray-400">
                     <span>BPS Score</span>
                     <span>{stats.bps}</span>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="text-center text-gray-500 py-4">
+              <div className="text-center text-gray-500 dark:text-gray-400 py-4">
                 {player.fixtures?.some(f => !f.started) ? 'Match not started' : 'Did not play'}
               </div>
             )}

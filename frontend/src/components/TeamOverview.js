@@ -105,23 +105,23 @@ export default function TeamOverview({ teamData }) {
       </div>
 
       {/* Current Season Form */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">Last 5 Gameweeks</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">Last 5 Gameweeks</h2>
         <div className="overflow-x-auto -mx-4 md:mx-0">
           <table className="w-full min-w-[500px]">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">GW</th>
-                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">Points</th>
-                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">
+              <tr className="border-b border-gray-200 dark:border-gray-700">
+                <th className="text-left py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">GW</th>
+                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">Points</th>
+                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">
                   <span className="hidden sm:inline">GW Rank</span>
                   <span className="sm:hidden">GW</span>
                 </th>
-                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">
+                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">
                   <span className="hidden sm:inline">Overall Rank</span>
                   <span className="sm:hidden">Ovr</span>
                 </th>
-                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600">
+                <th className="text-right py-2 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">
                   <span className="hidden sm:inline">Transfers</span>
                   <span className="sm:hidden">Tr</span>
                 </th>
@@ -136,7 +136,7 @@ export default function TeamOverview({ teamData }) {
                   : gw.points;
 
                 return (
-                  <tr key={gw.event} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr key={gw.event} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="py-2 md:py-3 px-2 md:px-4 font-medium text-sm">GW{gw.event}</td>
                     <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple relative group text-sm md:text-base">
                       {gwPoints}
@@ -183,7 +183,7 @@ export default function TeamOverview({ teamData }) {
           </table>
         </div>
         {liveData?.total_live_points && (
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             {dataChecked
               ? '○ Gameweek finalized. Final points confirmed.'
               : allMatchesFinished
@@ -196,26 +196,26 @@ export default function TeamOverview({ teamData }) {
       {/* Best/Worst Gameweeks */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {bestGW && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h3 className="font-semibold text-green-900 mb-2">Best Gameweek</h3>
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+            <h3 className="font-semibold text-green-900 dark:text-green-300 mb-2">Best Gameweek</h3>
             <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-bold text-green-700">{bestGW.points}</span>
-              <span className="text-sm text-green-600">points in GW{bestGW.event}</span>
+              <span className="text-3xl font-bold text-green-700 dark:text-green-400">{bestGW.points}</span>
+              <span className="text-sm text-green-600 dark:text-green-400">points in GW{bestGW.event}</span>
             </div>
-            <p className="text-sm text-green-600 mt-1">
+            <p className="text-sm text-green-600 dark:text-green-400 mt-1">
               Rank: {bestGW.rank?.toLocaleString()}
             </p>
           </div>
         )}
 
         {worstGW && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h3 className="font-semibold text-red-900 mb-2">Worst Gameweek</h3>
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <h3 className="font-semibold text-red-900 dark:text-red-300 mb-2">Worst Gameweek</h3>
             <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-bold text-red-700">{worstGW.points}</span>
-              <span className="text-sm text-red-600">points in GW{worstGW.event}</span>
+              <span className="text-3xl font-bold text-red-700 dark:text-red-400">{worstGW.points}</span>
+              <span className="text-sm text-red-600 dark:text-red-400">points in GW{worstGW.event}</span>
             </div>
-            <p className="text-sm text-red-600 mt-1">
+            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
               Rank: {worstGW.rank?.toLocaleString()}
             </p>
           </div>
@@ -223,8 +223,8 @@ export default function TeamOverview({ teamData }) {
       </div>
 
       {/* Chips Used */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Chips</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Chips</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { name: 'wildcard', label: 'Wildcard', icon: Sparkles, color: 'purple' },
@@ -254,13 +254,13 @@ export default function TeamOverview({ teamData }) {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <IconComponent className={`w-5 h-5 ${colors.icon}`} />
-                  <span className="font-semibold text-sm text-gray-800">{chipInfo.label}</span>
+                  <span className="font-semibold text-sm text-gray-800 dark:text-gray-100">{chipInfo.label}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   {isUsed ? (
                     <>
-                      <Check className="w-4 h-4 text-gray-500" />
-                      <span className="text-xs text-gray-600">Used GW{chip.event}</span>
+                      <Check className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      <span className="text-xs text-gray-600 dark:text-gray-300">Used GW{chip.event}</span>
                     </>
                   ) : (
                     <>
@@ -276,14 +276,14 @@ export default function TeamOverview({ teamData }) {
       </div>
 
       {/* League Summary */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">Leagues</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 md:p-6">
+        <h2 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-4">Leagues</h2>
         <div className="space-y-3">
           {team.leagues?.classic?.slice(0, 5).map((league) => (
-            <div key={league.id} className="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded-lg">
+            <div key={league.id} className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
               <div className="min-w-0 flex-1">
                 <div className="font-medium text-sm md:text-base truncate">{league.name}</div>
-                <div className="text-xs md:text-sm text-gray-500">
+                <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                   {league.entry_last_rank?.toLocaleString()} of {league.entry_count?.toLocaleString()} teams
                 </div>
               </div>
@@ -339,7 +339,7 @@ function StatCard({ label, value, icon, subtitle, isLive, status }) {
           </>
         )}
       </div>
-      {subtitle && <div className="text-sm text-gray-500 mt-1">{subtitle}</div>}
+      {subtitle && <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</div>}
     </div>
   );
 }
