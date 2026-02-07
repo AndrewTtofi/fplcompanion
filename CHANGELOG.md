@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.13.1] - 2026-02-07
+
+### Changes
+- Merge pull request #29 from AndrewTtofi/fix/league-comparison-points (f2cad11)
+- fix: show live GW points for all teams in league standings (8a192b8)
+- fix(frontend): show live opponent points in league standings table (8bc2273)
+
 ## [v2.13.0] - 2026-02-07
 
 ### Changes
