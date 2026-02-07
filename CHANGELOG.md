@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.12.2] - 2026-02-07
+
+### Changes
+- fix(ci): chain deploy workflow from release via workflow_call (cfdf5c0)
+
 ## [v2.12.1] - 2026-02-07
 
 ### Changes
