@@ -87,7 +87,6 @@ jobs:
           host: ${{ secrets.LIGHTSAIL_HOST }}
           username: ${{ secrets.LIGHTSAIL_USER }}
           key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
-          script_stop: true
           command_timeout: 10m
           script: |
             set -euo pipefail
@@ -134,9 +133,9 @@ jobs:
             echo "[5/5] Verifying deployment..."
             sleep 10
 
-            # Check backend health
+            # Check backend health (node is available in the container, wget/curl are not)
             for i in $(seq 1 12); do
-              if docker compose -f docker-compose.prod.yml exec -T backend wget -qO- http://localhost:3001/health > /dev/null 2>&1; then
+              if docker compose -f docker-compose.prod.yml exec -T backend node -e "require('http').get('http://localhost:3001/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))" 2>/dev/null; then
                 echo "Backend is healthy."
                 break
               fi
@@ -149,9 +148,9 @@ jobs:
               sleep 5
             done
 
-            # Check frontend
+            # Check frontend health
             for i in $(seq 1 12); do
-              if docker compose -f docker-compose.prod.yml exec -T frontend wget -qO- http://localhost:3000 > /dev/null 2>&1; then
+              if docker compose -f docker-compose.prod.yml exec -T frontend node -e "require('http').get('http://localhost:3000', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))" 2>/dev/null; then
                 echo "Frontend is healthy."
                 break
               fi
@@ -164,14 +163,14 @@ jobs:
               sleep 5
             done
 
-            # Check nginx
+            # Check nginx (curl is available on the host)
             for i in $(seq 1 6); do
-              if docker compose -f docker-compose.prod.yml exec -T nginx wget -qO- http://localhost:80 > /dev/null 2>&1; then
-                echo "Nginx is healthy."
+              if curl -s -o /dev/null -w "" http://localhost:80 2>/dev/null; then
+                echo "Nginx is responding."
                 break
               fi
               if [ "$i" -eq 6 ]; then
-                echo "WARNING: Nginx check inconclusive (may redirect to HTTPS)"
+                echo "WARNING: Nginx check inconclusive (may need SSL cert setup)"
               fi
               sleep 5
             done
