@@ -61,10 +61,12 @@ export default function LeagueView({ teamData }) {
 
 function LeagueStandings({ league, userTeamId, teamData }) {
   const [comparisonTeamId, setComparisonTeamId] = useState(null);
+  const [livePointsCache, setLivePointsCache] = useState({});
 
   // Reset comparison when league changes
   useEffect(() => {
     setComparisonTeamId(null);
+    setLivePointsCache({});
   }, [league.id]);
 
   const { data, error, isLoading } = useSWR(
@@ -93,6 +95,16 @@ function LeagueStandings({ league, userTeamId, teamData }) {
     () => api.compareTeams(userTeamId, comparisonTeamId, currentGwData.current_gameweek).then(res => res.data),
     { revalidateOnFocus: false }
   );
+
+  // Cache opponent live points so table stays updated after closing the comparison modal
+  useEffect(() => {
+    if (comparisonData && comparisonTeamId) {
+      setLivePointsCache(prev => ({
+        ...prev,
+        [comparisonTeamId]: comparisonData.team2.gameweek_points
+      }));
+    }
+  }, [comparisonData, comparisonTeamId]);
 
   if (isLoading) {
     return (
@@ -249,17 +261,24 @@ function LeagueStandings({ league, userTeamId, teamData }) {
             <tbody>
               {standings.map((entry, index) => {
                 const isUser = entry.entry === userTeamId;
+                const cachedLiveGw = livePointsCache[entry.entry];
                 const rankChange = entry.last_rank - entry.rank;
 
-                // Use live points for user's team if available
-                const gwPoints = isUser && userLiveData?.total_live_points
-                  ? userLiveData.total_live_points
-                  : entry.event_total;
+                // Use live points: user's live data, cached comparison data, or FPL API fallback
+                let gwPoints = entry.event_total;
+                if (isUser && userLiveData?.total_live_points) {
+                  gwPoints = userLiveData.total_live_points;
+                } else if (cachedLiveGw != null) {
+                  gwPoints = cachedLiveGw;
+                }
 
-                // Calculate live total points for user
-                const totalPoints = isUser && userLiveData?.total_live_points
-                  ? entry.total + (userLiveData.total_live_points - entry.event_total)
-                  : entry.total;
+                // Calculate live total points
+                let totalPoints = entry.total;
+                if (isUser && userLiveData?.total_live_points) {
+                  totalPoints = entry.total + (userLiveData.total_live_points - entry.event_total);
+                } else if (cachedLiveGw != null) {
+                  totalPoints = entry.total + (cachedLiveGw - entry.event_total);
+                }
 
                 return (
                   <tr
@@ -292,7 +311,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                     </td>
                     <td className="py-2 md:py-3 px-2 md:px-4 text-center text-xs md:text-sm relative group">
                       {gwPoints}
-                      {isUser && statusDisplay && (
+                      {(isUser || cachedLiveGw != null) && statusDisplay && (
                         <>
                           <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                           <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1">
@@ -303,7 +322,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                     </td>
                     <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple dark:text-fpl-green text-xs md:text-sm relative group">
                       {totalPoints.toLocaleString()}
-                      {isUser && statusDisplay && (
+                      {(isUser || cachedLiveGw != null) && statusDisplay && (
                         <>
                           <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                           <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">
