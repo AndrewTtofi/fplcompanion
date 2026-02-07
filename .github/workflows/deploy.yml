@@ -224,32 +224,35 @@ jobs:
 
       - name: Test HTTPS endpoint
         run: |
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }} --max-time 30 || echo "000")
+          # -k allows self-signed certs (first deploy uses a placeholder cert)
+          HTTP_STATUS=$(curl -sk -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }} --max-time 30)
           echo "HTTPS status: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 400 ]; then
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "HTTPS endpoint is live."
+          else
             echo "ERROR: Site returned HTTP $HTTP_STATUS"
             exit 1
           fi
-          echo "HTTPS endpoint is live."
 
       - name: Test API health
         run: |
-          HEALTH=$(curl -s https://${{ env.DOMAIN }}/health --max-time 15 || echo "failed")
-          echo "Health check response: $HEALTH"
-          if echo "$HEALTH" | grep -qi "failed"; then
-            echo "ERROR: Health check endpoint failed"
+          HTTP_STATUS=$(curl -sk -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }}/health --max-time 15)
+          echo "Health endpoint status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "API health check passed."
+          else
+            echo "ERROR: Health check returned $HTTP_STATUS"
             exit 1
           fi
-          echo "API health check passed."
 
       - name: Test API data endpoint
         run: |
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }}/api/gameweek/current --max-time 15 || echo "000")
+          HTTP_STATUS=$(curl -sk -o /dev/null -w "%{http_code}" https://${{ env.DOMAIN }}/api/gameweek/current --max-time 15)
           echo "API /gameweek/current status: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "WARNING: API endpoint returned $HTTP_STATUS (may be expected if FPL API is down)"
-          else
+          if [ "$HTTP_STATUS" -eq 200 ]; then
             echo "API data endpoint is working."
+          else
+            echo "WARNING: API endpoint returned $HTTP_STATUS (may be expected if FPL season is inactive)"
           fi
 
       - name: Smoke test summary
