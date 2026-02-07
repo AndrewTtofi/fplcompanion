@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.13.0] - 2026-02-07
+
+### Changes
+- Merge pull request #28 from AndrewTtofi/feature/dark-theme (75e8146)
+- fix(frontend): improve purple text readability in dark mode (42040a3)
+- feat(frontend): add dark theme and system theme support (534e6e7)
+
 ## [v2.12.6] - 2026-02-07
 
 ### Changes
