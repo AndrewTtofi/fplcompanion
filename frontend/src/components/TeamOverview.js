@@ -222,57 +222,97 @@ export default function TeamOverview({ teamData }) {
         )}
       </div>
 
-      {/* Chips Used */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      {/* Chips - Two Sets (GW 1-19 and GW 20-38) */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 md:p-6">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Chips</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
+        {(() => {
+          const chipTypes = [
             { name: 'wildcard', label: 'Wildcard', icon: Sparkles, color: 'purple' },
             { name: 'bboost', label: 'Bench Boost', icon: Users, color: 'blue' },
             { name: 'freehit', label: 'Free Hit', icon: Zap, color: 'yellow' },
             { name: '3xc', label: 'Triple Captain', icon: Crown, color: 'pink' }
-          ].map((chipInfo) => {
-            const chip = history.chips?.find(c => c.name === chipInfo.name);
-            const IconComponent = chipInfo.icon;
-            const isUsed = !!chip;
+          ];
 
-            const colorClasses = {
-              purple: { used: 'bg-purple-100 border-purple-300', available: 'bg-purple-50 border-purple-400', icon: 'text-purple-500', availableText: 'text-purple-600' },
-              blue: { used: 'bg-blue-100 border-blue-300', available: 'bg-blue-50 border-blue-400', icon: 'text-blue-500', availableText: 'text-blue-600' },
-              yellow: { used: 'bg-yellow-100 border-yellow-300', available: 'bg-yellow-50 border-yellow-400', icon: 'text-yellow-600', availableText: 'text-yellow-700' },
-              pink: { used: 'bg-pink-100 border-pink-300', available: 'bg-pink-50 border-pink-400', icon: 'text-pink-500', availableText: 'text-pink-600' }
-            };
+          const colorClasses = {
+            purple: {
+              used: 'bg-purple-100 border-purple-300 dark:bg-purple-900/30 dark:border-purple-700',
+              available: 'bg-purple-50 border-purple-400 dark:bg-purple-900/20 dark:border-purple-500',
+              icon: 'text-purple-500 dark:text-purple-400',
+              availableText: 'text-purple-600 dark:text-purple-400'
+            },
+            blue: {
+              used: 'bg-blue-100 border-blue-300 dark:bg-blue-900/30 dark:border-blue-700',
+              available: 'bg-blue-50 border-blue-400 dark:bg-blue-900/20 dark:border-blue-500',
+              icon: 'text-blue-500 dark:text-blue-400',
+              availableText: 'text-blue-600 dark:text-blue-400'
+            },
+            yellow: {
+              used: 'bg-yellow-100 border-yellow-300 dark:bg-yellow-900/30 dark:border-yellow-700',
+              available: 'bg-yellow-50 border-yellow-400 dark:bg-yellow-900/20 dark:border-yellow-500',
+              icon: 'text-yellow-600 dark:text-yellow-400',
+              availableText: 'text-yellow-700 dark:text-yellow-400'
+            },
+            pink: {
+              used: 'bg-pink-100 border-pink-300 dark:bg-pink-900/30 dark:border-pink-700',
+              available: 'bg-pink-50 border-pink-400 dark:bg-pink-900/20 dark:border-pink-500',
+              icon: 'text-pink-500 dark:text-pink-400',
+              availableText: 'text-pink-600 dark:text-pink-400'
+            }
+          };
 
-            const colors = colorClasses[chipInfo.color];
+          const halves = [
+            { label: 'First Half', subtitle: 'GW 1-19', chips: history.chips?.filter(c => c.event <= 19) || [] },
+            { label: 'Second Half', subtitle: 'GW 20-38', chips: history.chips?.filter(c => c.event >= 20) || [] }
+          ];
 
-            return (
-              <div
-                key={chipInfo.name}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  isUsed ? colors.used : colors.available
-                } ${isUsed ? 'opacity-75' : 'shadow-sm'}`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <IconComponent className={`w-5 h-5 ${colors.icon}`} />
-                  <span className="font-semibold text-sm text-gray-800 dark:text-gray-100">{chipInfo.label}</span>
+          return (
+            <div className="space-y-5">
+              {halves.map((half) => (
+                <div key={half.label}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{half.label}</h3>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">({half.subtitle})</span>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {chipTypes.map((chipInfo) => {
+                      const chip = half.chips.find(c => c.name === chipInfo.name);
+                      const IconComponent = chipInfo.icon;
+                      const isUsed = !!chip;
+                      const colors = colorClasses[chipInfo.color];
+
+                      return (
+                        <div
+                          key={`${half.label}-${chipInfo.name}`}
+                          className={`p-3 md:p-4 rounded-lg border-2 transition-all ${
+                            isUsed ? colors.used : colors.available
+                          } ${isUsed ? 'opacity-75' : 'shadow-sm'}`}
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <IconComponent className={`w-5 h-5 ${colors.icon}`} />
+                            <span className="font-semibold text-sm text-gray-800 dark:text-gray-100">{chipInfo.label}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            {isUsed ? (
+                              <>
+                                <Check className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                                <span className="text-xs text-gray-600 dark:text-gray-300">Used GW{chip.event}</span>
+                              </>
+                            ) : (
+                              <>
+                                <Clock className={`w-4 h-4 ${colors.icon}`} />
+                                <span className={`text-xs font-medium ${colors.availableText}`}>Available</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  {isUsed ? (
-                    <>
-                      <Check className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <span className="text-xs text-gray-600 dark:text-gray-300">Used GW{chip.event}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Clock className="w-4 h-4 text-gray-400" />
-                      <span className={`text-xs font-medium ${colors.availableText}`}>Available</span>
-                    </>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* League Summary */}
