@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import useSWR from 'swr';
 import { api, handleApiError } from '@/lib/api';
 import TeamOverview from '@/components/TeamOverview';
@@ -87,9 +88,26 @@ export default function TeamPage() {
     { id: 'transfers', label: 'Transfer Plan' },
   ];
 
+  const teamName = teamData?.team?.name || 'FPL Team';
+  const managerName = teamData?.team?.player_first_name && teamData?.team?.player_last_name
+    ? `${teamData.team.player_first_name} ${teamData.team.player_last_name}`
+    : '';
+  const pageTitle = `${teamName}${managerName ? ` — ${managerName}` : ''} | FPL Companion`;
+  const pageDescription = managerName
+    ? `View ${managerName}'s FPL team "${teamName}" — live points, gameweek analysis, league standings, and transfer history on FPL Companion.`
+    : `View FPL team "${teamName}" — live points, gameweek analysis, league standings, and transfer history on FPL Companion.`;
+
   return (
     <LeagueProvider teamData={teamData}>
       <Layout teamData={teamData}>
+        <Head>
+          <title>{pageTitle}</title>
+          <meta name="description" content={pageDescription} />
+          <meta property="og:title" content={pageTitle} />
+          <meta property="og:description" content={pageDescription} />
+          <meta property="og:url" content={`https://fplcompanion.com/team/${id}`} />
+          <link rel="canonical" href={`https://fplcompanion.com/team/${id}`} />
+        </Head>
         <div className="max-w-7xl mx-auto px-2 md:px-4 py-4 md:py-8">
           {/* Tabs */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6">
