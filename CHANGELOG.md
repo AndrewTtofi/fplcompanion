@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.15.0] - 2026-02-09
+
+### Changes
+- Merge pull request #34 from AndrewTtofi/feat/buy-me-a-coffee (932fb09)
+- docs: update README roadmap and add live site + BMC links (c15bb45)
+- feat: add GitHub Sponsor button via FUNDING.yml (3353602)
+- fix: add static sitemap.xml and fix robots.txt reference (7035461)
+- feat: add Buy Me a Coffee link to footer (fc41ec3)
+
 ## [v2.14.0] - 2026-02-09
 
 ### Changes
