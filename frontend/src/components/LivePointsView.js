@@ -316,6 +316,7 @@ function LivePlayerCard({ player, isBench = false }) {
             {stats.goals_scored > 0 && <StatItem label="G" value={stats.goals_scored} highlight />}
             {stats.assists > 0 && <StatItem label="A" value={stats.assists} highlight />}
             {stats.clean_sheets > 0 && <StatItem label="CS" value={stats.clean_sheets} highlight />}
+            {stats.defensive_contributions > 0 && <StatItem label="DC" value={stats.defensive_contributions} highlight />}
             {stats.bonus > 0 && <StatItem label="BPS" value={stats.bonus} highlight />}
             {stats.yellow_cards > 0 && <StatItem label="YC" value={stats.yellow_cards} negative />}
             {stats.red_cards > 0 && <StatItem label="RC" value={stats.red_cards} negative />}

@@ -305,6 +305,37 @@ class FPLApiService {
       const stats = liveStats?.stats || {};
       const explain = liveStats?.explain || [];
 
+      // Flatten the FPL API explain array from nested format:
+      // [{fixture: 39, stats: [{identifier: "minutes", points: 2, value: 90}]}]
+      // into flat format: [{name: "Minutes", points: 2, value: 90, identifier: "minutes"}]
+      const identifierLabels = {
+        minutes: 'Minutes',
+        goals_scored: 'Goals Scored',
+        assists: 'Assists',
+        clean_sheets: 'Clean Sheet',
+        goals_conceded: 'Goals Conceded',
+        own_goals: 'Own Goals',
+        penalties_saved: 'Penalties Saved',
+        penalties_missed: 'Penalties Missed',
+        yellow_cards: 'Yellow Card',
+        red_cards: 'Red Card',
+        saves: 'Saves',
+        bonus: 'Bonus',
+        starts: 'Started',
+        defensive_contributions: 'Defensive Contributions'
+      };
+
+      const pointsBreakdown = explain.flatMap(fixture =>
+        (fixture.stats || [])
+          .filter(stat => stat.points !== 0)
+          .map(stat => ({
+            name: identifierLabels[stat.identifier] || stat.identifier,
+            identifier: stat.identifier,
+            points: stat.points,
+            value: stat.value
+          }))
+      );
+
       return {
         ...pick,
         player_name: player ? `${player.first_name} ${player.second_name}` : 'Unknown',
@@ -328,9 +359,10 @@ class FPLApiService {
           saves: stats.saves || 0,
           bonus: stats.bonus || 0,
           bps: stats.bps || 0,
+          defensive_contributions: stats.defensive_contributions || 0,
           total_points: stats.total_points || 0
         },
-        points_breakdown: explain
+        points_breakdown: pointsBreakdown
       };
     });
 

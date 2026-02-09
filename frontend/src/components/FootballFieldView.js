@@ -424,6 +424,14 @@ function PlayerCard({ player, hoverAbove = false }) {
                     </div>
                   )}
 
+                  {/* Defensive Contributions */}
+                  {stats.defensive_contributions > 0 && (
+                    <div className="flex justify-between text-cyan-400 font-semibold">
+                      <span>Defensive Contributions</span>
+                      <span>+2</span>
+                    </div>
+                  )}
+
                   {/* Bonus Points */}
                   {stats.bonus > 0 && (
                     <div className="flex justify-between text-purple-400 font-semibold">
@@ -611,6 +619,9 @@ function LivePointsPlayerRow({ player, benchPosition }) {
     }
     if (stats.own_goals > 0) {
       breakdown.push({ label: `Own Goals (${stats.own_goals})`, points: stats.own_goals * -2, color: 'text-red-600' });
+    }
+    if (stats.defensive_contributions > 0) {
+      breakdown.push({ label: 'Defensive Contributions', points: 2, color: 'text-cyan-600' });
     }
     if (stats.bonus > 0) {
       breakdown.push({ label: 'Bonus Points', points: stats.bonus, color: 'text-purple-600' });
