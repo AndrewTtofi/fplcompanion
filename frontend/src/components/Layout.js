@@ -239,13 +239,13 @@ export default function Layout({ children, teamData }) {
             <p>FPL Companion - Unofficial Fantasy Premier League Dashboard</p>
             <p className="mt-1">Data provided by the official FPL API</p>
             <div className="flex items-center justify-center gap-3 mt-4">
-              <a
+              <Link
                 href="/blog"
                 className="inline-flex items-center gap-1.5 px-4 py-2 border border-fpl-purple/30 dark:border-fpl-green/30 text-fpl-purple dark:text-fpl-green text-sm font-semibold rounded-lg hover:bg-fpl-purple/5 dark:hover:bg-fpl-green/5 transition-colors"
               >
                 <BookOpen size={14} />
                 <span>Blog</span>
-              </a>
+              </Link>
               <a
                 href="https://buymeacoffee.com/fplcompanion"
                 target="_blank"

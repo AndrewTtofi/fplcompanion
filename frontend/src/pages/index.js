@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import Head from 'next/head';
 import { Search, BookOpen } from 'lucide-react';
 
@@ -149,7 +150,7 @@ export default function Home() {
             </div>
           </div>
 
-          <a
+          <Link
             href="/blog"
             className="block mt-6 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-5 hover:bg-white/20 transition-all group"
           >
@@ -163,7 +164,7 @@ export default function Home() {
               </div>
               <span className="text-fpl-green text-sm font-medium group-hover:translate-x-1 transition-transform">&rarr;</span>
             </div>
-          </a>
+          </Link>
 
           <div className="text-center mt-6 text-white text-sm">
             <p>No login required • Public data only • Fast & Secure</p>
