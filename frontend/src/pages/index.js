@@ -149,8 +149,11 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="text-center mt-8 text-white text-sm">
+          <div className="text-center mt-8 text-white text-sm space-y-2">
             <p>No login required • Public data only • Fast & Secure</p>
+            <a href="/blog" className="inline-block text-fpl-green hover:text-white transition">
+              Read our blog for FPL tips & guides &rarr;
+            </a>
           </div>
         </div>
       </div>
