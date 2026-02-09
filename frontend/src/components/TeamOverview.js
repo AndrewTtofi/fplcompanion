@@ -65,15 +65,6 @@ export default function TeamOverview({ teamData }) {
   // Get last 5 gameweeks performance
   const last5GWs = history.current?.slice(-5) || [];
 
-  // Calculate best and worst gameweek
-  const allGWs = history.current || [];
-  const bestGW = allGWs.reduce((best, gw) =>
-    gw.points > (best?.points || 0) ? gw : best, null
-  );
-  const worstGW = allGWs.reduce((worst, gw) =>
-    gw.points < (worst?.points || Infinity) ? gw : worst, null
-  );
-
   return (
     <div className="space-y-6">
       {/* Performance Stats Grid */}
@@ -190,35 +181,6 @@ export default function TeamOverview({ teamData }) {
               ? '◐ All matches finished. Awaiting bonus confirmation.'
               : '● Live - Matches in progress. Ranks update after gameweek finalization.'}
           </p>
-        )}
-      </div>
-
-      {/* Best/Worst Gameweeks */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {bestGW && (
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-            <h3 className="font-semibold text-green-900 dark:text-green-300 mb-2">Best Gameweek</h3>
-            <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-bold text-green-700 dark:text-green-400">{bestGW.points}</span>
-              <span className="text-sm text-green-600 dark:text-green-400">points in GW{bestGW.event}</span>
-            </div>
-            <p className="text-sm text-green-600 dark:text-green-400 mt-1">
-              Rank: {bestGW.rank?.toLocaleString()}
-            </p>
-          </div>
-        )}
-
-        {worstGW && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-            <h3 className="font-semibold text-red-900 dark:text-red-300 mb-2">Worst Gameweek</h3>
-            <div className="flex items-baseline space-x-2">
-              <span className="text-3xl font-bold text-red-700 dark:text-red-400">{worstGW.points}</span>
-              <span className="text-sm text-red-600 dark:text-red-400">points in GW{worstGW.event}</span>
-            </div>
-            <p className="text-sm text-red-600 dark:text-red-400 mt-1">
-              Rank: {worstGW.rank?.toLocaleString()}
-            </p>
-          </div>
         )}
       </div>
 

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
-import { Loader2, Trophy, TrendingUp, TrendingDown, Users, X } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, Users, X } from 'lucide-react';
 import { useLeague } from '@/contexts/LeagueContext';
 
 export default function LeagueView({ teamData }) {
-  const { selectedLeague: globalLeague, selectLeague } = useLeague();
+  const { selectedLeague: globalLeague } = useLeague();
   const [selectedLeague, setSelectedLeague] = useState(null);
   const classicLeagues = teamData.team.leagues?.classic || [];
 
@@ -28,34 +28,7 @@ export default function LeagueView({ teamData }) {
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* League Selector */}
-      {classicLeagues.length > 1 && (
-        <div>
-          <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-            Select League
-          </label>
-          <select
-            value={leagueToShow.id}
-            onChange={(e) => {
-              const league = classicLeagues.find(l => l.id === parseInt(e.target.value));
-              setSelectedLeague(league);
-              selectLeague(league); // Sync with global league filter
-            }}
-            className="w-full md:w-96 px-3 md:px-4 py-2 text-sm md:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:bg-gray-700 dark:text-white"
-          >
-            {classicLeagues.map(league => (
-              <option key={league.id} value={league.id}>
-                {league.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* League Details */}
-      <LeagueStandings key={leagueToShow.id} league={leagueToShow} userTeamId={teamData.team.id} teamData={teamData} />
-    </div>
+    <LeagueStandings key={leagueToShow.id} league={leagueToShow} userTeamId={teamData.team.id} teamData={teamData} />
   );
 }
 
@@ -172,70 +145,6 @@ function LeagueStandings({ league, userTeamId, teamData }) {
         />
       )}
 
-      {/* League Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 md:p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">{data.league.name}</h2>
-            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {standings.length} teams
-            </p>
-          </div>
-          <Trophy className="text-fpl-purple dark:text-fpl-green" size={32} />
-        </div>
-
-        {/* Always show user stats section */}
-        <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="grid grid-cols-3 gap-2 md:gap-4 text-center">
-            <div>
-              <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                <span className="hidden sm:inline">Your Rank</span>
-                <span className="sm:hidden">Rank</span>
-              </div>
-              <div className="text-lg md:text-2xl font-bold text-fpl-purple dark:text-fpl-green">
-                {userEntry?.rank || '-'}
-              </div>
-            </div>
-            <div>
-              <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                <span className="hidden sm:inline">GW Points</span>
-                <span className="sm:hidden">GW</span>
-              </div>
-              <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white relative group">
-                {userLiveData?.total_live_points ?? userEntry?.event_total ?? '-'}
-                {statusDisplay && (
-                  <>
-                    <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
-                    <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
-                      {statusDisplay.tooltip}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-            <div>
-              <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                <span className="hidden sm:inline">Total Points</span>
-                <span className="sm:hidden">Total</span>
-              </div>
-              <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white relative group">
-                {userLiveData?.total_live_points && userEntry
-                  ? userEntry.total + (userLiveData.total_live_points - userEntry.event_total)
-                  : userEntry?.total ?? '-'}
-                {statusDisplay && (
-                  <>
-                    <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
-                    <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 left-1/2 transform -translate-x-1/2">
-                      {statusDisplay.tooltip}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Standings Table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="overflow-x-auto">
@@ -346,28 +255,6 @@ function LeagueStandings({ league, userTeamId, teamData }) {
         </div>
       </div>
 
-      {/* League Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 md:p-4">
-          <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-1">League Leader</div>
-          <div className="font-bold text-base md:text-lg dark:text-white">{standings[0]?.entry_name}</div>
-          <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300">{standings[0]?.total.toLocaleString()} pts</div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 md:p-4">
-          <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-1">Average Points</div>
-          <div className="font-bold text-base md:text-lg dark:text-white">
-            {Math.round(standings.reduce((sum, s) => sum + s.total, 0) / standings.length).toLocaleString()}
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 md:p-4">
-          <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mb-1">Highest GW Score</div>
-          <div className="font-bold text-base md:text-lg dark:text-white">
-            {Math.max(...standings.map(s => s.event_total))}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

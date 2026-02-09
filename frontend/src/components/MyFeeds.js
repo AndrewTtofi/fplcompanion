@@ -3,7 +3,7 @@ import useSWR from 'swr';
 import { api } from '@/lib/api';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';
-import { AlertCircle, TrendingUp, TrendingDown, Activity, Calendar, Bell, UserCheck, UserX } from 'lucide-react';
+import { AlertCircle, TrendingUp, TrendingDown, Activity, Calendar, Bell, UserCheck, UserX, ChevronDown, ChevronUp } from 'lucide-react';
 
 function formatRelativeTime(isoTimestamp) {
   const diff = Date.now() - new Date(isoTimestamp).getTime();
@@ -96,6 +96,7 @@ export default function MyFeeds({ teamId }) {
 }
 
 function FeedItem({ item }) {
+  const [expanded, setExpanded] = useState(false);
   const { type, priority, title, description } = item;
 
   // Determine icon and colors based on type
@@ -174,33 +175,44 @@ function FeedItem({ item }) {
   const config = getTypeConfig();
 
   return (
-    <div className={`${config.bgColor} border ${config.borderColor} rounded-lg p-4 md:p-6 shadow-sm hover:shadow-md transition-shadow`}>
-      <div className="flex items-start gap-3 md:gap-4">
-        {/* Icon */}
+    <div className={`${config.bgColor} border ${config.borderColor} rounded-lg shadow-sm transition-shadow`}>
+      {/* Clickable header */}
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center gap-3 md:gap-4 p-4 md:p-6 text-left cursor-pointer"
+      >
         <div className={`${config.iconBg} ${config.iconColor} p-2 md:p-3 rounded-lg flex-shrink-0`}>
           {config.icon}
         </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
-            <h3 className="text-base md:text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+        <div className="flex-1 min-w-0 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <h3 className="text-base md:text-lg font-bold text-gray-900 dark:text-white truncate">{title}</h3>
             {priority === 'high' && (
               <span className="bg-red-500 text-white text-[10px] md:text-xs font-bold px-2 py-1 rounded-full uppercase flex-shrink-0">
                 High Priority
               </span>
             )}
           </div>
-          <p className="text-sm md:text-base text-gray-700 dark:text-gray-200 mb-3 md:mb-4">{description}</p>
-
-          {/* Type-specific details */}
-          {type === 'DOUBLE_GAMEWEEK' && <DoubleGameweekDetails item={item} />}
-          {type === 'BLANK_GAMEWEEK' && <BlankGameweekDetails item={item} />}
-          {type === 'INJURY_NEWS' && <InjuryNewsDetails item={item} />}
-          {type === 'PRICE_CHANGE' && <PriceChangeDetails item={item} />}
-          {type === 'TEAM_NEWS' && <TeamNewsDetails item={item} />}
+          {expanded
+            ? <ChevronUp size={20} className="text-gray-400 flex-shrink-0" />
+            : <ChevronDown size={20} className="text-gray-400 flex-shrink-0" />
+          }
         </div>
-      </div>
+      </button>
+
+      {/* Collapsible content */}
+      {expanded && (
+        <div className="px-4 md:px-6 pb-4 md:pb-6 pt-0">
+          <div className="ml-[40px] md:ml-[52px]">
+            <p className="text-sm md:text-base text-gray-700 dark:text-gray-200 mb-3 md:mb-4">{description}</p>
+            {type === 'DOUBLE_GAMEWEEK' && <DoubleGameweekDetails item={item} />}
+            {type === 'BLANK_GAMEWEEK' && <BlankGameweekDetails item={item} />}
+            {type === 'INJURY_NEWS' && <InjuryNewsDetails item={item} />}
+            {type === 'PRICE_CHANGE' && <PriceChangeDetails item={item} />}
+            {type === 'TEAM_NEWS' && <TeamNewsDetails item={item} />}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
