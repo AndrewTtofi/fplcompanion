@@ -203,32 +203,6 @@ export default function Layout({ children, teamData }) {
         </div>
       </header>
 
-      {/* League Filter Indicator Banner */}
-      {isFiltered && selectedLeague && (
-        <div className="bg-fpl-purple/10 border-b border-fpl-purple/20 dark:bg-fpl-purple/20 dark:border-fpl-purple/30">
-          <div className="max-w-7xl mx-auto px-4 py-2">
-            <div className="flex items-center justify-between text-xs md:text-sm">
-              <div className="flex items-center gap-1 md:gap-2 text-fpl-purple dark:text-fpl-green font-medium">
-                <Trophy size={14} className="md:w-4 md:h-4 flex-shrink-0" />
-                <span className="truncate">
-                  Viewing: <strong className="truncate">{selectedLeague.name}</strong>
-                </span>
-                <span className="hidden lg:inline text-xs text-gray-500 dark:text-gray-400">
-                  (All data filtered to this league)
-                </span>
-              </div>
-              <button
-                onClick={() => selectLeague(null)}
-                className="flex items-center gap-1 text-gray-600 hover:text-fpl-purple dark:text-gray-400 dark:hover:text-fpl-green transition-colors flex-shrink-0"
-              >
-                <span className="text-xs hidden sm:inline">Clear</span>
-                <X size={14} />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Content */}
       <main>{children}</main>
 
