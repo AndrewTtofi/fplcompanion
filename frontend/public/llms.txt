@@ -1,0 +1,25 @@
+# FPL Companion
+
+> Free Fantasy Premier League dashboard for FPL managers. No login required.
+
+FPL Companion is a web application at https://fplcompanion.com that provides Fantasy Premier League managers with a comprehensive dashboard to track their team, analyze gameweeks, compare league standings, and plan transfers.
+
+## Features
+
+- **Live Gameweek Points**: Real-time point tracking with automatic substitutions and captain multipliers
+- **Team Overview**: Squad value, overall rank, chip usage (two-set system for 2025/26), and season performance
+- **Pitch View**: Visual formation with player cards showing points, goals, assists, bonus, and defensive contributions
+- **League Standings**: Classic and Head-to-Head league tables with live gameweek points comparison
+- **Transfer Planning**: Player shortlist, fixture difficulty ratings, and shareable transfer plans
+- **My Feeds**: AI-powered podcast insights from the Official FPL Podcast using Google Gemini
+- **Dark Mode**: Full dark mode support across all views
+
+## How It Works
+
+Users enter their FPL Team ID (found in the URL on the official FPL website) and get instant access to their full dashboard. The app uses the official Fantasy Premier League API — no authentication or login is required since all FPL data is publicly available.
+
+## Links
+
+- Website: https://fplcompanion.com
+- GitHub: https://github.com/AndrewTtofi/fplcompanion
+- Support: https://buymeacoffee.com/fplcompanion
