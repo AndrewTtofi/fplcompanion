@@ -3,7 +3,17 @@ import useSWR from 'swr';
 import { api } from '@/lib/api';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';
-import { AlertCircle, TrendingUp, TrendingDown, Activity, Calendar, Bell } from 'lucide-react';
+import { AlertCircle, TrendingUp, TrendingDown, Activity, Calendar, Bell, UserCheck, UserX } from 'lucide-react';
+
+function formatRelativeTime(isoTimestamp) {
+  const diff = Date.now() - new Date(isoTimestamp).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
 
 export default function MyFeeds({ teamId }) {
   const [currentGameweek, setCurrentGameweek] = useState(null);
@@ -13,7 +23,7 @@ export default function MyFeeds({ teamId }) {
     () => api.getTeamFeed(teamId, currentGameweek).then(res => res.data),
     {
       revalidateOnFocus: true,
-      refreshInterval: 300000, // Refresh every 5 minutes
+      refreshInterval: 60000, // Refresh every 60 seconds
     }
   );
 
@@ -25,20 +35,20 @@ export default function MyFeeds({ teamId }) {
   }, []);
 
   if (isLoading || !currentGameweek) {
-    return <LoadingSpinner size="lg" message="Loading your feeds..." />;
+    return <LoadingSpinner size="lg" message="Loading feeds..." />;
   }
 
   if (error || !feedData) {
     return (
       <ErrorMessage
         title="Failed to load feeds"
-        message="We couldn't load your personalized feeds. Please try again."
+        message="We couldn't load your feeds. Please try again."
         onRetry={() => mutate()}
       />
     );
   }
 
-  const { feed_items, total_items } = feedData;
+  const { feed_items, total_items, last_checked } = feedData;
 
   return (
     <div className="space-y-4">
@@ -47,8 +57,13 @@ export default function MyFeeds({ teamId }) {
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">My Feeds</h2>
           <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">
-            Important updates and insights for your FPL team
+            Player news, injury updates, and insights for your squad
           </p>
+          {last_checked && (
+            <p className="text-[10px] md:text-xs text-gray-400 dark:text-gray-500 mt-1">
+              News last checked: {formatRelativeTime(last_checked)}
+            </p>
+          )}
         </div>
         {total_items > 0 && (
           <div className="flex items-center gap-2 bg-fpl-purple text-white px-3 md:px-4 py-1.5 md:py-2 rounded-lg flex-shrink-0">
@@ -65,14 +80,14 @@ export default function MyFeeds({ teamId }) {
             <Activity className="mx-auto text-gray-300 dark:text-gray-600 mb-4" size={64} />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">All caught up!</h3>
             <p className="text-gray-600 dark:text-gray-300">
-              No important updates at the moment. Check back later for double gameweeks, injury news, and more.
+              No important updates at the moment. Check back later for team news, double gameweeks, and more.
             </p>
           </div>
         </div>
       ) : (
         <div className="space-y-4">
           {feed_items.map((item, index) => (
-            <FeedItem key={index} item={item} />
+            <FeedItem key={`${item.type}-${index}`} item={item} />
           ))}
         </div>
       )}
@@ -118,6 +133,33 @@ function FeedItem({ item }) {
           iconBg: 'bg-blue-500',
           iconColor: 'text-white',
         };
+      case 'TEAM_NEWS': {
+        if (item.change_type === 'CLEARED_NEWS') {
+          return {
+            icon: <UserCheck size={24} />,
+            bgColor: 'bg-green-50 dark:bg-green-900/20',
+            borderColor: 'border-green-200 dark:border-green-800',
+            iconBg: 'bg-green-500',
+            iconColor: 'text-white',
+          };
+        }
+        if (item.new_status === 'i' || item.new_status === 's') {
+          return {
+            icon: <UserX size={24} />,
+            bgColor: 'bg-red-50 dark:bg-red-900/20',
+            borderColor: 'border-red-200 dark:border-red-800',
+            iconBg: 'bg-red-500',
+            iconColor: 'text-white',
+          };
+        }
+        return {
+          icon: <AlertCircle size={24} />,
+          bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
+          borderColor: 'border-yellow-200 dark:border-yellow-800',
+          iconBg: 'bg-yellow-500',
+          iconColor: 'text-white',
+        };
+      }
       default:
         return {
           icon: <Calendar size={24} />,
@@ -156,7 +198,71 @@ function FeedItem({ item }) {
           {type === 'BLANK_GAMEWEEK' && <BlankGameweekDetails item={item} />}
           {type === 'INJURY_NEWS' && <InjuryNewsDetails item={item} />}
           {type === 'PRICE_CHANGE' && <PriceChangeDetails item={item} />}
+          {type === 'TEAM_NEWS' && <TeamNewsDetails item={item} />}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function TeamNewsDetails({ item }) {
+  const { player, change_type, old_status, new_status,
+          chance_of_playing_next_round, created_at } = item;
+
+  const statusLabels = {
+    a: 'Available', d: 'Doubtful', i: 'Injured',
+    s: 'Suspended', u: 'Unavailable', n: 'Not in Squad'
+  };
+
+  const statusColors = {
+    a: 'text-green-600', d: 'text-yellow-600', i: 'text-red-600',
+    s: 'text-red-600', u: 'text-gray-600', n: 'text-gray-600'
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-sm text-gray-900 dark:text-white">
+              {player.name}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{player.team}</span>
+          </div>
+          {chance_of_playing_next_round !== null && chance_of_playing_next_round !== undefined && (
+            <span className={`text-xs font-semibold ${
+              chance_of_playing_next_round >= 75 ? 'text-green-600' :
+              chance_of_playing_next_round >= 50 ? 'text-yellow-600' : 'text-red-600'
+            }`}>
+              {chance_of_playing_next_round}% chance
+            </span>
+          )}
+        </div>
+
+        {/* Status change indicator */}
+        {old_status && new_status && old_status !== new_status && (
+          <div className="flex items-center gap-2 text-xs mb-2">
+            <span className={statusColors[old_status] || 'text-gray-600'}>{statusLabels[old_status] || old_status}</span>
+            <span className="text-gray-400">&rarr;</span>
+            <span className={`font-semibold ${statusColors[new_status] || 'text-gray-600'}`}>
+              {statusLabels[new_status] || new_status}
+            </span>
+          </div>
+        )}
+
+        {/* Recovery message */}
+        {change_type === 'CLEARED_NEWS' && (
+          <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+            Player has recovered and is available for selection
+          </p>
+        )}
+
+        {/* Timestamp */}
+        {created_at && (
+          <p className="text-[10px] md:text-xs text-gray-400 dark:text-gray-500 mt-1">
+            {formatRelativeTime(created_at)}
+          </p>
+        )}
       </div>
     </div>
   );
