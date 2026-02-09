@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.17.0] - 2026-02-09
+
+### Changes
+- feat: add automated player news feed and team articles tab (#38) (76c446f)
+
 ## [v2.16.0] - 2026-02-09
 
 ### Changes
