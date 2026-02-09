@@ -13,7 +13,7 @@ export default function App({ Component, pageProps }) {
       <Head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#37003c" />
+        <meta name="theme-color" content="#1A1A2E" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="canonical" href={SITE_URL} />
 
