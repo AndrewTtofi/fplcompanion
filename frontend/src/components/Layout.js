@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
-import { Home, ArrowLeft, Trophy, X } from 'lucide-react';
+import { Home, ArrowLeft, Trophy, X, BookOpen } from 'lucide-react';
 import { useLeague } from '@/contexts/LeagueContext';
 import ThemeToggle from './ThemeToggle';
 
@@ -238,15 +238,24 @@ export default function Layout({ children, teamData }) {
           <div className="text-center text-sm text-gray-500 dark:text-gray-400">
             <p>FPL Companion - Unofficial Fantasy Premier League Dashboard</p>
             <p className="mt-1">Data provided by the official FPL API</p>
-            <a
-              href="https://buymeacoffee.com/fplcompanion"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-gray-900 text-sm font-semibold rounded-lg transition-colors"
-            >
-              <span>☕</span>
-              <span>Buy Me a Coffee</span>
-            </a>
+            <div className="flex items-center justify-center gap-3 mt-4">
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-1.5 px-4 py-2 border border-fpl-purple/30 dark:border-fpl-green/30 text-fpl-purple dark:text-fpl-green text-sm font-semibold rounded-lg hover:bg-fpl-purple/5 dark:hover:bg-fpl-green/5 transition-colors"
+              >
+                <BookOpen size={14} />
+                <span>Blog</span>
+              </Link>
+              <a
+                href="https://buymeacoffee.com/fplcompanion"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-gray-900 text-sm font-semibold rounded-lg transition-colors"
+              >
+                <span>☕</span>
+                <span>Buy Me a Coffee</span>
+              </a>
+            </div>
           </div>
         </div>
       </footer>

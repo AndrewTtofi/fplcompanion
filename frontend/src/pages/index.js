@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import Head from 'next/head';
-import { Search } from 'lucide-react';
+import { Search, BookOpen } from 'lucide-react';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -149,7 +150,23 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="text-center mt-8 text-white text-sm">
+          <Link
+            href="/blog"
+            className="block mt-6 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-5 hover:bg-white/20 transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-fpl-green/20 rounded-lg flex items-center justify-center">
+                <BookOpen size={20} className="text-fpl-green" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-white font-semibold text-sm">FPL Tips & Guides</h3>
+                <p className="text-white/60 text-xs mt-0.5">Learn how to get the most out of FPL Companion</p>
+              </div>
+              <span className="text-fpl-green text-sm font-medium group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </div>
+          </Link>
+
+          <div className="text-center mt-6 text-white text-sm">
             <p>No login required • Public data only • Fast & Secure</p>
           </div>
         </div>
