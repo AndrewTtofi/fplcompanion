@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.18.0] - 2026-02-09
+
+### Changes
+- feat: UI cleanups across multiple views (#39) (877eee6)
+
 ## [v2.17.0] - 2026-02-09
 
 ### Changes
