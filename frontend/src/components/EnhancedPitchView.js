@@ -147,7 +147,7 @@ function EnhancedPlayerJersey({ player, type, showFixtures }) {
               {stats.goals_scored > 0 && <span className="bg-white bg-opacity-20 px-1.5 py-0.5 rounded">⚽{stats.goals_scored}</span>}
               {stats.assists > 0 && <span className="bg-white bg-opacity-20 px-1.5 py-0.5 rounded">🅰️{stats.assists}</span>}
               {stats.clean_sheets > 0 && <span className="bg-white bg-opacity-20 px-1.5 py-0.5 rounded">CS</span>}
-              {stats.defensive_contribution > 0 && <span className="bg-white bg-opacity-20 px-1.5 py-0.5 rounded">DC</span>}
+              {player.points_breakdown?.some(b => b.identifier === 'defensive_contribution') && <span className="bg-white bg-opacity-20 px-1.5 py-0.5 rounded">DC</span>}
               {stats.bonus > 0 && <span className="bg-white bg-opacity-20 px-1.5 py-0.5 rounded">⭐{stats.bonus}</span>}
             </div>
           </div>
