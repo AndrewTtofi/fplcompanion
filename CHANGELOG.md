@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.13.3] - 2026-02-09
+
+### Changes
+- fix: update chips display for 2025/26 two-set system and fix dark mode (#31) (5934ec4)
+
 ## [v2.13.2] - 2026-02-09
 
 ### Changes
