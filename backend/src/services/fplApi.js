@@ -899,21 +899,71 @@ class FPLApiService {
       });
     }
 
-    // Sort by priority and date
-    const priorityOrder = { high: 0, medium: 1, low: 2 };
-    feedItems.sort((a, b) => {
-      if (a.priority !== b.priority) {
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      }
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
+    // 5. Player news changes (from news scheduler)
+    try {
+      const newsProcessor = require('./newsProcessor');
+      const newsEvents = await newsProcessor.getNewsEventsForPlayers(squadPlayerIds);
+
+      newsEvents.forEach(event => {
+        feedItems.push({
+          type: 'TEAM_NEWS',
+          priority: event.change_type === 'CLEARED_NEWS' ? 'low' : 'high',
+          title: this._getNewsTitle(event),
+          description: event.new_news || 'Player status updated',
+          player: {
+            id: event.player_id,
+            name: event.web_name,
+            full_name: event.player_name,
+            team: event.team_short,
+            team_id: event.team_id,
+          },
+          change_type: event.change_type,
+          old_news: event.old_news,
+          new_news: event.new_news,
+          old_status: event.old_status,
+          new_status: event.new_status,
+          chance_of_playing_next_round: event.chance_of_playing_next_round,
+          chance_of_playing_this_round: event.chance_of_playing_this_round,
+          created_at: event.timestamp,
+        });
+      });
+    } catch (err) {
+      // News processor may not be ready yet — don't fail the feed
+      console.error('[FPLApi] Error fetching news events for feed:', err.message);
+    }
+
+    // Sort: chronologically, most recent first
+    feedItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    // Get last news check time
+    let lastChecked = null;
+    try {
+      const newsProcessor = require('./newsProcessor');
+      lastChecked = await newsProcessor.getLastChecked();
+    } catch (_) { /* ignore */ }
 
     return {
       team_id: teamId,
       current_gameweek: currentGW?.id,
       feed_items: feedItems,
-      total_items: feedItems.length
+      total_items: feedItems.length,
+      last_checked: lastChecked,
     };
+  }
+
+  _getNewsTitle(event) {
+    const name = event.web_name;
+    switch (event.change_type) {
+      case 'CLEARED_NEWS': return `${name} - Available`;
+      case 'NEW_NEWS': return `${name} - ${this._statusLabel(event.new_status)}`;
+      case 'UPDATED_NEWS': return `${name} - Status Update`;
+      default: return `${name} - News Update`;
+    }
+  }
+
+  _statusLabel(status) {
+    const labels = { a: 'Available', d: 'Doubtful', i: 'Injured', s: 'Suspended', u: 'Unavailable', n: 'Not in Squad' };
+    return labels[status] || 'Unknown';
   }
 }
 

@@ -332,6 +332,96 @@ router.get('/feeds/team/:teamId', async (req, res, next) => {
 });
 
 // ============================================
+// News Routes
+// ============================================
+
+/**
+ * GET /api/news/events
+ * GET /api/news/events?since=ISO_TIMESTAMP
+ * Get all player news change events
+ */
+router.get('/news/events', async (req, res, next) => {
+  try {
+    const newsProcessor = require('../services/newsProcessor');
+    const since = req.query.since || null;
+    const events = await newsProcessor.getNewsEvents(since);
+    const lastChecked = await newsProcessor.getLastChecked();
+    res.json({
+      events,
+      total: events.length,
+      last_checked: lastChecked,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/news/status
+ * Get news scheduler status
+ */
+router.get('/news/status', async (req, res, next) => {
+  try {
+    const newsScheduler = require('../services/newsScheduler');
+    const newsProcessor = require('../services/newsProcessor');
+    const lastChecked = await newsProcessor.getLastChecked();
+    res.json({
+      ...newsScheduler.getStatus(),
+      lastChecked,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ============================================
+// Articles Routes
+// ============================================
+
+/**
+ * GET /api/articles/team/:teamId
+ * Get articles relevant to a team's squad (filtered by squad teams)
+ */
+router.get('/articles/team/:teamId', async (req, res, next) => {
+  try {
+    const teamId = req.params.teamId;
+    const articlesFetcher = require('../services/articlesFetcher');
+
+    // Get squad team short names for highlighting
+    const bootstrap = await fplApi.getBootstrapStatic();
+    const currentGW = bootstrap.events.find(e => e.is_current);
+
+    let squadTeams = [];
+    if (currentGW) {
+      const picks = await fplApi.getTeamPicks(teamId, currentGW.id);
+      const playerIds = picks.picks.map(p => p.element);
+      const teamIds = [...new Set(
+        playerIds.map(pid => {
+          const player = bootstrap.elements.find(e => e.id === pid);
+          return player?.team;
+        }).filter(Boolean)
+      )];
+      squadTeams = teamIds.map(tid => {
+        const team = bootstrap.teams.find(t => t.id === tid);
+        return team?.short_name;
+      }).filter(Boolean);
+    }
+
+    // Match against ALL 20 PL teams
+    const articles = await articlesFetcher.getArticlesAllTeams();
+
+    res.json({
+      articles,
+      total: articles.length,
+      allTeams: articlesFetcher.ALL_TEAMS,
+      squadTeams,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ============================================
 // Podcast Transcript Routes
 // ============================================
 

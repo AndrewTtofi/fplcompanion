@@ -57,6 +57,16 @@ export const api = {
     return apiClient.get(url);
   },
 
+  // News events
+  getNewsEvents: (since = null) => {
+    const url = since ? `/news/events?since=${since}` : '/news/events';
+    return apiClient.get(url);
+  },
+  getNewsStatus: () => apiClient.get('/news/status'),
+
+  // Articles
+  getTeamArticles: (teamId) => apiClient.get(`/articles/team/${teamId}`),
+
   // Podcast transcript and insights (auto-processed on backend startup)
   getPodcastTranscript: () => apiClient.get('/podcast/transcript'),
   getPodcastInsights: () => apiClient.get('/podcast/insights'),

@@ -8,6 +8,7 @@ const redisClient = require('./config/redis');
 const routes = require('./routes');
 const podcastProcessor = require('./services/podcastProcessor');
 const podcastScheduler = require('./services/podcastScheduler');
+const newsScheduler = require('./services/newsScheduler');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -67,6 +68,9 @@ const startServer = async () => {
       } else {
         console.log('○ Podcast transcription disabled (GOOGLE_AI_API_KEY not configured)');
       }
+
+      // Start player news monitoring
+      newsScheduler.start();
     });
   } catch (error) {
     console.error('Failed to start server:', error);
@@ -78,6 +82,7 @@ const startServer = async () => {
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received, shutting down gracefully');
   podcastScheduler.stop();
+  newsScheduler.stop();
   await redisClient.quit();
   process.exit(0);
 });
