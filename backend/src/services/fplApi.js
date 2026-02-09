@@ -322,7 +322,7 @@ class FPLApiService {
         saves: 'Saves',
         bonus: 'Bonus',
         starts: 'Started',
-        defensive_contributions: 'Defensive Contributions'
+        defensive_contribution: 'Defensive Contributions'
       };
 
       const pointsBreakdown = explain.flatMap(fixture =>
@@ -359,7 +359,7 @@ class FPLApiService {
           saves: stats.saves || 0,
           bonus: stats.bonus || 0,
           bps: stats.bps || 0,
-          defensive_contributions: stats.defensive_contributions || 0,
+          defensive_contribution: stats.defensive_contribution || 0,
           total_points: stats.total_points || 0
         },
         points_breakdown: pointsBreakdown
