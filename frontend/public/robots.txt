@@ -4,4 +4,3 @@ Allow: /
 
 # Sitemap
 Sitemap: https://fplcompanion.com/sitemap.xml
-Sitemap: https://fplcompanion.com/sitemap-0.xml
