@@ -298,7 +298,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for complete guidelines.
 
 This project uses [Semantic Versioning](https://semver.org/). See [CHANGELOG.md](CHANGELOG.md) for version history.
 
-**Current Version:** v2.0.0
+**Current Version:** v2.13.3
 
 - **MAJOR** version for incompatible API changes
 - **MINOR** version for new features (backward-compatible)
@@ -308,10 +308,12 @@ Versions are automatically managed through commit messages on merge to `main`.
 
 ## Links
 
+- **Live Site:** https://fplcompanion.com
 - **GitHub Repository:** https://github.com/AndrewTtofi/fplcompanion
 - **Issue Tracker:** https://github.com/AndrewTtofi/fplcompanion/issues
 - **Releases:** https://github.com/AndrewTtofi/fplcompanion/releases
 - **Changelog:** [CHANGELOG.md](CHANGELOG.md)
+- **Buy Me a Coffee:** https://buymeacoffee.com/fplcompanion
 
 ## License
 
@@ -328,10 +330,11 @@ MIT - See [LICENSE](LICENSE) for details
 - [x] Team comparison feature
 - [x] Podcast insights (transcript)
 - [x] Podcast insights (AI-extracted picks)
-- [ ] Transfer planner
+- [x] Transfer planner
+- [x] Dark mode
+- [x] Mobile-responsive improvements
+- [x] SEO & search engine indexing
 - [ ] Fixture difficulty analyzer
 - [ ] Player search by name
 - [ ] Historical season data
 - [ ] Email/push notifications for gameweek updates
-- [ ] Mobile-responsive improvements
-- [ ] Dark mode
