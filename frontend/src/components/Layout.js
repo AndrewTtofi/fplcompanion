@@ -238,6 +238,15 @@ export default function Layout({ children, teamData }) {
           <div className="text-center text-sm text-gray-500 dark:text-gray-400">
             <p>FPL Companion - Unofficial Fantasy Premier League Dashboard</p>
             <p className="mt-1">Data provided by the official FPL API</p>
+            <a
+              href="https://buymeacoffee.com/fplcompanion"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-gray-900 text-sm font-semibold rounded-lg transition-colors"
+            >
+              <span>☕</span>
+              <span>Buy Me a Coffee</span>
+            </a>
           </div>
         </div>
       </footer>
