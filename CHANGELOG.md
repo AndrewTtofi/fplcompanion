@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.14.0] - 2026-02-09
+
+### Changes
+- Merge pull request #33 from AndrewTtofi/feat/seo-indexing (e7bd62b)
+- feat: add brand assets (favicon, OG image, app icons) (b7dd22e)
+- feat: add SEO meta tags, sitemap, structured data, and robots.txt (546cbc8)
+
 ## [v2.13.3] - 2026-02-09
 
 ### Changes
