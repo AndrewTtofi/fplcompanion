@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.16.0] - 2026-02-09
+
+### Changes
+- feat: add blog section for SEO content (#36) (d459cf3)
+- Merge pull request #35 from AndrewTtofi/feat/llms-txt (cc523ab)
+- feat: add llms.txt for AI/LLM discoverability (842f746)
+
 ## [v2.15.0] - 2026-02-09
 
 ### Changes
