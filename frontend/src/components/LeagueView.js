@@ -135,7 +135,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div>
       {/* Comparison Modal */}
       {comparisonTeamId && comparisonData && (
         <ComparisonView
@@ -151,15 +151,13 @@ function LeagueStandings({ league, userTeamId, teamData }) {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">Rank</th>
-                <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">Team</th>
-                <th className="text-left py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300 hidden md:table-cell">Manager</th>
-                <th className="text-center py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">GW</th>
-                <th className="text-right py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">Total</th>
-                <th className="text-center py-2 md:py-3 px-2 md:px-4 text-xs md:text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  <span className="hidden sm:inline">Compare</span>
-                  <span className="sm:hidden">Comp</span>
-                </th>
+                <th className="text-left py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">#</th>
+                <th className="text-left py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">Team</th>
+                <th className="text-left py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300 hidden md:table-cell">Manager</th>
+                <th className="text-left py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">Capt</th>
+                <th className="text-center py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">GW</th>
+                <th className="text-right py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">Tot</th>
+                <th className="text-center py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300 hidden md:table-cell">Compare</th>
               </tr>
             </thead>
             <tbody>
@@ -187,63 +185,75 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                 return (
                   <tr
                     key={entry.entry}
+                    onClick={!isUser ? () => setComparisonTeamId(entry.entry) : undefined}
                     className={`border-t border-gray-100 dark:border-gray-700 ${
-                      isUser ? 'bg-fpl-purple bg-opacity-10 dark:bg-fpl-purple/20 font-semibold' : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                      isUser
+                        ? 'bg-fpl-purple bg-opacity-10 dark:bg-fpl-purple/20 font-semibold'
+                        : 'hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer active:bg-gray-100 dark:active:bg-gray-600 md:cursor-default md:active:bg-transparent dark:md:active:bg-transparent'
                     }`}
                   >
-                    <td className="py-2 md:py-3 px-2 md:px-4">
-                      <div className="flex items-center space-x-1 md:space-x-2">
-                        <span className={`text-xs md:text-sm ${index < 3 ? 'font-bold text-fpl-purple dark:text-fpl-green' : ''}`}>
+                    <td className="py-1 md:py-3 px-1 md:px-4">
+                      <div className="flex items-center space-x-0.5 md:space-x-2">
+                        <span className={`text-[11px] md:text-sm ${index < 3 ? 'font-bold text-fpl-purple dark:text-fpl-green' : ''}`}>
                           {entry.rank}
                         </span>
                         {rankChange > 0 && (
-                          <TrendingUp className="text-green-500" size={14} />
+                          <TrendingUp className="text-green-500 w-3 h-3 md:w-3.5 md:h-3.5" />
                         )}
                         {rankChange < 0 && (
-                          <TrendingDown className="text-red-500" size={14} />
+                          <TrendingDown className="text-red-500 w-3 h-3 md:w-3.5 md:h-3.5" />
                         )}
                       </div>
                     </td>
-                    <td className="py-2 md:py-3 px-2 md:px-4">
-                      <div className="flex items-center space-x-1 md:space-x-2">
-                        {isUser && <span className="text-fpl-pink">→</span>}
-                        <span className="text-xs md:text-sm truncate max-w-[120px] md:max-w-none">{entry.entry_name}</span>
+                    <td className="py-1 md:py-3 px-1 md:px-4">
+                      <div className="flex items-center space-x-0.5 md:space-x-2">
+                        {isUser && <span className="text-fpl-pink text-[11px]">→</span>}
+                        <span className="text-[11px] md:text-sm truncate max-w-[80px] md:max-w-none">{entry.entry_name}</span>
                       </div>
                     </td>
-                    <td className="py-2 md:py-3 px-2 md:px-4 text-sm text-gray-600 dark:text-gray-300 hidden md:table-cell">
+                    <td className="py-1 md:py-3 px-1 md:px-4 text-sm text-gray-600 dark:text-gray-300 hidden md:table-cell">
                       {entry.player_name}
                     </td>
-                    <td className="py-2 md:py-3 px-2 md:px-4 text-center text-xs md:text-sm relative group">
+                    <td className="py-1 md:py-3 px-1 md:px-4">
+                      {teamLive?.captain_name ? (
+                        <div className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate max-w-[60px] md:max-w-[100px]">
+                          <span>{teamLive.captain_name}</span>
+                          <span className="ml-0.5 font-semibold text-gray-700 dark:text-gray-200">{teamLive.captain_points}</span>
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-gray-300 dark:text-gray-600">—</span>
+                      )}
+                    </td>
+                    <td className="py-1 md:py-3 px-1 md:px-4 text-center text-[11px] md:text-sm relative group">
                       {gwPoints}
                       {(isUser || teamLive) && statusDisplay && (
                         <>
-                          <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
+                          <span className={`ml-0.5 text-[9px] md:text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                           <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1">
                             {statusDisplay.tooltip}
                           </div>
                         </>
                       )}
                     </td>
-                    <td className="py-2 md:py-3 px-2 md:px-4 text-right font-bold text-fpl-purple dark:text-fpl-green text-xs md:text-sm relative group">
+                    <td className="py-1 md:py-3 px-1 md:px-4 text-right font-bold text-fpl-purple dark:text-fpl-green text-[11px] md:text-sm relative group">
                       {totalPoints.toLocaleString()}
                       {(isUser || teamLive) && statusDisplay && (
                         <>
-                          <span className={`ml-1 text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
+                          <span className={`ml-0.5 text-[9px] md:text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
                           <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">
                             {statusDisplay.tooltip}
                           </div>
                         </>
                       )}
                     </td>
-                    <td className="py-2 md:py-3 px-2 md:px-4 text-center">
+                    <td className="py-1 md:py-3 px-1 md:px-4 text-center hidden md:table-cell">
                       {!isUser && (
                         <button
-                          onClick={() => setComparisonTeamId(entry.entry)}
-                          className="inline-flex items-center gap-1 px-2 md:px-3 py-1 text-xs md:text-sm font-medium text-fpl-purple dark:text-fpl-green hover:bg-fpl-purple hover:text-white border border-fpl-purple rounded-md transition-colors dark:hover:bg-fpl-purple/20 dark:hover:text-white"
+                          onClick={(e) => { e.stopPropagation(); setComparisonTeamId(entry.entry); }}
+                          className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-fpl-purple dark:text-fpl-green hover:bg-fpl-purple hover:text-white border border-fpl-purple rounded-md transition-colors dark:hover:bg-fpl-purple/20 dark:hover:text-white"
                         >
-                          <Users size={14} className="hidden sm:inline" />
-                          <span className="hidden sm:inline">Compare</span>
-                          <span className="sm:hidden">Comp</span>
+                          <Users size={14} />
+                          Compare
                         </button>
                       )}
                     </td>
@@ -254,7 +264,6 @@ function LeagueStandings({ league, userTeamId, teamData }) {
           </table>
         </div>
       </div>
-
     </div>
   );
 }

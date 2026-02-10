@@ -103,9 +103,10 @@ class FPLApiService {
    * Fetches picks for each team and calculates points from the shared live data.
    */
   async getLeagueLivePoints(leagueId, gameweek, page = 1) {
-    const [leagueData, liveData] = await Promise.all([
+    const [leagueData, liveData, bootstrap] = await Promise.all([
       this.getClassicLeague(leagueId, page),
-      this.getLiveGameweekData(gameweek)
+      this.getLiveGameweekData(gameweek),
+      this.getBootstrapStatic()
     ]);
 
     // Build a map of element id -> total_points from live data
@@ -113,6 +114,14 @@ class FPLApiService {
     if (liveData?.elements) {
       liveData.elements.forEach(el => {
         livePointsMap[el.id] = el.stats?.total_points || 0;
+      });
+    }
+
+    // Build a map of element id -> web_name from bootstrap
+    const playerNameMap = {};
+    if (bootstrap?.elements) {
+      bootstrap.elements.forEach(el => {
+        playerNameMap[el.id] = el.web_name;
       });
     }
 
@@ -124,7 +133,7 @@ class FPLApiService {
     );
     const allPicks = await Promise.all(picksPromises);
 
-    // Calculate live points for each team
+    // Calculate live points and captain info for each team
     const livePoints = {};
     standings.forEach((entry, idx) => {
       const picks = allPicks[idx];
@@ -132,14 +141,25 @@ class FPLApiService {
 
       const startingPicks = picks.picks.filter(p => p.position <= 11);
       let total = 0;
+      let captainName = null;
+      let captainPoints = 0;
+
       for (const pick of startingPicks) {
         const pts = livePointsMap[pick.element] || 0;
-        total += pick.is_captain ? pts * pick.multiplier : pts;
+        if (pick.is_captain) {
+          captainName = playerNameMap[pick.element] || 'Unknown';
+          captainPoints = pts * pick.multiplier;
+          total += captainPoints;
+        } else {
+          total += pts;
+        }
       }
 
       livePoints[entry.entry] = {
         live_gw_points: total,
-        transfers_cost: picks.entry_history?.event_transfers_cost || 0
+        transfers_cost: picks.entry_history?.event_transfers_cost || 0,
+        captain_name: captainName,
+        captain_points: captainPoints
       };
     });
 
