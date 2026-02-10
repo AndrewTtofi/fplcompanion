@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
-import { Loader2, TrendingUp, TrendingDown, Users, X } from 'lucide-react';
+import { Loader2, TrendingUp, TrendingDown, Users, X, ChevronDown } from 'lucide-react';
 import { useLeague } from '@/contexts/LeagueContext';
 
 export default function LeagueView({ teamData }) {
@@ -147,128 +147,137 @@ function LeagueStandings({ league, userTeamId, teamData }) {
 
       {/* Standings Table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                <th className="text-left py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">#</th>
-                <th className="text-left py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">Team</th>
-                <th className="text-left py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300 hidden md:table-cell">Manager</th>
-                <th className="text-left py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">Capt</th>
-                <th className="text-center py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">GW</th>
-                <th className="text-right py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300">Tot</th>
-                <th className="text-center py-1 md:py-3 px-1 md:px-4 text-[11px] md:text-sm font-semibold text-gray-600 dark:text-gray-300 hidden md:table-cell">Compare</th>
-              </tr>
-            </thead>
-            <tbody>
-              {standings.map((entry, index) => {
-                const isUser = entry.entry === userTeamId;
-                const teamLive = leagueLiveData?.live_points?.[entry.entry];
-                const rankChange = entry.last_rank - entry.rank;
+        <table className="w-full">
+          <thead className="bg-gray-50 dark:bg-gray-900">
+            <tr>
+              <th className="text-left py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400 w-6">#</th>
+              <th className="text-left py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Captain</th>
+              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Chip</th>
+              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Players currently in play">In Play</th>
+              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Players yet to start">To Start</th>
+              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="GW points minus transfer costs">GW Net</th>
+              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Total points this month">Month Total</th>
+              <th className="text-right py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Total</th>
+            </tr>
+          </thead>
+            {standings.map((entry, index) => {
+              const isUser = entry.entry === userTeamId;
+              const teamLive = leagueLiveData?.live_points?.[entry.entry];
+              const rankChange = entry.last_rank - entry.rank;
 
-                // Use live points: user's detailed live data, league-wide live data, or FPL API fallback
-                let gwPoints = entry.event_total;
-                if (isUser && userLiveData?.total_live_points) {
-                  gwPoints = userLiveData.total_live_points;
-                } else if (teamLive) {
-                  gwPoints = teamLive.live_gw_points;
-                }
+              // Use live points: user's detailed live data, league-wide live data, or FPL API fallback
+              let gwPoints = entry.event_total;
+              if (isUser && userLiveData?.total_live_points) {
+                gwPoints = userLiveData.total_live_points;
+              } else if (teamLive) {
+                gwPoints = teamLive.live_gw_points;
+              }
 
-                // Calculate live total points
-                let totalPoints = entry.total;
-                if (isUser && userLiveData?.total_live_points) {
-                  totalPoints = entry.total + (userLiveData.total_live_points - entry.event_total);
-                } else if (teamLive) {
-                  totalPoints = entry.total + (teamLive.live_gw_points - entry.event_total);
-                }
+              // Calculate live total points
+              let totalPoints = entry.total;
+              if (isUser && userLiveData?.total_live_points) {
+                totalPoints = entry.total + (userLiveData.total_live_points - entry.event_total);
+              } else if (teamLive) {
+                totalPoints = entry.total + (teamLive.live_gw_points - entry.event_total);
+              }
 
-                return (
-                  <tr
-                    key={entry.entry}
-                    onClick={!isUser ? () => setComparisonTeamId(entry.entry) : undefined}
-                    className={`border-t border-gray-100 dark:border-gray-700 ${
-                      isUser
-                        ? 'bg-fpl-purple bg-opacity-10 dark:bg-fpl-purple/20 font-semibold'
-                        : 'hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer active:bg-gray-100 dark:active:bg-gray-600 md:cursor-default md:active:bg-transparent dark:md:active:bg-transparent'
-                    }`}
-                  >
-                    <td className="py-1 md:py-3 px-1 md:px-4">
-                      <div className="flex items-center space-x-0.5 md:space-x-2">
-                        <span className={`text-[11px] md:text-sm ${index < 3 ? 'font-bold text-fpl-purple dark:text-fpl-green' : ''}`}>
+              const transfersCost = teamLive?.transfers_cost || 0;
+              const netPoints = teamLive?.net_points != null ? teamLive.net_points : gwPoints - transfersCost;
+
+              // Chip badge
+              const chipLabel = teamLive?.active_chip === 'bboost' ? 'BB' :
+                teamLive?.active_chip === '3xc' ? 'TC' :
+                teamLive?.active_chip === 'freehit' ? 'FH' :
+                teamLive?.active_chip === 'wildcard' ? 'WC' : null;
+
+              const chipColor = teamLive?.active_chip === 'bboost' ? 'bg-blue-500' :
+                teamLive?.active_chip === '3xc' ? 'bg-pink-500' :
+                teamLive?.active_chip === 'freehit' ? 'bg-yellow-500' :
+                teamLive?.active_chip === 'wildcard' ? 'bg-purple-500' : '';
+
+              const rowBg = isUser
+                ? 'bg-fpl-purple bg-opacity-10 dark:bg-fpl-purple/20'
+                : '';
+              const rowInteractive = !isUser
+                ? 'cursor-pointer active:bg-gray-100 dark:active:bg-gray-600'
+                : '';
+
+              return (
+                <tbody
+                  key={entry.entry}
+                  onClick={!isUser ? () => setComparisonTeamId(entry.entry) : undefined}
+                  className={`${rowBg} ${rowInteractive} border-t border-gray-200 dark:border-gray-700`}
+                >
+                  {/* Row 1: Team name */}
+                  <tr>
+                    <td className="pt-1 pb-0 px-1 md:px-3">
+                      <div className="flex items-center gap-0.5">
+                        <span className={`text-[11px] md:text-sm font-bold ${index < 3 ? 'text-fpl-purple dark:text-fpl-green' : 'text-gray-700 dark:text-gray-300'}`}>
                           {entry.rank}
                         </span>
-                        {rankChange > 0 && (
-                          <TrendingUp className="text-green-500 w-3 h-3 md:w-3.5 md:h-3.5" />
-                        )}
-                        {rankChange < 0 && (
-                          <TrendingDown className="text-red-500 w-3 h-3 md:w-3.5 md:h-3.5" />
-                        )}
+                        {rankChange > 0 && <TrendingUp className="text-green-500 w-2.5 h-2.5" />}
+                        {rankChange < 0 && <TrendingDown className="text-red-500 w-2.5 h-2.5" />}
                       </div>
                     </td>
-                    <td className="py-1 md:py-3 px-1 md:px-4">
-                      <div className="flex items-center space-x-0.5 md:space-x-2">
-                        {isUser && <span className="text-fpl-pink text-[11px]">→</span>}
-                        <span className="text-[11px] md:text-sm truncate max-w-[80px] md:max-w-none">{entry.entry_name}</span>
+                    <td colSpan={7} className="pt-1 pb-0 px-1 md:px-3">
+                      <div className="flex items-center gap-1">
+                        {isUser && <span className="text-fpl-pink text-[10px]">&#9654;</span>}
+                        <span className={`text-[11px] md:text-sm truncate ${isUser ? 'font-bold text-gray-900 dark:text-white' : 'font-semibold text-gray-800 dark:text-gray-200'}`}>
+                          {entry.entry_name}
+                        </span>
+                        <span className="text-[10px] md:text-xs text-gray-400 dark:text-gray-500 truncate">
+                          ({entry.player_name})
+                        </span>
                       </div>
                     </td>
-                    <td className="py-1 md:py-3 px-1 md:px-4 text-sm text-gray-600 dark:text-gray-300 hidden md:table-cell">
-                      {entry.player_name}
-                    </td>
-                    <td className="py-1 md:py-3 px-1 md:px-4">
+                  </tr>
+                  {/* Row 2: Stats */}
+                  <tr>
+                    <td className="pt-0 pb-1 px-1 md:px-3 text-[10px] text-gray-300 dark:text-gray-600">—</td>
+                    <td className="pt-0 pb-1 px-1 md:px-3">
                       {teamLive?.captain_name ? (
-                        <div className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate max-w-[60px] md:max-w-[100px]">
-                          <span>{teamLive.captain_name}</span>
-                          <span className="ml-0.5 font-semibold text-gray-700 dark:text-gray-200">{teamLive.captain_points}</span>
-                        </div>
+                        <span className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate max-w-[60px] md:max-w-[100px]">{teamLive.captain_name}</span>
                       ) : (
                         <span className="text-[10px] text-gray-300 dark:text-gray-600">—</span>
                       )}
                     </td>
-                    <td className="py-1 md:py-3 px-1 md:px-4 text-center text-[11px] md:text-sm relative group">
-                      {gwPoints}
-                      {(isUser || teamLive) && statusDisplay && (
-                        <>
-                          <span className={`ml-0.5 text-[9px] md:text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
-                          <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1">
-                            {statusDisplay.tooltip}
-                          </div>
-                        </>
-                      )}
+                    <td className="pt-0 pb-1 px-1 md:px-3 text-center">
+                      {chipLabel ? (
+                        <span className={`${chipColor} text-white text-[9px] md:text-[10px] font-bold px-1 py-0.5 rounded`}>
+                          {chipLabel}
+                        </span>
+                      ) : null}
                     </td>
-                    <td className="py-1 md:py-3 px-1 md:px-4 text-right font-bold text-fpl-purple dark:text-fpl-green text-[11px] md:text-sm relative group">
+                    <td className="pt-0 pb-1 px-1 md:px-3 text-center text-[11px] md:text-sm text-gray-600 dark:text-gray-300">
+                      {teamLive?.players_playing != null ? teamLive.players_playing : '—'}
+                    </td>
+                    <td className="pt-0 pb-1 px-1 md:px-3 text-center text-[11px] md:text-sm text-gray-600 dark:text-gray-300">
+                      {teamLive?.players_to_start != null ? teamLive.players_to_start : '—'}
+                    </td>
+                    <td className="pt-0 pb-1 px-1 md:px-3 text-center text-[11px] md:text-sm text-gray-600 dark:text-gray-300">
+                      {netPoints}
+                    </td>
+                    <td className="pt-0 pb-1 px-1 md:px-3 text-center text-[11px] md:text-sm text-gray-600 dark:text-gray-300">
+                      {teamLive?.month_total != null ? teamLive.month_total : '—'}
+                    </td>
+                    <td className="pt-0 pb-1 px-1 md:px-3 text-right text-[11px] md:text-sm font-bold text-fpl-purple dark:text-fpl-green">
                       {totalPoints.toLocaleString()}
-                      {(isUser || teamLive) && statusDisplay && (
-                        <>
-                          <span className={`ml-0.5 text-[9px] md:text-xs ${statusDisplay.color} cursor-help`}>{statusDisplay.symbol}</span>
-                          <div className="absolute hidden md:group-hover:block z-50 bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap top-full mt-1 right-0">
-                            {statusDisplay.tooltip}
-                          </div>
-                        </>
-                      )}
-                    </td>
-                    <td className="py-1 md:py-3 px-1 md:px-4 text-center hidden md:table-cell">
-                      {!isUser && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setComparisonTeamId(entry.entry); }}
-                          className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-fpl-purple dark:text-fpl-green hover:bg-fpl-purple hover:text-white border border-fpl-purple rounded-md transition-colors dark:hover:bg-fpl-purple/20 dark:hover:text-white"
-                        >
-                          <Users size={14} />
-                          Compare
-                        </button>
-                      )}
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                </tbody>
+              );
+            })}
+        </table>
       </div>
     </div>
   );
 }
 
 function ComparisonView({ comparisonData, onClose, isLoading }) {
+  const [showDifferentials, setShowDifferentials] = useState(false);
+  const [showCaptains, setShowCaptains] = useState(false);
+  const [showSharedPlayers, setShowSharedPlayers] = useState(false);
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -300,43 +309,6 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
         </div>
 
         <div className="p-4 md:p-6 space-y-4 md:space-y-6">
-          {/* Team Headers */}
-          <div className="grid grid-cols-2 gap-2 md:gap-4">
-            {/* Team 1 */}
-            <div className="bg-gradient-to-r from-fpl-purple to-purple-700 text-white rounded-lg p-3 md:p-6">
-              <div className="text-[10px] md:text-sm opacity-90">Your Team</div>
-              <div className="text-sm md:text-2xl font-bold mt-1 truncate">{team1.name}</div>
-              <div className="text-[10px] md:text-sm opacity-90 mt-1 truncate">{team1.manager}</div>
-              <div className="mt-2 md:mt-4 grid grid-cols-2 gap-2 md:gap-4">
-                <div>
-                  <div className="text-[9px] md:text-xs opacity-75">GW Points</div>
-                  <div className="text-sm md:text-xl font-bold">{team1.gameweek_points}</div>
-                </div>
-                <div>
-                  <div className="text-[9px] md:text-xs opacity-75">Overall Rank</div>
-                  <div className="text-sm md:text-xl font-bold">{team1.overall_rank.toLocaleString()}</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Team 2 */}
-            <div className="bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg p-3 md:p-6">
-              <div className="text-[10px] md:text-sm opacity-90">Opponent</div>
-              <div className="text-sm md:text-2xl font-bold mt-1 truncate">{team2.name}</div>
-              <div className="text-[10px] md:text-sm opacity-90 mt-1 truncate">{team2.manager}</div>
-              <div className="mt-2 md:mt-4 grid grid-cols-2 gap-2 md:gap-4">
-                <div>
-                  <div className="text-[9px] md:text-xs opacity-75">GW Points</div>
-                  <div className="text-sm md:text-xl font-bold">{team2.gameweek_points}</div>
-                </div>
-                <div>
-                  <div className="text-[9px] md:text-xs opacity-75">Overall Rank</div>
-                  <div className="text-sm md:text-xl font-bold">{team2.overall_rank.toLocaleString()}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Gameweek Difference */}
           <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 md:p-6 text-center">
             <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-2">Gameweek Difference</div>
@@ -360,114 +332,154 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
             </div>
           )}
 
-          {/* Captain Comparison */}
+          {/* Differentials (collapsible) */}
+          <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+            <button
+              onClick={() => setShowDifferentials(!showDifferentials)}
+              className="w-full flex items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <span className="font-semibold text-sm md:text-base text-gray-900 dark:text-white">
+                Differentials ({comparison.team1_differentials.length} vs {comparison.team2_differentials.length})
+              </span>
+              <ChevronDown className={`w-4 h-4 md:w-5 md:h-5 text-gray-500 dark:text-gray-400 transition-transform ${showDifferentials ? 'rotate-180' : ''}`} />
+            </button>
+            {showDifferentials && (
+              <div className="p-3 md:p-4 space-y-3 md:space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  {/* Your Differentials */}
+                  <div className="bg-white dark:bg-gray-800 border border-fpl-purple rounded-lg p-3 md:p-4">
+                    <h3 className="font-semibold text-sm md:text-base text-gray-900 dark:text-white mb-2 md:mb-3">
+                      Your Differentials ({comparison.team1_differentials.length})
+                    </h3>
+                    <div className="space-y-2 max-h-48 md:max-h-64 overflow-y-auto">
+                      {comparison.team1_differentials.map((player) => (
+                        <div key={player.id} className="flex items-center justify-between bg-purple-50 dark:bg-purple-900/20 rounded p-2">
+                          <div className="flex items-center gap-1 md:gap-2 min-w-0">
+                            <span className="font-medium text-xs md:text-sm truncate dark:text-white">{player.name}</span>
+                            <span className="text-[10px] md:text-xs text-gray-600 dark:text-gray-300 flex-shrink-0">{player.team}</span>
+                            {player.is_captain && (
+                              <span className="bg-yellow-500 text-white text-[10px] md:text-xs px-1 rounded">C</span>
+                            )}
+                          </div>
+                          <span className="font-bold text-xs md:text-sm text-fpl-purple dark:text-fpl-green flex-shrink-0 ml-2">{player.multiplied_points} pts</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-xs md:text-sm dark:text-white">Total:</span>
+                        <span className="font-bold text-fpl-purple dark:text-fpl-green text-sm md:text-lg">
+                          {comparison.differential_points.team1} pts
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Their Differentials */}
+                  <div className="bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg p-3 md:p-4">
+                    <h3 className="font-semibold text-sm md:text-base text-gray-900 dark:text-white mb-2 md:mb-3">
+                      Their Differentials ({comparison.team2_differentials.length})
+                    </h3>
+                    <div className="space-y-2 max-h-48 md:max-h-64 overflow-y-auto">
+                      {comparison.team2_differentials.map((player) => (
+                        <div key={player.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 rounded p-2">
+                          <div className="flex items-center gap-1 md:gap-2 min-w-0">
+                            <span className="font-medium text-xs md:text-sm truncate dark:text-white">{player.name}</span>
+                            <span className="text-[10px] md:text-xs text-gray-600 dark:text-gray-300 flex-shrink-0">{player.team}</span>
+                            {player.is_captain && (
+                              <span className="bg-yellow-500 text-white text-[10px] md:text-xs px-1 rounded">C</span>
+                            )}
+                          </div>
+                          <span className="font-bold text-xs md:text-sm text-gray-700 dark:text-gray-200 flex-shrink-0 ml-2">{player.multiplied_points} pts</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-xs md:text-sm dark:text-white">Total:</span>
+                        <span className="font-bold text-gray-700 dark:text-gray-200 text-sm md:text-lg">
+                          {comparison.differential_points.team2} pts
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Differential Points Difference */}
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 md:p-4 text-center">
+                  <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-1">Differential Points Advantage</div>
+                  <div className={`text-xl md:text-3xl font-bold ${comparison.differential_points.difference > 0 ? 'text-green-600' : comparison.differential_points.difference < 0 ? 'text-red-600' : 'text-gray-900 dark:text-white'}`}>
+                    {comparison.differential_points.difference > 0 ? '+' : ''}{comparison.differential_points.difference} pts
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Captain Comparison (collapsible) */}
           {!comparison.captain_difference.same_captain && (
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 md:p-4">
-                <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-1 md:mb-2">Your Captain</div>
-                <div className="font-bold text-xs md:text-lg truncate dark:text-white">{comparison.captain_difference.team1_captain.name}</div>
-                <div className="text-lg md:text-2xl font-bold text-fpl-purple dark:text-fpl-green mt-1 md:mt-2">
-                  {comparison.captain_difference.team1_captain.multiplied_points} pts
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setShowCaptains(!showCaptains)}
+                className="w-full flex items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <span className="font-semibold text-sm md:text-base text-gray-900 dark:text-white">
+                  Captain Comparison
+                </span>
+                <ChevronDown className={`w-4 h-4 md:w-5 md:h-5 text-gray-500 dark:text-gray-400 transition-transform ${showCaptains ? 'rotate-180' : ''}`} />
+              </button>
+              {showCaptains && (
+                <div className="p-3 md:p-4">
+                  <div className="grid grid-cols-2 gap-2 md:gap-4">
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 md:p-4">
+                      <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-1 md:mb-2">Your Captain</div>
+                      <div className="font-bold text-xs md:text-lg truncate dark:text-white">{comparison.captain_difference.team1_captain.name}</div>
+                      <div className="text-lg md:text-2xl font-bold text-fpl-purple dark:text-fpl-green mt-1 md:mt-2">
+                        {comparison.captain_difference.team1_captain.multiplied_points} pts
+                      </div>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 md:p-4">
+                      <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-1 md:mb-2">Their Captain</div>
+                      <div className="font-bold text-xs md:text-lg truncate dark:text-white">{comparison.captain_difference.team2_captain.name}</div>
+                      <div className="text-lg md:text-2xl font-bold text-gray-700 dark:text-gray-200 mt-1 md:mt-2">
+                        {comparison.captain_difference.team2_captain.multiplied_points} pts
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 md:p-4">
-                <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-1 md:mb-2">Their Captain</div>
-                <div className="font-bold text-xs md:text-lg truncate dark:text-white">{comparison.captain_difference.team2_captain.name}</div>
-                <div className="text-lg md:text-2xl font-bold text-gray-700 dark:text-gray-200 mt-1 md:mt-2">
-                  {comparison.captain_difference.team2_captain.multiplied_points} pts
-                </div>
-              </div>
+              )}
             </div>
           )}
 
-          {/* Shared Players */}
+          {/* Shared Players (collapsible) */}
           {comparison.shared_players.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 md:p-4">
-              <h3 className="font-semibold text-sm md:text-base text-gray-900 dark:text-white mb-2 md:mb-3">
-                Shared Players ({comparison.shared_players.length})
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {comparison.shared_players.map((player) => (
-                  <div key={player.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 rounded p-2">
-                    <div className="flex items-center gap-1 md:gap-2 min-w-0">
-                      <span className="font-medium text-xs md:text-sm truncate dark:text-white">{player.name}</span>
-                      <span className="text-[10px] md:text-xs text-gray-600 dark:text-gray-300 flex-shrink-0">{player.team}</span>
-                    </div>
-                    <span className="font-bold text-xs md:text-sm text-gray-900 dark:text-white flex-shrink-0 ml-2">{player.points} pts</span>
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setShowSharedPlayers(!showSharedPlayers)}
+                className="w-full flex items-center justify-between p-3 md:p-4 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <span className="font-semibold text-sm md:text-base text-gray-900 dark:text-white">
+                  Shared Players ({comparison.shared_players.length})
+                </span>
+                <ChevronDown className={`w-4 h-4 md:w-5 md:h-5 text-gray-500 dark:text-gray-400 transition-transform ${showSharedPlayers ? 'rotate-180' : ''}`} />
+              </button>
+              {showSharedPlayers && (
+                <div className="p-3 md:p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {comparison.shared_players.map((player) => (
+                      <div key={player.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 rounded p-2">
+                        <div className="flex items-center gap-1 md:gap-2 min-w-0">
+                          <span className="font-medium text-xs md:text-sm truncate dark:text-white">{player.name}</span>
+                          <span className="text-[10px] md:text-xs text-gray-600 dark:text-gray-300 flex-shrink-0">{player.team}</span>
+                        </div>
+                        <span className="font-bold text-xs md:text-sm text-gray-900 dark:text-white flex-shrink-0 ml-2">{player.points} pts</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
           )}
-
-          {/* Differentials */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            {/* Your Differentials */}
-            <div className="bg-white dark:bg-gray-800 border border-fpl-purple rounded-lg p-3 md:p-4">
-              <h3 className="font-semibold text-sm md:text-base text-gray-900 dark:text-white mb-2 md:mb-3">
-                Your Differentials ({comparison.team1_differentials.length})
-              </h3>
-              <div className="space-y-2 max-h-48 md:max-h-64 overflow-y-auto">
-                {comparison.team1_differentials.map((player) => (
-                  <div key={player.id} className="flex items-center justify-between bg-purple-50 dark:bg-purple-900/20 rounded p-2">
-                    <div className="flex items-center gap-1 md:gap-2 min-w-0">
-                      <span className="font-medium text-xs md:text-sm truncate dark:text-white">{player.name}</span>
-                      <span className="text-[10px] md:text-xs text-gray-600 dark:text-gray-300 flex-shrink-0">{player.team}</span>
-                      {player.is_captain && (
-                        <span className="bg-yellow-500 text-white text-[10px] md:text-xs px-1 rounded">C</span>
-                      )}
-                    </div>
-                    <span className="font-bold text-xs md:text-sm text-fpl-purple dark:text-fpl-green flex-shrink-0 ml-2">{player.multiplied_points} pts</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-xs md:text-sm dark:text-white">Total:</span>
-                  <span className="font-bold text-fpl-purple dark:text-fpl-green text-sm md:text-lg">
-                    {comparison.differential_points.team1} pts
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Their Differentials */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-400 dark:border-gray-600 rounded-lg p-3 md:p-4">
-              <h3 className="font-semibold text-sm md:text-base text-gray-900 dark:text-white mb-2 md:mb-3">
-                Their Differentials ({comparison.team2_differentials.length})
-              </h3>
-              <div className="space-y-2 max-h-48 md:max-h-64 overflow-y-auto">
-                {comparison.team2_differentials.map((player) => (
-                  <div key={player.id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 rounded p-2">
-                    <div className="flex items-center gap-1 md:gap-2 min-w-0">
-                      <span className="font-medium text-xs md:text-sm truncate dark:text-white">{player.name}</span>
-                      <span className="text-[10px] md:text-xs text-gray-600 dark:text-gray-300 flex-shrink-0">{player.team}</span>
-                      {player.is_captain && (
-                        <span className="bg-yellow-500 text-white text-[10px] md:text-xs px-1 rounded">C</span>
-                      )}
-                    </div>
-                    <span className="font-bold text-xs md:text-sm text-gray-700 dark:text-gray-200 flex-shrink-0 ml-2">{player.multiplied_points} pts</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-xs md:text-sm dark:text-white">Total:</span>
-                  <span className="font-bold text-gray-700 dark:text-gray-200 text-sm md:text-lg">
-                    {comparison.differential_points.team2} pts
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Differential Points Difference */}
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 md:p-4 text-center">
-            <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-1">Differential Points Advantage</div>
-            <div className={`text-xl md:text-3xl font-bold ${comparison.differential_points.difference > 0 ? 'text-green-600' : comparison.differential_points.difference < 0 ? 'text-red-600' : 'text-gray-900 dark:text-white'}`}>
-              {comparison.differential_points.difference > 0 ? '+' : ''}{comparison.differential_points.difference} pts
-            </div>
-          </div>
         </div>
 
         {/* Footer */}

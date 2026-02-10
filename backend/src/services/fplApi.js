@@ -103,10 +103,11 @@ class FPLApiService {
    * Fetches picks for each team and calculates points from the shared live data.
    */
   async getLeagueLivePoints(leagueId, gameweek, page = 1) {
-    const [leagueData, liveData, bootstrap] = await Promise.all([
+    const [leagueData, liveData, bootstrap, fixtures] = await Promise.all([
       this.getClassicLeague(leagueId, page),
       this.getLiveGameweekData(gameweek),
-      this.getBootstrapStatic()
+      this.getBootstrapStatic(),
+      this.getFixtures(gameweek)
     ]);
 
     // Build a map of element id -> total_points from live data
@@ -117,32 +118,69 @@ class FPLApiService {
       });
     }
 
-    // Build a map of element id -> web_name from bootstrap
+    // Build maps from bootstrap
     const playerNameMap = {};
+    const playerTeamMap = {};
     if (bootstrap?.elements) {
       bootstrap.elements.forEach(el => {
         playerNameMap[el.id] = el.web_name;
+        playerTeamMap[el.id] = el.team;
       });
     }
 
+    // Build a map of team id -> fixture status (started, finished)
+    const teamFixtureStatus = {};
+    if (fixtures) {
+      fixtures.forEach(f => {
+        [f.team_h, f.team_a].forEach(teamId => {
+          if (!teamFixtureStatus[teamId]) {
+            teamFixtureStatus[teamId] = { started: false, finished: false };
+          }
+          if (f.started) teamFixtureStatus[teamId].started = true;
+          if (f.finished) teamFixtureStatus[teamId].finished = true;
+          if (f.started && !f.finished) teamFixtureStatus[teamId].in_progress = true;
+        });
+      });
+    }
+
+    // Find which gameweeks are in the current month
+    const currentEvent = bootstrap?.events?.find(e => e.id === parseInt(gameweek));
+    const currentMonth = currentEvent?.deadline_time ? new Date(currentEvent.deadline_time).getMonth() : new Date().getMonth();
+    const currentYear = currentEvent?.deadline_time ? new Date(currentEvent.deadline_time).getFullYear() : new Date().getFullYear();
+    const monthGameweeks = bootstrap?.events?.filter(e => {
+      if (!e.deadline_time) return false;
+      const d = new Date(e.deadline_time);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear && e.id <= parseInt(gameweek);
+    }).map(e => e.id) || [];
+
     const standings = leagueData.standings?.results || [];
 
-    // Fetch picks for all teams in parallel
+    // Fetch picks and histories for all teams in parallel
     const picksPromises = standings.map(entry =>
       this.getTeamPicks(entry.entry, gameweek).catch(() => null)
     );
-    const allPicks = await Promise.all(picksPromises);
+    const historyPromises = standings.map(entry =>
+      this.getTeamHistory(entry.entry).catch(() => null)
+    );
+    const [allPicks, allHistories] = await Promise.all([
+      Promise.all(picksPromises),
+      Promise.all(historyPromises)
+    ]);
 
-    // Calculate live points and captain info for each team
+    // Calculate live points and stats for each team
     const livePoints = {};
     standings.forEach((entry, idx) => {
       const picks = allPicks[idx];
+      const history = allHistories[idx];
       if (!picks?.picks) return;
 
-      const startingPicks = picks.picks.filter(p => p.position <= 11);
+      const isBenchBoost = picks.active_chip === 'bboost';
+      const startingPicks = isBenchBoost ? picks.picks : picks.picks.filter(p => p.position <= 11);
       let total = 0;
       let captainName = null;
       let captainPoints = 0;
+      let playersPlaying = 0;
+      let playersToStart = 0;
 
       for (const pick of startingPicks) {
         const pts = livePointsMap[pick.element] || 0;
@@ -153,13 +191,36 @@ class FPLApiService {
         } else {
           total += pts;
         }
+
+        // Check fixture status for this player's team
+        const playerTeam = playerTeamMap[pick.element];
+        const status = teamFixtureStatus[playerTeam];
+        if (status?.in_progress) playersPlaying++;
+        else if (!status?.started) playersToStart++;
+      }
+
+      const transfersCost = picks.entry_history?.event_transfers_cost || 0;
+
+      // Calculate month total from history
+      let monthTotal = 0;
+      if (history?.current) {
+        history.current.forEach(gw => {
+          if (monthGameweeks.includes(gw.event)) {
+            monthTotal += gw.points;
+          }
+        });
       }
 
       livePoints[entry.entry] = {
         live_gw_points: total,
-        transfers_cost: picks.entry_history?.event_transfers_cost || 0,
+        transfers_cost: transfersCost,
+        net_points: total - transfersCost,
         captain_name: captainName,
-        captain_points: captainPoints
+        captain_points: captainPoints,
+        players_playing: playersPlaying,
+        players_to_start: playersToStart,
+        month_total: monthTotal,
+        active_chip: picks.active_chip || null
       };
     });
 
@@ -387,10 +448,11 @@ class FPLApiService {
     });
 
     // Separate starting XI and bench
-    let startingXI = enrichedPicks.filter(p => p.position <= 11);
-    let bench = enrichedPicks.filter(p => p.position > 11).sort((a, b) => a.position - b.position);
+    const isBenchBoost = picks.active_chip === 'bboost';
+    let startingXI = isBenchBoost ? enrichedPicks : enrichedPicks.filter(p => p.position <= 11);
+    let bench = isBenchBoost ? [] : enrichedPicks.filter(p => p.position > 11).sort((a, b) => a.position - b.position);
 
-    // Apply automatic substitutions
+    // Apply automatic substitutions (not applicable during Bench Boost)
     // Auto-subs only apply AFTER the entire gameweek is finished
     // Check if ALL players (starting XI + bench) have finished their matches
     const allPlayers = [...startingXI, ...bench];
@@ -398,7 +460,7 @@ class FPLApiService {
       return p.fixtures?.every(f => f.finished === true);
     });
 
-    if (allMatchesFinished) {
+    if (allMatchesFinished && !isBenchBoost) {
       // Now that all matches are done, find players who didn't play
       const didNotPlay = startingXI.filter(p => p.live_stats.minutes === 0);
 
