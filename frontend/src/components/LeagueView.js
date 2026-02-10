@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { api } from '@/lib/api';
 import { Loader2, TrendingUp, TrendingDown, Users, X, ChevronDown } from 'lucide-react';
 import { useLeague } from '@/contexts/LeagueContext';
+import SquadComparisonView from './SquadComparisonView';
 
 export default function LeagueView({ teamData }) {
   const { selectedLeague: globalLeague } = useLeague();
@@ -274,6 +275,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
 }
 
 function ComparisonView({ comparisonData, onClose, isLoading }) {
+  const [activeTab, setActiveTab] = useState('squad');
   const [showDifferentials, setShowDifferentials] = useState(false);
   const [showCaptains, setShowCaptains] = useState(false);
   const [showSharedPlayers, setShowSharedPlayers] = useState(false);
@@ -289,7 +291,14 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
     );
   }
 
-  const { team1, team2, comparison, summary } = comparisonData;
+  const { team1, team2, comparison, summary, team1_squad, team2_squad } = comparisonData;
+  const hasSquadData = !!team1_squad && !!team2_squad;
+
+  const sharedPlayerIds = hasSquadData
+    ? [...team1_squad.starting_xi, ...(team1_squad.bench || [])]
+        .map(p => p.element)
+        .filter(id => [...team2_squad.starting_xi, ...(team2_squad.bench || [])].some(p => p.element === id))
+    : comparison.shared_players.map(p => p.id);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 md:p-4" onClick={onClose}>
@@ -298,8 +307,34 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">Head-to-Head</h2>
+        <div className="flex items-center justify-between px-3 py-2.5 md:p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-2 md:gap-3">
+            <h2 className="text-sm md:text-2xl font-bold text-gray-900 dark:text-white">Head-to-Head</h2>
+            {hasSquadData && (
+              <div className="flex gap-0.5 bg-gray-100 dark:bg-gray-700 p-0.5 rounded-lg">
+                <button
+                  onClick={() => setActiveTab('squad')}
+                  className={`w-16 md:w-20 py-1 text-[11px] md:text-xs rounded-md font-medium transition-colors text-center ${
+                    activeTab === 'squad'
+                      ? 'bg-white dark:bg-gray-600 text-fpl-purple dark:text-fpl-green shadow-sm'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  Squad
+                </button>
+                <button
+                  onClick={() => setActiveTab('analysis')}
+                  className={`w-16 md:w-20 py-1 text-[11px] md:text-xs rounded-md font-medium transition-colors text-center ${
+                    activeTab === 'analysis'
+                      ? 'bg-white dark:bg-gray-600 text-fpl-purple dark:text-fpl-green shadow-sm'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  Analysis
+                </button>
+              </div>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
@@ -308,7 +343,20 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
           </button>
         </div>
 
-        <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+        <div className="p-3 md:p-6 space-y-4 md:space-y-6">
+          {/* Squad View */}
+          {activeTab === 'squad' && hasSquadData && (
+            <SquadComparisonView
+              team1Name={team1.name}
+              team2Name={team2.name}
+              team1Squad={team1_squad}
+              team2Squad={team2_squad}
+              sharedPlayerIds={sharedPlayerIds}
+            />
+          )}
+
+          {/* Analysis View */}
+          {activeTab === 'analysis' && <>
           {/* Gameweek Difference */}
           <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 md:p-6 text-center">
             <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mb-2">Gameweek Difference</div>
@@ -480,10 +528,11 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
               )}
             </div>
           )}
+          </>}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end p-4 md:p-6 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex justify-end p-3 md:p-6 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={onClose}
             className="bg-fpl-purple text-white px-4 md:px-6 py-2 text-sm md:text-base rounded-lg hover:bg-opacity-90 transition-colors"

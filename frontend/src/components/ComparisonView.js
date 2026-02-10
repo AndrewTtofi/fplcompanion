@@ -3,6 +3,7 @@ import useSWR from 'swr';
 import { api } from '@/lib/api';
 import { Loader2, Users, TrendingUp, Trophy, Target, AlertCircle } from 'lucide-react';
 import { useLeague } from '@/contexts/LeagueContext';
+import SquadComparisonView from './SquadComparisonView';
 
 export default function ComparisonView({ myTeamId, myTeamName, gameweek, leagues }) {
   const { selectedLeague: globalLeague } = useLeague();
@@ -141,6 +142,8 @@ function ComparisonSelector({ opponentId, setOpponentId, handleCompare, leagues,
 }
 
 function ComparisonResults({ myTeamId, opponentId, gameweek, onBack }) {
+  const [activeTab, setActiveTab] = useState('squad');
+
   const { data, error, isLoading } = useSWR(
     ['comparison', myTeamId, opponentId, gameweek],
     () => api.compareTeams(myTeamId, opponentId, gameweek).then(res => res.data),
@@ -166,19 +169,65 @@ function ComparisonResults({ myTeamId, opponentId, gameweek, onBack }) {
     );
   }
 
-  const { team1, team2, comparison, summary } = data;
+  const { team1, team2, comparison, summary, team1_squad, team2_squad } = data;
   const isAhead = comparison.gameweek_difference > 0;
+  const hasSquadData = !!team1_squad && !!team2_squad;
+
+  const sharedPlayerIds = hasSquadData
+    ? [...team1_squad.starting_xi, ...(team1_squad.bench || [])]
+        .map(p => p.element)
+        .filter(id => [...team2_squad.starting_xi, ...(team2_squad.bench || [])].some(p => p.element === id))
+    : comparison.shared_players.map(p => p.id);
 
   return (
     <div className="space-y-6">
-      {/* Back Button */}
-      <button
-        onClick={onBack}
-        className="text-fpl-purple dark:text-fpl-green hover:underline flex items-center gap-2"
-      >
-        ← Change Opponent
-      </button>
+      {/* Back Button + Tab Toggle */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={onBack}
+          className="text-fpl-purple dark:text-fpl-green hover:underline flex items-center gap-2"
+        >
+          ← Change Opponent
+        </button>
+        {hasSquadData && (
+          <div className="flex gap-0.5 bg-gray-100 dark:bg-gray-700 p-0.5 rounded-lg">
+            <button
+              onClick={() => setActiveTab('squad')}
+              className={`w-16 md:w-20 py-1 text-xs rounded-md font-medium text-center transition-colors ${
+                activeTab === 'squad'
+                  ? 'bg-white dark:bg-gray-600 text-fpl-purple dark:text-fpl-green shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}
+            >
+              Squad
+            </button>
+            <button
+              onClick={() => setActiveTab('analysis')}
+              className={`w-16 md:w-20 py-1 text-xs rounded-md font-medium text-center transition-colors ${
+                activeTab === 'analysis'
+                  ? 'bg-white dark:bg-gray-600 text-fpl-purple dark:text-fpl-green shadow-sm'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}
+            >
+              Analysis
+            </button>
+          </div>
+        )}
+      </div>
 
+      {/* Squad View */}
+      {activeTab === 'squad' && hasSquadData && (
+        <SquadComparisonView
+          team1Name={team1.name}
+          team2Name={team2.name}
+          team1Squad={team1_squad}
+          team2Squad={team2_squad}
+          sharedPlayerIds={sharedPlayerIds}
+        />
+      )}
+
+      {/* Analysis View */}
+      {activeTab === 'analysis' && <>
       {/* Summary Box */}
       <div className={`rounded-lg p-6 text-white ${
         isAhead ? 'bg-gradient-to-r from-green-600 to-green-700' : 'bg-gradient-to-r from-red-600 to-red-700'
@@ -310,6 +359,7 @@ function ComparisonResults({ myTeamId, opponentId, gameweek, onBack }) {
             : 'Differentials scored equally'}
         </p>
       </div>
+      </>}
     </div>
   );
 }
