@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.19.0] - 2026-02-10
+
+### Changes
+- Merge pull request #40 from AndrewTtofi/feature/league-compact-captains (3765f08)
+- feat: add league stats columns, 2-row layout, bench boost support, and collapsible comparison sections (173e1d5)
+- feat: make tabs single-line scrollable on mobile (1ed29bc)
+- feat: compact league standings with captain display (812ca94)
+
 ## [v2.18.0] - 2026-02-09
 
 ### Changes
