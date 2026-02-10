@@ -702,7 +702,23 @@ class FPLApiService {
         team1DiffPoints,
         team2DiffPoints,
         captainDifference
-      )
+      ),
+      team1_squad: {
+        starting_xi: team1Data.starting_xi,
+        bench: team1Data.bench,
+        active_chip: team1Data.active_chip,
+        total_live_points: team1Data.total_live_points,
+        net_points: team1Data.net_points,
+        transfers: team1Data.transfers,
+      },
+      team2_squad: {
+        starting_xi: team2Data.starting_xi,
+        bench: team2Data.bench,
+        active_chip: team2Data.active_chip,
+        total_live_points: team2Data.total_live_points,
+        net_points: team2Data.net_points,
+        transfers: team2Data.transfers,
+      }
     };
   }
 
