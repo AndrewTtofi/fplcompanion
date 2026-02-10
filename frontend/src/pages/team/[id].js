@@ -113,8 +113,8 @@ export default function TeamPage() {
         <div className="max-w-7xl mx-auto px-2 md:px-4 py-4 md:py-8">
           {/* Tabs */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6">
-            <div className="border-b border-gray-200 dark:border-gray-700">
-              <nav className="flex flex-wrap -mb-px">
+            <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hide">
+              <nav className="flex -mb-px min-w-max">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
