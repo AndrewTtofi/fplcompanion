@@ -425,6 +425,8 @@ class FPLApiService {
         position_name: position?.singular_name_short || 'N/A',
         position_id: position?.id,
         now_cost: player?.now_cost / 10,
+        photo: player?.photo || null,
+        team_code: team?.code || null,
         fixtures: playerFixtures,
         live_stats: {
           minutes: stats.minutes || 0,
@@ -1046,6 +1048,72 @@ class FPLApiService {
       feed_items: feedItems,
       total_items: feedItems.length,
       last_checked: lastChecked,
+    };
+  }
+
+  /**
+   * Get league ownership data for a specific player
+   * Shows which managers own, start, or bench the player
+   */
+  async getPlayerLeagueOwnership(playerId, leagueId, gameweek) {
+    const [leagueData, bootstrap] = await Promise.all([
+      this.getClassicLeague(leagueId),
+      this.getBootstrapStatic()
+    ]);
+
+    const standings = leagueData.standings?.results || [];
+    const totalManagers = standings.length;
+    const elementId = parseInt(playerId);
+
+    // Fetch picks for all league teams in parallel
+    const picksPromises = standings.map(entry =>
+      this.getTeamPicks(entry.entry, gameweek).catch(() => null)
+    );
+    const allPicks = await Promise.all(picksPromises);
+
+    const managers = [];
+    let startsCount = 0;
+    let benchCount = 0;
+
+    standings.forEach((entry, idx) => {
+      const picks = allPicks[idx];
+      if (!picks?.picks) return;
+
+      const pick = picks.picks.find(p => p.element === elementId);
+      if (!pick) return;
+
+      const isBenchBoost = picks.active_chip === 'bboost';
+      const isStarting = isBenchBoost || pick.position <= 11;
+
+      if (isStarting) startsCount++;
+      else benchCount++;
+
+      managers.push({
+        entry_id: entry.entry,
+        manager_name: entry.player_name,
+        team_name: entry.entry_name,
+        status: isStarting ? 'starting' : 'bench',
+        is_captain: pick.is_captain,
+        is_vice_captain: pick.is_vice_captain,
+      });
+    });
+
+    const ownedCount = startsCount + benchCount;
+    const player = bootstrap.elements.find(p => p.id === elementId);
+
+    return {
+      player_id: elementId,
+      league_id: parseInt(leagueId),
+      total_managers: totalManagers,
+      owned_count: ownedCount,
+      starts_count: startsCount,
+      bench_count: benchCount,
+      starts_league: totalManagers > 0 ? ((startsCount / totalManagers) * 100).toFixed(1) : '0.0',
+      starts_effective: ownedCount > 0 ? ((startsCount / ownedCount) * 100).toFixed(1) : '0.0',
+      owned_league: totalManagers > 0 ? ((ownedCount / totalManagers) * 100).toFixed(1) : '0.0',
+      owned_overall: player?.selected_by_percent || '0.0',
+      price: player ? (player.now_cost / 10).toFixed(1) : '0.0',
+      managers,
     };
   }
 

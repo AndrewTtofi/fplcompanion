@@ -12,6 +12,7 @@ export default function FootballFieldView({ teamId, gameweek }) {
   const { mode } = router.query;
 
   const [viewMode, setViewMode] = useState(mode || 'live'); // 'live' or 'field'
+  const [mobileSection, setMobileSection] = useState('starting'); // 'starting' or 'bench'
 
   // Update viewMode when URL changes
   useEffect(() => {
@@ -101,30 +102,44 @@ export default function FootballFieldView({ teamId, gameweek }) {
       {/* Live Points View */}
       {viewMode === 'live' && (
         <div className="space-y-3 md:space-y-4">
-          {/* Mobile: Stack Stats on Top */}
+          {/* Mobile: Clickable Stats Cards */}
           <div className="md:hidden">
-            <div className="grid grid-cols-3 gap-2 md:gap-3">
-              {/* Total Points Card */}
-              <div className="bg-gradient-to-br from-fpl-purple to-purple-700 rounded-lg p-3 text-white shadow-lg">
+            <div className="grid grid-cols-3 gap-2">
+              {/* Total Points Card - toggles Starting XI */}
+              <button
+                onClick={() => setMobileSection('starting')}
+                className={`rounded-lg p-2 text-white shadow-lg transition-all ${
+                  mobileSection === 'starting'
+                    ? 'bg-gradient-to-br from-fpl-purple to-purple-700 ring-2 ring-fpl-green'
+                    : 'bg-gradient-to-br from-fpl-purple/70 to-purple-700/70'
+                }`}
+              >
                 <div className="text-center">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide mb-1">Total</div>
-                  <div className="text-2xl font-bold">{data.total_live_points}</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wide">Total</div>
+                  <div className="text-xl font-bold">{data.total_live_points}</div>
                 </div>
-              </div>
+              </button>
 
-              {/* Bench Points Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
+              {/* Bench Points Card - toggles Bench */}
+              <button
+                onClick={() => setMobileSection('bench')}
+                className={`rounded-lg p-2 shadow-md transition-all ${
+                  mobileSection === 'bench'
+                    ? 'bg-fpl-purple text-white ring-2 ring-fpl-green'
+                    : 'bg-white dark:bg-gray-800'
+                }`}
+              >
                 <div className="text-center">
-                  <div className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Bench</div>
-                  <div className="text-2xl font-bold text-gray-700 dark:text-gray-200">{data.bench_points}</div>
+                  <div className={`text-[10px] font-semibold uppercase tracking-wide ${mobileSection === 'bench' ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>Bench</div>
+                  <div className={`text-xl font-bold ${mobileSection === 'bench' ? 'text-white' : 'text-gray-700 dark:text-gray-200'}`}>{data.bench_points}</div>
                 </div>
-              </div>
+              </button>
 
               {/* Transfers Card */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-3 shadow-md">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-md">
                 <div className="text-center">
-                  <div className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Trans</div>
-                  <div className="text-2xl font-bold text-gray-700 dark:text-gray-200">{data.transfers.made}</div>
+                  <div className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Trans</div>
+                  <div className="text-xl font-bold text-gray-700 dark:text-gray-200">{data.transfers.made}</div>
                 </div>
               </div>
             </div>
@@ -166,22 +181,22 @@ export default function FootballFieldView({ teamId, gameweek }) {
               </div>
             </div>
 
-            {/* Middle Column - Starting XI */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 md:p-4 flex flex-col">
-              <h3 className="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-3 flex-shrink-0">Starting XI</h3>
-              <div className="space-y-1.5">
+            {/* Mobile: Starting XI (shown when mobileSection === 'starting') */}
+            <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 md:p-4 flex flex-col ${mobileSection !== 'starting' ? 'hidden md:flex' : ''}`}>
+              <h3 className="text-xs md:text-base font-bold text-gray-900 dark:text-white mb-1.5 md:mb-3 flex-shrink-0">Starting XI</h3>
+              <div className="space-y-1 md:space-y-1.5">
                 {starting_xi.map(player => (
-                  <LivePointsPlayerRow key={player.element} player={player} />
+                  <LivePointsPlayerRow key={player.element} player={player} compact />
                 ))}
               </div>
             </div>
 
-            {/* Right Column - Bench */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 md:p-4 flex flex-col">
-              <h3 className="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-3 flex-shrink-0">Substitutes</h3>
-              <div className="space-y-1.5">
+            {/* Mobile: Bench (shown when mobileSection === 'bench') */}
+            <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 md:p-4 flex flex-col ${mobileSection !== 'bench' ? 'hidden md:flex' : ''}`}>
+              <h3 className="text-xs md:text-base font-bold text-gray-900 dark:text-white mb-1.5 md:mb-3 flex-shrink-0">Substitutes</h3>
+              <div className="space-y-1 md:space-y-1.5">
                 {bench.map((player, index) => (
-                  <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} />
+                  <LivePointsPlayerRow key={player.element} player={player} benchPosition={index + 1} compact />
                 ))}
               </div>
             </div>
@@ -520,7 +535,7 @@ function BenchPlayerCard({ player, position }) {
   );
 }
 
-function LivePointsPlayerRow({ player, benchPosition }) {
+function LivePointsPlayerRow({ player, benchPosition, compact }) {
   const [showPopup, setShowPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
   const rowRef = React.useRef(null);
@@ -636,52 +651,54 @@ function LivePointsPlayerRow({ player, benchPosition }) {
     <div className="relative group">
       <div
         ref={rowRef}
-        className={`flex items-center justify-between p-2 md:p-2.5 rounded-lg border transition-all cursor-pointer ${
+        className={`flex items-center justify-between ${compact ? 'p-1 md:p-2.5' : 'p-2 md:p-2.5'} rounded-lg border transition-all cursor-pointer ${
           isPlaying ? 'border-green-400 bg-green-50 dark:bg-green-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-fpl-purple hover:shadow-sm'
         } ${benchPosition ? 'bg-gray-50 dark:bg-gray-900' : 'bg-white dark:bg-gray-800'}`}
         onClick={() => setShowPopup(true)}
         onMouseEnter={handleMouseEnter}
       >
-        <div className="flex items-center gap-2 flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 md:gap-2 flex-1 min-w-0">
           {benchPosition && (
-            <div className="bg-gray-600 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0">
+            <div className="bg-gray-600 text-white text-[9px] md:text-[10px] font-bold rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center shrink-0">
               {benchPosition}
             </div>
           )}
 
-          <div className={`${positionColors[player.position_id]} px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0`}>
-            {player.position_name}
+          <div className={`${positionColors[player.position_id]} px-1 md:px-1.5 py-0.5 rounded text-[9px] md:text-[10px] font-bold shrink-0`}>
+            {compact ? player.position_name?.charAt(0) + player.position_name?.slice(1, 3) : player.position_name}
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-sm text-gray-900 dark:text-white truncate">{player.web_name}</span>
+            <div className="flex items-center gap-1">
+              <span className={`font-semibold ${compact ? 'text-xs' : 'text-sm'} md:text-sm text-gray-900 dark:text-white truncate`}>{player.web_name}</span>
               {player.is_captain && (
-                <span className="bg-yellow-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">C</span>
+                <span className="bg-yellow-500 text-white text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded font-bold shrink-0">C</span>
               )}
               {player.is_vice_captain && (
-                <span className="bg-gray-600 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">V</span>
+                <span className="bg-gray-600 text-white text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded font-bold shrink-0">V</span>
               )}
               {player.auto_sub && !player.subbed_out && (
-                <span className="bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">IN</span>
+                <span className="bg-green-500 text-white text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded font-bold shrink-0">IN</span>
               )}
               {player.auto_sub && player.subbed_out && (
-                <span className="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shrink-0">OFF</span>
+                <span className="bg-red-500 text-white text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded font-bold shrink-0">OFF</span>
               )}
               {isPlaying && (
-                <span className="bg-green-500 text-white text-[9px] px-1.5 py-0.5 rounded animate-pulse shrink-0">
+                <span className="bg-green-500 text-white text-[8px] md:text-[9px] px-1 md:px-1.5 py-0.5 rounded animate-pulse shrink-0">
                   L
                 </span>
               )}
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
-              {player.team_short} • {stats.minutes || 0}&apos;
-            </div>
+            {!compact && (
+              <div className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
+                {player.team_short} • {stats.minutes || 0}&apos;
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="text-right flex-shrink-0 ml-2">
-          <div className="text-lg font-bold text-fpl-purple dark:text-fpl-green">
+        <div className="text-right flex-shrink-0 ml-1 md:ml-2">
+          <div className={`${compact ? 'text-sm' : 'text-lg'} md:text-lg font-bold text-fpl-purple dark:text-fpl-green`}>
             {player.is_captain ? stats.total_points * player.multiplier : stats.total_points}
           </div>
         </div>
