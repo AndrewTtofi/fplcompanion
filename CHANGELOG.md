@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.21.0] - 2026-02-11
+
+### Changes
+- Merge pull request #42 from AndrewTtofi/feat/ui-improvements (a1d0684)
+- feat: add player detail modal with league ownership, team badges, and player photos (b257415)
+
 ## [v2.20.0] - 2026-02-10
 
 ### Changes
