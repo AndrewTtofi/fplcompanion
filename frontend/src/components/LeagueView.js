@@ -35,6 +35,36 @@ export default function LeagueView({ teamData }) {
 
 function LeagueStandings({ league, userTeamId, teamData }) {
   const [comparisonTeamId, setComparisonTeamId] = useState(null);
+  const [sortKey, setSortKey] = useState('rank');
+  const [sortDir, setSortDir] = useState('asc');
+
+  const handleSort = (key) => {
+    if (sortKey === key) {
+      setSortDir(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir(key === 'rank' ? 'asc' : 'desc');
+    }
+  };
+
+  const SortHeader = ({ colKey, children, className }) => {
+    const isActive = sortKey === colKey;
+    return (
+      <th
+        className={`${className} cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200 transition-colors`}
+        onClick={() => handleSort(colKey)}
+      >
+        <span className="inline-flex items-center gap-0.5">
+          {children}
+          {isActive && (
+            <span className="text-fpl-purple dark:text-fpl-green text-[8px] md:text-[10px]">
+              {sortDir === 'asc' ? '▲' : '▼'}
+            </span>
+          )}
+        </span>
+      </th>
+    );
+  };
 
   // Reset comparison when league changes
   useEffect(() => {
@@ -91,7 +121,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
     );
   }
 
-  const standings = data.standings.results;
+  const rawStandings = data.standings.results;
 
   // Get gameweek status
   const gwStatus = userLiveData?.gameweek_status || {};
@@ -111,7 +141,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
 
   // Get user's league entry from multiple sources:
   // 1. From the standings page (if user is on current page)
-  const userEntryInPage = standings.find(s => s.entry === userTeamId);
+  const userEntryInPage = rawStandings.find(s => s.entry === userTeamId);
 
   // 2. From new_entries (if available)
   const userEntryFromNewEntries = data.new_entries?.results?.find(s => s.entry === userTeamId);
@@ -135,6 +165,62 @@ function LeagueStandings({ league, userTeamId, teamData }) {
     };
   }
 
+  // Pre-compute derived data for each entry so we can sort on any column
+  const enrichedStandings = rawStandings.map((entry) => {
+    const isUser = entry.entry === userTeamId;
+    const teamLive = leagueLiveData?.live_points?.[entry.entry];
+
+    let gwPoints = entry.event_total;
+    if (isUser && userLiveData?.total_live_points) {
+      gwPoints = userLiveData.total_live_points;
+    } else if (teamLive) {
+      gwPoints = teamLive.live_gw_points;
+    }
+
+    let totalPoints = entry.total;
+    if (isUser && userLiveData?.total_live_points) {
+      totalPoints = entry.total + (userLiveData.total_live_points - entry.event_total);
+    } else if (teamLive) {
+      totalPoints = entry.total + (teamLive.live_gw_points - entry.event_total);
+    }
+
+    const transfersCost = teamLive?.transfers_cost || 0;
+    const netPoints = teamLive?.net_points != null ? teamLive.net_points : gwPoints - transfersCost;
+
+    return {
+      ...entry,
+      isUser,
+      teamLive,
+      gwPoints,
+      totalPoints,
+      netPoints,
+      captainName: teamLive?.captain_name || '',
+      activeChip: teamLive?.active_chip || '',
+      playersPlaying: teamLive?.players_playing ?? -1,
+      playersToStart: teamLive?.players_to_start ?? -1,
+      monthTotal: teamLive?.month_total ?? -1,
+    };
+  });
+
+  // Sort the enriched standings
+  const standings = [...enrichedStandings].sort((a, b) => {
+    let aVal, bVal;
+    switch (sortKey) {
+      case 'rank': aVal = a.rank; bVal = b.rank; break;
+      case 'captain': aVal = a.captainName.toLowerCase(); bVal = b.captainName.toLowerCase(); break;
+      case 'chip': aVal = a.activeChip; bVal = b.activeChip; break;
+      case 'playing': aVal = a.playersPlaying; bVal = b.playersPlaying; break;
+      case 'toStart': aVal = a.playersToStart; bVal = b.playersToStart; break;
+      case 'gwNet': aVal = a.netPoints; bVal = b.netPoints; break;
+      case 'monthTotal': aVal = a.monthTotal; bVal = b.monthTotal; break;
+      case 'total': aVal = a.totalPoints; bVal = b.totalPoints; break;
+      default: aVal = a.rank; bVal = b.rank;
+    }
+    if (aVal < bVal) return sortDir === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   return (
     <div>
       {/* Comparison Modal */}
@@ -152,39 +238,19 @@ function LeagueStandings({ league, userTeamId, teamData }) {
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-900">
             <tr>
-              <th className="text-left py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400 w-6">#</th>
-              <th className="text-left py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Captain</th>
-              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Chip</th>
-              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Players currently in play">In Play</th>
-              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Players yet to start">To Start</th>
-              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="GW points minus transfer costs">GW Net</th>
-              <th className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Total points this month">Month Total</th>
-              <th className="text-right py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Total</th>
+              <SortHeader colKey="rank" className="text-left py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400 w-6">#</SortHeader>
+              <SortHeader colKey="captain" className="text-left py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Captain</SortHeader>
+              <SortHeader colKey="chip" className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Chip</SortHeader>
+              <SortHeader colKey="playing" className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Players currently in play">In Play</SortHeader>
+              <SortHeader colKey="toStart" className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Players yet to start">To Start</SortHeader>
+              <SortHeader colKey="gwNet" className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="GW points minus transfer costs">GW Net</SortHeader>
+              <SortHeader colKey="monthTotal" className="text-center py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400" title="Total points this month">Month Total</SortHeader>
+              <SortHeader colKey="total" className="text-right py-1 px-1 md:px-3 text-[10px] md:text-xs font-semibold text-gray-500 dark:text-gray-400">Total</SortHeader>
             </tr>
           </thead>
-            {standings.map((entry, index) => {
-              const isUser = entry.entry === userTeamId;
-              const teamLive = leagueLiveData?.live_points?.[entry.entry];
+            {standings.map((entry) => {
+              const { isUser, teamLive, netPoints, totalPoints } = entry;
               const rankChange = entry.last_rank - entry.rank;
-
-              // Use live points: user's detailed live data, league-wide live data, or FPL API fallback
-              let gwPoints = entry.event_total;
-              if (isUser && userLiveData?.total_live_points) {
-                gwPoints = userLiveData.total_live_points;
-              } else if (teamLive) {
-                gwPoints = teamLive.live_gw_points;
-              }
-
-              // Calculate live total points
-              let totalPoints = entry.total;
-              if (isUser && userLiveData?.total_live_points) {
-                totalPoints = entry.total + (userLiveData.total_live_points - entry.event_total);
-              } else if (teamLive) {
-                totalPoints = entry.total + (teamLive.live_gw_points - entry.event_total);
-              }
-
-              const transfersCost = teamLive?.transfers_cost || 0;
-              const netPoints = teamLive?.net_points != null ? teamLive.net_points : gwPoints - transfersCost;
 
               // Chip badge
               const chipLabel = teamLive?.active_chip === 'bboost' ? 'BB' :
@@ -214,7 +280,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
                   <tr>
                     <td className="pt-1 pb-0 px-1 md:px-3">
                       <div className="flex items-center gap-0.5">
-                        <span className={`text-[11px] md:text-sm font-bold ${index < 3 ? 'text-fpl-purple dark:text-fpl-green' : 'text-gray-700 dark:text-gray-300'}`}>
+                        <span className={`text-[11px] md:text-sm font-bold ${entry.rank <= 3 ? 'text-fpl-purple dark:text-fpl-green' : 'text-gray-700 dark:text-gray-300'}`}>
                           {entry.rank}
                         </span>
                         {rankChange > 0 && <TrendingUp className="text-green-500 w-2.5 h-2.5" />}
