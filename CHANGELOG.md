@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.22.0] - 2026-02-11
+
+### Changes
+- Merge pull request #43 from AndrewTtofi/feat/sortable-league-columns (4aa37ec)
+- feat: add sortable columns to league standings table (4e27061)
+
 ## [v2.21.0] - 2026-02-11
 
 ### Changes
