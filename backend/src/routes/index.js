@@ -148,12 +148,89 @@ router.get('/fixtures', async (req, res, next) => {
 
 /**
  * GET /api/player/:id
- * Get player detailed information
+ * Get player detailed information enriched with bootstrap data
  */
 router.get('/player/:id', async (req, res, next) => {
   try {
     const playerId = req.params.id;
-    const data = await fplApi.getPlayerDetail(playerId);
+    const [detail, bootstrap] = await Promise.all([
+      fplApi.getPlayerDetail(playerId),
+      fplApi.getBootstrapStatic()
+    ]);
+
+    const player = bootstrap.elements.find(p => p.id === parseInt(playerId));
+    const team = player ? bootstrap.teams.find(t => t.id === player.team) : null;
+    const position = player ? bootstrap.element_types.find(p => p.id === player.element_type) : null;
+
+    const teamMap = {};
+    bootstrap.teams.forEach(t => { teamMap[t.id] = t.short_name; });
+
+    // Enrich history with opponent team short names
+    const history = (detail.history || []).map(h => ({
+      ...h,
+      opponent_team_short: teamMap[h.opponent_team] || `T${h.opponent_team}`,
+    }));
+
+    // Enrich upcoming fixtures with opponent info
+    const playerTeamId = player?.team;
+    const fixtures = (detail.fixtures || []).map(f => {
+      const isHome = f.team_h === playerTeamId;
+      const opponentId = isHome ? f.team_a : f.team_h;
+      return {
+        ...f,
+        is_home: isHome,
+        opponent_short: teamMap[opponentId] || `T${opponentId}`,
+      };
+    });
+
+    res.json({
+      ...detail,
+      history,
+      fixtures,
+      player_info: player ? {
+        id: player.id,
+        web_name: player.web_name,
+        first_name: player.first_name,
+        second_name: player.second_name,
+        team_name: team?.name || '',
+        team_short: team?.short_name || '',
+        position_name: position?.singular_name_short || '',
+        now_cost: player.now_cost / 10,
+        selected_by_percent: player.selected_by_percent,
+        form: player.form,
+        points_per_game: player.points_per_game,
+        total_points: player.total_points,
+        minutes: player.minutes,
+        goals_scored: player.goals_scored,
+        assists: player.assists,
+        clean_sheets: player.clean_sheets,
+        starts: player.starts,
+        status: player.status,
+        news: player.news,
+        chance_of_playing_next_round: player.chance_of_playing_next_round,
+        photo: player.photo || null,
+        team_code: team?.code || null,
+      } : null
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/player/:playerId/league/:leagueId/ownership
+ * Get league ownership data for a player (who owns, starts, benches them)
+ */
+router.get('/player/:playerId/league/:leagueId/ownership', async (req, res, next) => {
+  try {
+    const { playerId, leagueId } = req.params;
+    const gameweek = req.query.gameweek;
+    if (!gameweek) {
+      const currentGW = await fplApi.getCurrentGameweek();
+      const data = await fplApi.getPlayerLeagueOwnership(playerId, leagueId, currentGW);
+      return res.json(data);
+    }
+    const data = await fplApi.getPlayerLeagueOwnership(playerId, leagueId, gameweek);
     res.json(data);
   } catch (error) {
     next(error);

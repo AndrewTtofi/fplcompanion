@@ -20,8 +20,8 @@ export default function TeamPage() {
   const router = useRouter();
   const { id, tab } = router.query;
 
-  // Initialize activeTab from URL query parameter or default to 'overview'
-  const [activeTab, setActiveTab] = useState(tab || 'overview');
+  // Initialize activeTab from URL query parameter or default to 'leagues'
+  const [activeTab, setActiveTab] = useState(tab || 'leagues');
 
   // Update activeTab when URL changes
   useEffect(() => {
@@ -82,11 +82,11 @@ export default function TeamPage() {
   }
 
   const tabs = [
+    { id: 'leagues', label: 'Leagues' },
     { id: 'overview', label: 'Overview' },
     { id: 'gameweek', label: 'Current Gameweek' },
     { id: 'feeds', label: 'My Feeds' },
     { id: 'news', label: 'Team News' },
-    { id: 'leagues', label: 'Leagues' },
     { id: 'transfers', label: 'Transfer Plan' },
   ];
 

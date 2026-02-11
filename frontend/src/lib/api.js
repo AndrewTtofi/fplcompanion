@@ -34,6 +34,12 @@ export const api = {
 
   // Player endpoints
   getPlayerDetail: (playerId) => apiClient.get(`/player/${playerId}`),
+  getPlayerLeagueOwnership: (playerId, leagueId, gameweek = null) => {
+    const url = gameweek
+      ? `/player/${playerId}/league/${leagueId}/ownership?gameweek=${gameweek}`
+      : `/player/${playerId}/league/${leagueId}/ownership`;
+    return apiClient.get(url);
+  },
   getGlobalTopPlayers: (limit = 20) => apiClient.get(`/players/top/alltime?limit=${limit}`),
 
   // Fixtures

@@ -143,6 +143,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
           comparisonData={comparisonData}
           onClose={() => setComparisonTeamId(null)}
           isLoading={comparisonLoading}
+          leagueId={league.id}
         />
       )}
 
@@ -274,7 +275,7 @@ function LeagueStandings({ league, userTeamId, teamData }) {
   );
 }
 
-function ComparisonView({ comparisonData, onClose, isLoading }) {
+function ComparisonView({ comparisonData, onClose, isLoading, leagueId }) {
   const [activeTab, setActiveTab] = useState('squad');
   const [showDifferentials, setShowDifferentials] = useState(false);
   const [showCaptains, setShowCaptains] = useState(false);
@@ -352,6 +353,7 @@ function ComparisonView({ comparisonData, onClose, isLoading }) {
               team1Squad={team1_squad}
               team2Squad={team2_squad}
               sharedPlayerIds={sharedPlayerIds}
+              leagueId={leagueId}
             />
           )}
 
