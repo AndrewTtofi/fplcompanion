@@ -49,3 +49,6 @@ backend/temp/
 *.aac
 *.ogg
 *.flac
+
+# Claude
+CLAUDE.md

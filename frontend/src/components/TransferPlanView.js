@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import useSWR from 'swr';
 import { api } from '@/lib/api';
-import { Loader2, Plus, X, ChevronUp, ChevronDown, Star, Filter, Link2, Check } from 'lucide-react';
+import { Loader2, Plus, X, ChevronUp, ChevronDown, Star, Filter, Link2, Check, Search } from 'lucide-react';
 import PodcastInsights from './PodcastInsights';
 
 const SHORTLIST_STORAGE_KEY = 'fpl_shortlist';
@@ -9,6 +9,7 @@ const SHORTLIST_STORAGE_KEY = 'fpl_shortlist';
 export default function TransferPlanView({ teamData }) {
   // Filters
   const [filters, setFilters] = useState({
+    name: '',
     team: null,
     position: null,
     minPrice: null,
@@ -197,6 +198,14 @@ export default function TransferPlanView({ teamData }) {
     let players = [...bootstrapData.elements];
 
     // Apply filters
+    if (filters.name && filters.name.length >= 2) {
+      const q = filters.name.toLowerCase();
+      players = players.filter(p =>
+        p.web_name.toLowerCase().includes(q) ||
+        p.first_name.toLowerCase().includes(q) ||
+        p.second_name.toLowerCase().includes(q)
+      );
+    }
     if (filters.team) {
       players = players.filter(p => p.team === filters.team);
     }
@@ -269,6 +278,7 @@ export default function TransferPlanView({ teamData }) {
 
   const clearFilters = () => {
     setFilters({
+      name: '',
       team: null,
       position: null,
       minPrice: null,
@@ -366,14 +376,14 @@ export default function TransferPlanView({ teamData }) {
           <Filter size={18} className="text-gray-500 dark:text-gray-400" />
           <h3 className="font-semibold text-gray-900 dark:text-white">Filters</h3>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
           {/* Team Filter */}
           <div>
             <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1">Team</label>
             <select
               value={filters.team || ''}
               onChange={(e) => setFilters({ ...filters, team: e.target.value ? parseInt(e.target.value) : null })}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full h-[34px] px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
               <option value="">All Teams</option>
               {bootstrapData?.teams?.map(team => (
@@ -388,7 +398,7 @@ export default function TransferPlanView({ teamData }) {
             <select
               value={filters.position || ''}
               onChange={(e) => setFilters({ ...filters, position: e.target.value ? parseInt(e.target.value) : null })}
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              className="w-full h-[34px] px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             >
               <option value="">All Positions</option>
               {bootstrapData?.element_types?.map(pos => (
@@ -425,6 +435,29 @@ export default function TransferPlanView({ teamData }) {
               onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value ? parseFloat(e.target.value) : null })}
               className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
             />
+          </div>
+
+          {/* Player Name */}
+          <div>
+            <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1">Player Name</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="e.g. Salah, Haaland"
+                value={filters.name}
+                onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+                className="w-full px-2 py-1.5 pl-8 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-fpl-purple focus:border-transparent dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+              />
+              <Search size={14} className="absolute left-2.5 top-2 text-gray-400" />
+              {filters.name && (
+                <button
+                  onClick={() => setFilters({ ...filters, name: '' })}
+                  className="absolute right-2 top-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Clear Filters */}
