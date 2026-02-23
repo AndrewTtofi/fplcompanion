@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.23.0] - 2026-02-23
+
+### Changes
+- Merge pull request #44 from hippopotamus-gmsg/feat/player-search-by-name (aa70f8b)
+- feat(frontend): add player name search filter to transfer plan (b50f30d)
+
 ## [v2.22.0] - 2026-02-11
 
 ### Changes
