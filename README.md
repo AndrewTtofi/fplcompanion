@@ -335,6 +335,6 @@ MIT - See [LICENSE](LICENSE) for details
 - [x] Mobile-responsive improvements
 - [x] SEO & search engine indexing
 - [ ] Fixture difficulty analyzer
-- [ ] Player search by name
+- [x] Player search by name
 - [ ] Historical season data
 - [ ] Email/push notifications for gameweek updates
